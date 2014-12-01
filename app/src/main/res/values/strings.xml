@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">JaagrT</string>
+    <string name="title_activity_login">JaagrT Login</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="login_facebook">Login with Facebook</string>
+    <string name="login_google">Login with Google</string>
+    <string name="login_with_account">Or Login with your Account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">I forgot my password</string>
+    <string name="app_id">822228331163024</string>
+
+</resources>
