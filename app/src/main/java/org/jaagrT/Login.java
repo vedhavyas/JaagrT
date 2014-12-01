@@ -18,6 +18,7 @@ import com.sromku.simple.fb.listeners.OnLoginListener;
 public class Login extends Activity {
 
     private EditText emailBox, passwordBox;
+    private SimpleFacebook mSimpleFacebook;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,11 @@ public class Login extends Activity {
         new SetupUI().execute(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSimpleFacebook = SimpleFacebook.getInstance(this);
+    }
 
     private class SetupUI extends AsyncTask<Activity, Void, Void>{
 
@@ -45,7 +51,7 @@ public class Login extends Activity {
             passwordBox = (EditText)findViewById(R.id.passwordBox);
             final Activity activity = activities[0];
 
-            SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(activity);
+            mSimpleFacebook = SimpleFacebook.getInstance(activity);
 
             //setup listeners
             fbBtn.setOnClickListener(new View.OnClickListener() {
