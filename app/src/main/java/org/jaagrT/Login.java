@@ -1,33 +1,42 @@
 package org.jaagrT;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.listeners.OnLoginListener;
+
+import org.jaagrT.utils.Constants;
+import org.jaagrT.utils.Utilities;
 
 
 public class Login extends Activity {
 
     private EditText emailBox, passwordBox;
     private SimpleFacebook mSimpleFacebook;
+    private OnLoginListener fbLoginListener;
+    private GoogleApiClient apiClient;
+    private Activity activity;
+    private GoogleApiClient.ConnectionCallbacks googleConnectionCallbacks;
+    private GoogleApiClient.OnConnectionFailedListener googleOnConnectionFailedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
-        new SetupUI().execute(this);
+        activity = this;
+        new SetupUI().execute();
     }
 
     @Override
@@ -36,10 +45,30 @@ public class Login extends Activity {
         mSimpleFacebook = SimpleFacebook.getInstance(this);
     }
 
-    private class SetupUI extends AsyncTask<Activity, Void, Void>{
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mSimpleFacebook.onActivityResult(this, requestCode, resultCode, data);
+
+        if (requestCode == Constants.GOOGLE_CONNECTION && resultCode == RESULT_OK) {
+            Utilities.logIt("Google connection resolved");
+            apiClient.connect();
+
+        }
+    }
+
+    private void showErrorDialog(int errorCode) {
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt("dialog_error", errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getFragmentManager(), "errorDialog");
+    }
+
+    private class SetupUI extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected Void doInBackground(Activity... activities) {
+        protected Void doInBackground(Void... params) {
 
             // Instantiate UI Elements
             Button fbBtn = (Button) findViewById(R.id.fbBtn);
@@ -47,32 +76,33 @@ public class Login extends Activity {
             Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
             Button loginBtn = (Button) findViewById(R.id.loginBtn);
             Button forgotPassBtn = (Button) findViewById(R.id.forgotPasswordBtn);
-            emailBox = (EditText)findViewById(R.id.emailBox);
-            passwordBox = (EditText)findViewById(R.id.passwordBox);
-            final Activity activity = activities[0];
+            emailBox = (EditText) findViewById(R.id.emailBox);
+            passwordBox = (EditText) findViewById(R.id.passwordBox);
 
             mSimpleFacebook = SimpleFacebook.getInstance(activity);
+
 
             //setup listeners
             fbBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    Toast.makeText(activity, "Facebook Login", Toast.LENGTH_SHORT).show();
+                    mSimpleFacebook.login(fbLoginListener);
                 }
             });
 
             googleBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    apiClient.connect();
                 }
             });
 
             signUpBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent signUpIntent = new Intent(activity, Signup.class);
+                    startActivity(signUpIntent);
+                    overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
                 }
             });
 
@@ -90,34 +120,76 @@ public class Login extends Activity {
                 }
             });
 
-            OnLoginListener fbLoginListener = new OnLoginListener() {
+            fbLoginListener = new OnLoginListener() {
                 @Override
                 public void onLogin() {
-
+                    Utilities.logIt("Connected with facebook");
                 }
 
                 @Override
                 public void onNotAcceptingPermissions(Permission.Type type) {
-
+                    Utilities.logIt("User didn't accept permissions");
                 }
 
                 @Override
                 public void onThinking() {
-
+                    Utilities.logIt("On thinking");
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
-
+                    Utilities.logIt("Exception while logging into facebook");
                 }
 
                 @Override
                 public void onFail(String s) {
+                    Utilities.logIt("Failed to login to facebook");
+                }
+            };
 
+            googleConnectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(Bundle bundle) {
+                    Utilities.logIt("Connected to Google");
+                }
+
+                @Override
+                public void onConnectionSuspended(int i) {
+                    Utilities.logIt("Connection is suspended");
+                }
+            };
+
+            googleOnConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+                @Override
+                public void onConnectionFailed(ConnectionResult result) {
+                    Utilities.logIt("Google connection failed");
+                    if (result.hasResolution()) {
+                        try {
+                            result.startResolutionForResult(activity, Constants.GOOGLE_CONNECTION);
+                        } catch (IntentSender.SendIntentException e) {
+                            Utilities.logIt("Google connection - Exception caught!! Reconnecting...");
+                            apiClient.connect();
+                        }
+                    } else {
+                        Utilities.logIt("Google connection - Issue has no resolution!!");
+                        showErrorDialog(result.getErrorCode());
+                    }
                 }
             };
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            apiClient = new GoogleApiClient.Builder(getBaseContext())
+                    .addConnectionCallbacks(googleConnectionCallbacks)
+                    .addOnConnectionFailedListener(googleOnConnectionFailedListener)
+                    .addScope(Plus.SCOPE_PLUS_LOGIN)
+                    .addScope(Plus.SCOPE_PLUS_PROFILE)
+                    .addApi(Plus.API)
+                    .build();
         }
     }
 }

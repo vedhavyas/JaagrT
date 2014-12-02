@@ -13,6 +13,11 @@
     <string name="sign_up">Sign Up</string>
     <string name="login">Login</string>
     <string name="forgot_password">I forgot my password</string>
-    <string name="app_id">822228331163024</string>
+    <string name="app_id">630451703747709</string>
+    <string name="title_activity_signup">JaagrT Signup</string>
+    <string name="name">Name</string>
+    <string name="verify_password">Verify Password</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

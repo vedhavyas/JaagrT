@@ -27,7 +27,7 @@ public class JaagrT extends Application {
         @Override
         protected Void doInBackground(Void... params) {
             {
-                Logger.DEBUG_WITH_STACKTRACE = false;
+                Logger.DEBUG_WITH_STACKTRACE = true;
 
                 // initialize facebook configuration
                 Permission[] permissions = new Permission[]{
@@ -37,8 +37,8 @@ public class JaagrT extends Application {
                 };
 
                 SimpleFacebookConfiguration configuration = new SimpleFacebookConfiguration.Builder()
-                        .setAppId("822228331163024")
-                        .setNamespace("test_login_ved_")
+                        .setAppId("630451703747709")
+                        .setNamespace("jaagrt_name_space")
                         .setPermissions(permissions)
                         .setDefaultAudience(SessionDefaultAudience.FRIENDS)
                         .setAskForAllPermissionsAtOnce(false)
