@@ -19,5 +19,9 @@
     <string name="verify_password">Verify Password</string>
     <string name="phone_number">Phone Number</string>
     <string name="cancel">Cancel</string>
+    <string name="sign_up_using_facebook">Signup using Facebook</string>
+    <string name="sign_up_using_google">Signup using Google</string>
+    <string name="create_with_email">Or create an account with Email</string>
+    <string name="loading">loading...</string>
 
 </resources>

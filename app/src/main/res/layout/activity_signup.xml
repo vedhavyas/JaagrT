@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:validator="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/signUpLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30sp"
-        android:text="@string/sign_up"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        android:typeface="monospace" />
 
     <LinearLayout
         android:id="@+id/signUpLayout"
@@ -22,7 +13,50 @@
         android:layout_centerInParent="true"
         android:orientation="vertical">
 
-        <EditText
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+
+            <Button
+                android:id="@+id/fbBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10sp"
+                android:background="@drawable/facebook_btn"
+                android:paddingEnd="10sp"
+                android:paddingStart="35sp"
+                android:text="@string/sign_up_using_facebook"
+                android:textColor="@android:color/white"
+                android:typeface="monospace" />
+
+            <Button
+                android:id="@+id/gPlusBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/google_btn"
+                android:paddingEnd="23sp"
+                android:paddingStart="43sp"
+                android:text="@string/sign_up_using_google"
+                android:textColor="@android:color/white"
+                android:typeface="monospace" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20sp"
+            android:layout_marginTop="20sp"
+            android:text="@string/create_with_email"
+            android:textColor="@android:color/holo_orange_light"
+            android:textSize="15sp"
+            android:typeface="monospace" />
+
+
+        <com.andreabaccega.widget.FormEditText
             android:id="@+id/nameBox"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -39,9 +73,10 @@
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            validator:testType="personFullName" />
 
-        <EditText
+        <com.andreabaccega.widget.FormEditText
             android:id="@+id/emailBox"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -58,9 +93,10 @@
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            validator:testType="email" />
 
-        <EditText
+        <com.andreabaccega.widget.FormEditText
             android:id="@+id/passwordBox"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -79,7 +115,7 @@
             android:textCursorDrawable="@drawable/edit_text_cursor"
             android:typeface="monospace" />
 
-        <EditText
+        <com.andreabaccega.widget.FormEditText
             android:id="@+id/verifyPasswordBox"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -98,7 +134,7 @@
             android:textCursorDrawable="@drawable/edit_text_cursor"
             android:typeface="monospace" />
 
-        <EditText
+        <com.andreabaccega.widget.FormEditText
             android:id="@+id/phoneBox"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -115,7 +151,8 @@
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            validator:testType="phone" />
 
         <LinearLayout
             android:layout_width="fill_parent"

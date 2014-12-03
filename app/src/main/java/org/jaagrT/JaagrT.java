@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 
 import com.facebook.SessionDefaultAudience;
+import com.parse.Parse;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
@@ -11,6 +12,7 @@ import com.sromku.simple.fb.utils.Logger;
 
 /**
  * Authored by vedhavyas on 1/12/14.
+ * Project JaagrT
  */
 
 
@@ -46,6 +48,12 @@ public class JaagrT extends Application {
 
                 SimpleFacebook.setConfiguration(configuration);
             }
+
+            {
+                Parse.enableLocalDatastore(getBaseContext());
+                Parse.initialize(getBaseContext(), "p1S63CxoGmQVRTNp5OGE3nS976oe0W12HJNjEvOo", "xq7HB4QnIMWqYgJDLbYOWTJRImYL3SGMWDw4Qdpu");
+            }
+
             return null;
         }
     }

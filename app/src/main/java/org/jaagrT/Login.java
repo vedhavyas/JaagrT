@@ -1,18 +1,22 @@
 package org.jaagrT;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 
+import com.andreabaccega.widget.FormEditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.nispok.snackbar.Snackbar;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.listeners.OnLoginListener;
@@ -23,7 +27,7 @@ import org.jaagrT.utils.Utilities;
 
 public class Login extends Activity {
 
-    private EditText emailBox, passwordBox;
+    private FormEditText emailBox, passwordBox;
     private SimpleFacebook mSimpleFacebook;
     private OnLoginListener fbLoginListener;
     private GoogleApiClient apiClient;
@@ -73,14 +77,12 @@ public class Login extends Activity {
             // Instantiate UI Elements
             Button fbBtn = (Button) findViewById(R.id.fbBtn);
             Button googleBtn = (Button) findViewById(R.id.googleBtn);
-            Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
+            final Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
             Button loginBtn = (Button) findViewById(R.id.loginBtn);
             Button forgotPassBtn = (Button) findViewById(R.id.forgotPasswordBtn);
-            emailBox = (EditText) findViewById(R.id.emailBox);
-            passwordBox = (EditText) findViewById(R.id.passwordBox);
-
-            mSimpleFacebook = SimpleFacebook.getInstance(activity);
-
+            emailBox = (FormEditText) findViewById(R.id.emailBox);
+            passwordBox = (FormEditText) findViewById(R.id.passwordBox);
+            final FormEditText[] editTexts = {emailBox, passwordBox};
 
             //setup listeners
             fbBtn.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +111,25 @@ public class Login extends Activity {
             loginBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (Utilities.isEditBoxesValid(editTexts)) {
+                        Snackbar snackbar = Utilities.getSnackBar(activity);
+                        snackbar.text("Data validated!")
+                                .textColorResource(R.color.white)
+                                .actionLabel("Okay")
+                                .actionColorResource(R.color.orange_light)
+                                .show(activity);
 
+                        final AlertDialog.Builder progressDialog = new AlertDialog.Builder(activity);
+                        LayoutInflater inflater = activity.getLayoutInflater();
+                        View view = inflater.inflate(R.layout.progress_dialog, null);
+                        TextView progressText = (TextView) view.findViewById(R.id.progressText);
+                        progressText.setText("Loaded finally!!");
+                        progressDialog.setView(view);
+                        progressDialog.setCancelable(false);
+
+                        new ShowDialog(progressDialog).execute();
+
+                    }
                 }
             });
 
@@ -183,6 +203,7 @@ public class Login extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mSimpleFacebook = SimpleFacebook.getInstance(activity);
             apiClient = new GoogleApiClient.Builder(getBaseContext())
                     .addConnectionCallbacks(googleConnectionCallbacks)
                     .addOnConnectionFailedListener(googleOnConnectionFailedListener)
@@ -190,6 +211,37 @@ public class Login extends Activity {
                     .addScope(Plus.SCOPE_PLUS_PROFILE)
                     .addApi(Plus.API)
                     .build();
+        }
+    }
+
+    private class ShowDialog extends AsyncTask<Void, Void, Void> {
+        AlertDialog dialog;
+        AlertDialog.Builder builder;
+
+        private ShowDialog(AlertDialog.Builder builder) {
+            this.builder = builder;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = builder.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            dialog.cancel();
         }
     }
 }

@@ -7,5 +7,5 @@ package org.jaagrT.utils;
 
 public class Constants {
 
-    public static int GOOGLE_CONNECTION = 1;
+    public static final int GOOGLE_CONNECTION = 1;
 }
