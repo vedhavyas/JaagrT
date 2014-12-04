@@ -6,21 +6,19 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.andreabaccega.widget.FormEditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
-import com.nispok.snackbar.Snackbar;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.listeners.OnLoginListener;
 
+import org.jaagrT.utils.AlertDialogs;
 import org.jaagrT.utils.Constants;
 import org.jaagrT.utils.Utilities;
 
@@ -112,24 +110,11 @@ public class Login extends Activity {
                 @Override
                 public void onClick(View v) {
                     if (Utilities.isEditBoxesValid(editTexts)) {
-                        Snackbar snackbar = Utilities.getSnackBar(activity);
-                        snackbar.text("Data validated!")
-                                .textColorResource(R.color.white)
-                                .actionLabel("Okay")
-                                .actionColorResource(R.color.orange_light)
-                                .show(activity);
-
-                        final AlertDialog.Builder progressDialog = new AlertDialog.Builder(activity);
-                        LayoutInflater inflater = activity.getLayoutInflater();
-                        View view = inflater.inflate(R.layout.progress_dialog, null);
-                        TextView progressText = (TextView) view.findViewById(R.id.progressText);
-                        progressText.setText("Loaded finally!!");
-                        progressDialog.setView(view);
-                        progressDialog.setCancelable(false);
-
-                        new ShowDialog(progressDialog).execute();
-
+                        Utilities.snackIt(activity, "Data Validated", "Okay");
                     }
+
+                    new ShowDialog().execute();
+
                 }
             });
 
@@ -215,17 +200,12 @@ public class Login extends Activity {
     }
 
     private class ShowDialog extends AsyncTask<Void, Void, Void> {
+
         AlertDialog dialog;
-        AlertDialog.Builder builder;
-
-        private ShowDialog(AlertDialog.Builder builder) {
-            this.builder = builder;
-        }
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = builder.show();
+            dialog = AlertDialogs.showProgressDialog(activity, "Loading Data");
         }
 
         @Override

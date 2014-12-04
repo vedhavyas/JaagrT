@@ -33,7 +33,7 @@
                 android:typeface="monospace" />
 
             <Button
-                android:id="@+id/gPlusBtn"
+                android:id="@+id/googleBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/google_btn"

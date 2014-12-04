@@ -1,10 +1,8 @@
 package org.jaagrT.utils;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
-import android.widget.EditText;
 
-import com.andreabaccega.formedittextvalidator.Validator;
 import com.andreabaccega.widget.FormEditText;
 import com.nispok.snackbar.Snackbar;
 
@@ -17,11 +15,6 @@ import org.jaagrT.R;
 
 public class Utilities {
 
-
-    public static Snackbar getSnackBar(Context context) {
-        return Snackbar.with(context)
-                .colorResource(R.color.white);
-    }
 
     public static void logIt(String data) {
         Log.i("JaagrT", data);
@@ -37,31 +30,14 @@ public class Utilities {
         return allValid;
     }
 
-    public static class PhoneNumberValidator extends Validator {
+    public static void snackIt(Activity activity, String text, String actionLabel) {
 
-        public PhoneNumberValidator() {
-            super("Phone Number is not valid");
-        }
-
-        @Override
-        public boolean isValid(EditText editText) {
-            return editText.getText().length() >= 10;
-        }
+        Snackbar snackbar = Snackbar.with(activity);
+        snackbar.text(text)
+                .textColorResource(R.color.white)
+                .actionLabel(actionLabel)
+                .actionColorResource(R.color.blue)
+                .show(activity);
     }
 
-    public static class PasswordVerifyValidator extends Validator {
-
-        private FormEditText passwordBox;
-
-        public PasswordVerifyValidator(FormEditText passwordBox) {
-            super("Passwords didn't match");
-            this.passwordBox = passwordBox;
-        }
-
-        @Override
-        public boolean isValid(EditText verifyPasswordBox) {
-            return passwordBox.getText().toString().isEmpty() && !verifyPasswordBox.getText().toString().isEmpty() ||
-                    verifyPasswordBox.getText().toString().equals(passwordBox.getText().toString());
-        }
-    }
 }
