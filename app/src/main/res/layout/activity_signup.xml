@@ -24,7 +24,7 @@
                 android:id="@+id/fbBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10sp"
+                android:layout_marginBottom="20sp"
                 android:background="@drawable/facebook_btn"
                 android:paddingEnd="10sp"
                 android:paddingStart="35sp"
