@@ -23,5 +23,7 @@
     <string name="sign_up_using_google">Signup using Google</string>
     <string name="create_with_email">Or create an account with Email</string>
     <string name="loading">loading...</string>
+    <string name="title_activity_image_crop">Crop Activity</string>
+    <string name="choose_pic">Choose another</string>
 
 </resources>

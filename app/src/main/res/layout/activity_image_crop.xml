@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="org.jaagrT.ImageCrop">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.edmodo.cropper.CropImageView xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cropImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            custom:imageResource="@drawable/ic_profile_big" />
+
+        <Button
+            android:id="@+id/acceptBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="20sp"
+            android:background="@drawable/accept_btn" />
+
+        <Button
+            android:id="@+id/rotateBtn"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="20sp"
+            android:background="@drawable/rotate_btn" />
+
+        <Button
+            android:id="@+id/choosePicBtn"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:background="@drawable/btn_holder"
+            android:paddingEnd="15sp"
+            android:paddingStart="15sp"
+            android:text="@string/choose_pic"
+            android:typeface="monospace" />
+
+    </FrameLayout>
+
+
+</LinearLayout>

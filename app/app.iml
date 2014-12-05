@@ -81,6 +81,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="cropper-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="facebook-android-sdk-3.21.0" level="project" />
     <orderEntry type="library" exported="" name="simple.facebook-2.2" level="project" />
