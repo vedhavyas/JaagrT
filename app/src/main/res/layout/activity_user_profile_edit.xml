@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:validator="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="50sp"
+        android:layout_marginTop="50sp"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:id="@+id/profilePicView"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/profile_pic"
+            android:src="@drawable/ic_profile_big" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15sp">
+
+        <com.andreabaccega.widget.FormEditText
+            android:id="@+id/nameBox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="30sp"
+            android:layout_marginRight="30sp"
+            android:background="@drawable/background_edit_text_top"
+            android:drawablePadding="8sp"
+            android:drawableStart="@drawable/ic_profile_small"
+            android:ems="10"
+            android:hint="@string/name"
+            android:inputType="textPersonName"
+            android:padding="10sp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textCursorDrawable="@drawable/edit_text_cursor"
+            android:typeface="monospace"
+            validator:testType="personFullName" />
+
+        <com.andreabaccega.widget.FormEditText
+            android:id="@+id/emailBox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="30sp"
+            android:layout_marginRight="30sp"
+            android:background="@drawable/background_edit_text_middle"
+            android:drawablePadding="8sp"
+            android:drawableStart="@drawable/ic_email"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:padding="10sp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textCursorDrawable="@drawable/edit_text_cursor"
+            android:typeface="monospace"
+            validator:testType="email" />
+
+
+        <com.andreabaccega.widget.FormEditText
+            android:id="@+id/phoneBox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="30sp"
+            android:layout_marginRight="30sp"
+            android:background="@drawable/background_edit_text_bottom"
+            android:drawablePadding="8sp"
+            android:drawableStart="@drawable/ic_phone"
+            android:ems="10"
+            android:hint="@string/phone_number"
+            android:inputType="phone"
+            android:padding="10sp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textCursorDrawable="@drawable/edit_text_cursor"
+            android:typeface="monospace"
+            validator:testType="phone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="15sp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancelBtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_holder"
+            android:text="@string/cancel"
+            android:textColor="@android:color/white"
+            android:typeface="monospace" />
+
+        <Button
+            android:id="@+id/updateBtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_holder"
+            android:text="@string/update_profile"
+            android:textColor="@android:color/white"
+            android:typeface="monospace" />
+
+    </LinearLayout>
+
+</LinearLayout>

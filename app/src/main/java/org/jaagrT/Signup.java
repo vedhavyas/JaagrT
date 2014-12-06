@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,27 +16,41 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
+import com.sromku.simple.fb.entities.Profile;
 import com.sromku.simple.fb.listeners.OnLoginListener;
+import com.sromku.simple.fb.listeners.OnProfileListener;
+import com.sromku.simple.fb.utils.Attributes;
+import com.sromku.simple.fb.utils.PictureAttributes;
 
 import org.jaagrT.utils.AlertDialogs;
 import org.jaagrT.utils.Constants;
 import org.jaagrT.utils.FormValidators;
 import org.jaagrT.utils.Utilities;
 
+import java.io.InputStream;
+
 
 public class Signup extends Activity {
 
+    private static final int FB_PROFILE_PIC_HEIGHT = 800;
+    private static final int FB_PROFILE_PIC_WIDTH = 800;
+    private static final int GOOGLE_PLUS_PIC_DIMENSION = 800;
     private FormEditText nameBox, emailBox, passwordBox, phoneBox;
     private Activity activity;
     private SimpleFacebook simpleFacebook;
     private OnLoginListener fbLoginListener;
     private GoogleApiClient apiClient;
     private AlertDialog dialog;
+    private String profileUrl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +77,54 @@ public class Signup extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         simpleFacebook.onActivityResult(this, requestCode, resultCode, data);
 
-        if (requestCode == Constants.GOOGLE_CONNECTION && resultCode == RESULT_OK) {
+        if (requestCode == Constants.GOOGLE_CONNECTION_CODE && resultCode == RESULT_OK) {
             Utilities.logIt("Google connection resolved");
             apiClient.connect();
 
+        } else if (requestCode == Constants.CROP_IMAGE_CODE) {
+            if (resultCode == RESULT_OK) {
+                Utilities.logIt("Crop - Result OK");
+                saveProfilePicOnCloud(data.getByteArrayExtra(Constants.CROPPED_IMAGE_ARRAY));
+            } else {
+                Utilities.logIt("Crop - Result Failed");
+            }
+        }
+    }
+
+    private void saveProfilePicOnCloud(byte[] byteData) {
+        if (byteData != null) {
+            final AlertDialog profileSaveDialog = AlertDialogs.showProgressDialog(activity, "Saving Image on Cloud");
+            final ParseFile profilePic = new ParseFile(Constants.USER_PICTURE_FILE_NAME, byteData);
+            profilePic.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        profileSaveDialog.cancel();
+                        attachProfileToUser(profilePic);
+                    } else {
+                        AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!!");
+                    }
+                }
+            });
+        }
+    }
+
+    private void attachProfileToUser(ParseFile file) {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            final AlertDialog attachFileDialog = AlertDialogs.showProgressDialog(activity, "Finalizing the Registration..");
+            currentUser.put(Constants.USER_PROFILE_PICTURE, file);
+            currentUser.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    attachFileDialog.cancel();
+                    if (e == null) {
+                        Utilities.snackIt(activity, "Profile Picture Saved", "Okay");
+                    } else {
+                        AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
+                    }
+                }
+            });
         }
     }
 
@@ -76,8 +137,8 @@ public class Signup extends Activity {
     }
 
     private void registerUser() {
-        final AlertDialog dialog = AlertDialogs.showProgressDialog(activity, "Signing up...");
-        ParseUser newUser = new ParseUser();
+        final AlertDialog registrationDialog = AlertDialogs.showProgressDialog(activity, "Signing up...");
+        final ParseUser newUser = new ParseUser();
         newUser.setUsername(emailBox.getText().toString());
         newUser.setPassword(passwordBox.getText().toString());
         newUser.setEmail(emailBox.getText().toString());
@@ -87,15 +148,100 @@ public class Signup extends Activity {
         newUser.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                dialog.cancel();
                 if (e == null) {
                     Utilities.snackIt(activity, "Registration Successful", "Okay");
+                    ParseObject settings = new ParseObject(Constants.USER_SETTINGS_CLASS);
+
+                    // add settings
+                    settings.add(Constants.SEND_SMS, true);
+                    settings.add(Constants.SEND_EMAIL, true);
+                    settings.add(Constants.SEND_PUSH, true);
+                    settings.add(Constants.RESCUER, false);
+                    settings.add(Constants.RECEIVE_SMS, false);
+                    settings.add(Constants.RECEIVE_PUSH, false);
+                    settings.add(Constants.RECEIVE_EMAIL, false);
+                    settings.add(Constants.SEND_ALERT_RANGE, 400);
+                    settings.add(Constants.RECEIVE_ALERT_RANGE, 400);
+
+                    newUser.add(Constants.USER_SETTINGS, settings);
+                    newUser.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            registrationDialog.cancel();
+                            Utilities.snackIt(activity, "Saved settings", "Okay");
+                            getProfilePicIfPossible();
+                        }
+                    });
                 } else {
+                    registrationDialog.cancel();
                     Utilities.logIt(e.getMessage());
-                    AlertDialogs.errorDialog(activity, "Error", e.getMessage(), "okay").show();
+                    AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
                 }
             }
         });
+    }
+
+    private void getProfilePicIfPossible() {
+        if (profileUrl != null) {
+            Utilities.logIt("Profile URL Found");
+            new DownloadImageTask().execute(profileUrl);
+        } else {
+            startCropActivity(null);
+        }
+    }
+
+    private void startCropActivity(Bitmap bitmap) {
+        Intent cropIntent = new Intent(activity, ImageCrop.class);
+        if (bitmap != null) {
+            cropIntent.putExtra(Constants.ORIGINAL_IMAGE_ARRAY, Utilities.getBlob(bitmap));
+        }
+        startActivityForResult(cropIntent, Constants.CROP_IMAGE_CODE);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    }
+
+    private void getFacebookProfile() {
+        OnProfileListener fbProfileListener = new OnProfileListener() {
+            @Override
+            public void onComplete(Profile profile) {
+                nameBox.setText(profile.getName());
+                emailBox.setText(profile.getEmail());
+                profileUrl = profile.getPicture();
+            }
+        };
+
+        PictureAttributes pictureAttributes = Attributes.createPictureAttributes();
+        pictureAttributes.setHeight(FB_PROFILE_PIC_HEIGHT);
+        pictureAttributes.setWidth(FB_PROFILE_PIC_WIDTH);
+        pictureAttributes.setType(PictureAttributes.PictureType.SQUARE);
+
+        Profile.Properties properties = new Profile.Properties.Builder()
+                .add(Profile.Properties.ID)
+                .add(Profile.Properties.NAME)
+                .add(Profile.Properties.EMAIL)
+                .add(Profile.Properties.PICTURE, pictureAttributes)
+                .build();
+
+        Utilities.logIt("Downloading profile...");
+        simpleFacebook.getProfile(properties, fbProfileListener);
+    }
+
+    private void getGooglePlusProfile() {
+        try {
+            Person currentPerson = Plus.PeopleApi
+                    .getCurrentPerson(apiClient);
+            if (currentPerson != null) {
+                nameBox.setText(currentPerson.getDisplayName());
+                emailBox.setText(Plus.AccountApi.getAccountName(apiClient));
+                profileUrl = currentPerson.getImage().getUrl();
+                profileUrl = profileUrl.substring(0,
+                        profileUrl.length() - 2)
+                        + GOOGLE_PLUS_PIC_DIMENSION;
+            } else {
+                Utilities.logIt("Google Profile info is null !!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUpActivity() {
@@ -113,8 +259,8 @@ public class Signup extends Activity {
 
         Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
         Button cancelBtn = (Button) findViewById(R.id.cancelBtn);
-        Button fbBtn = (Button) findViewById(R.id.fbBtn);
-        Button googleBtn = (Button) findViewById(R.id.googleBtn);
+        final Button fbBtn = (Button) findViewById(R.id.fbBtn);
+        final Button googleBtn = (Button) findViewById(R.id.googleBtn);
 
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
@@ -153,6 +299,8 @@ public class Signup extends Activity {
             @Override
             public void onLogin() {
                 Utilities.logIt("Connected with facebook");
+                fbBtn.setEnabled(false);
+                getFacebookProfile();
             }
 
             @Override
@@ -179,10 +327,13 @@ public class Signup extends Activity {
         GoogleApiClient.ConnectionCallbacks googleConnectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
             @Override
             public void onConnected(Bundle bundle) {
+                Utilities.logIt("Connected to Google");
+                googleBtn.setEnabled(false);
+                getGooglePlusProfile();
                 if (dialog != null && dialog.isShowing()) {
                     dialog.cancel();
                 }
-                Utilities.logIt("Connected to Google");
+
             }
 
             @Override
@@ -197,7 +348,7 @@ public class Signup extends Activity {
                 Utilities.logIt("Google connection failed");
                 if (result.hasResolution()) {
                     try {
-                        result.startResolutionForResult(activity, Constants.GOOGLE_CONNECTION);
+                        result.startResolutionForResult(activity, Constants.GOOGLE_CONNECTION_CODE);
                     } catch (IntentSender.SendIntentException e) {
                         Utilities.logIt("Google connection - Exception caught!! Reconnecting...");
                         apiClient.connect();
@@ -218,5 +369,40 @@ public class Signup extends Activity {
                 .addApi(Plus.API)
                 .build();
     }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        AlertDialog profileDownloadDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Utilities.logIt("Downloading your Profile Picture...");
+            profileDownloadDialog = AlertDialogs.showProgressDialog(activity, "Downloading your Profile Pic...");
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Utilities.logIt(e.getMessage());
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            profileDownloadDialog.cancel();
+            if (bitmap != null) {
+                startCropActivity(bitmap);
+            }
+        }
+    }
+
 
 }

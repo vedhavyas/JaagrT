@@ -31,7 +31,7 @@ dependencies {
     compile 'com.andreabaccega:android-form-edittext:1.1.0@aar'
     compile 'com.pnikosis:materialish-progress:1.0'
     compile 'com.parse.bolts:bolts-android:1.1.2'
-    compile 'cn.pedant.sweetalert:library:1.2'
     compile 'com.edmodo:cropper:1.0.1'
+    compile 'com.afollestad:material-dialogs:0.3.6'
 
 }

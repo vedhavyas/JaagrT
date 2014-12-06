@@ -6,9 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import org.jaagrT.R;
+import com.afollestad.materialdialogs.Alignment;
+import com.afollestad.materialdialogs.MaterialDialog;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import org.jaagrT.R;
 
 /**
  * Authored by vedhavyas on 5/12/14.
@@ -30,18 +31,15 @@ public class AlertDialogs {
 
     }
 
-    public static SweetAlertDialog errorDialog(Activity activity, String titleMessage, String errorMessage, String confirmText) {
-        SweetAlertDialog warningDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);
-        warningDialog.setContentText(errorMessage);
-        warningDialog.setConfirmText(confirmText);
-        warningDialog.setTitleText(titleMessage);
-        warningDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-            @Override
-            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                sweetAlertDialog.cancel();
-            }
-        });
+    public static void showErrorDialog(Activity activity, String title, String content, String negativeBtnText) {
 
-        return warningDialog;
+        MaterialDialog.Builder errorDialog = new MaterialDialog.Builder(activity);
+        errorDialog.title(title)
+                .content(content)
+                .negativeText(negativeBtnText)
+                .titleColor(activity.getResources().getColor(R.color.red_dark))
+                .negativeColor(activity.getResources().getColor(R.color.red_dark))
+                .titleAlignment(Alignment.CENTER)
+                .show();
     }
 }

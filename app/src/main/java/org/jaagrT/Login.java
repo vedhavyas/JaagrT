@@ -47,7 +47,7 @@ public class Login extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         simpleFacebook.onActivityResult(this, requestCode, resultCode, data);
 
-        if (requestCode == Constants.GOOGLE_CONNECTION && resultCode == RESULT_OK) {
+        if (requestCode == Constants.GOOGLE_CONNECTION_CODE && resultCode == RESULT_OK) {
             Utilities.logIt("Google connection resolved");
             apiClient.connect();
 
@@ -109,7 +109,7 @@ public class Login extends Activity {
         forgotPassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent cropIntent = new Intent(activity, ImageCrop.class);
+                Intent cropIntent = new Intent(activity, UserProfileEdit.class);
                 startActivity(cropIntent);
             }
         });
@@ -159,7 +159,7 @@ public class Login extends Activity {
                 Utilities.logIt("Google connection failed");
                 if (result.hasResolution()) {
                     try {
-                        result.startResolutionForResult(activity, Constants.GOOGLE_CONNECTION);
+                        result.startResolutionForResult(activity, Constants.GOOGLE_CONNECTION_CODE);
                     } catch (IntentSender.SendIntentException e) {
                         Utilities.logIt("Google connection - Exception caught!! Reconnecting...");
                         apiClient.connect();

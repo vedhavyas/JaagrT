@@ -25,5 +25,8 @@
     <string name="loading">loading...</string>
     <string name="title_activity_image_crop">Crop Activity</string>
     <string name="choose_pic">Choose another</string>
+    <string name="title_activity_profile_edit">Edit Profile</string>
+    <string name="update_profile">Update</string>
+    <string name="profile_pic">Profile Picture</string>
 
 </resources>
