@@ -10,6 +10,7 @@ import com.nispok.snackbar.Snackbar;
 
 import org.jaagrT.R;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -62,6 +63,17 @@ public class Utilities {
             bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
         }
         return bitmap;
+    }
+
+    public static Bitmap compressBitmap(Bitmap original) {
+        Bitmap compressed = null;
+        if (original != null) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            original.compress(Bitmap.CompressFormat.JPEG, 40, out);
+            compressed = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
+        }
+
+        return compressed;
     }
 
 }

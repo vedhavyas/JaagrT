@@ -21,7 +21,6 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
@@ -84,47 +83,24 @@ public class Signup extends Activity {
         } else if (requestCode == Constants.CROP_IMAGE_CODE) {
             if (resultCode == RESULT_OK) {
                 Utilities.logIt("Crop - Result OK");
-                saveProfilePicOnCloud(data.getByteArrayExtra(Constants.CROPPED_IMAGE_ARRAY));
+                byte[] fileByte = data.getByteArrayExtra(Constants.CROPPED_IMAGE_ARRAY);
+                if (fileByte != null) {
+                    final ParseFile profilePic = new ParseFile(Constants.USER_PICTURE_FILE_NAME, fileByte);
+                    attachProfileToUser(profilePic);
+                }
             } else {
                 Utilities.logIt("Crop - Result Failed");
             }
         }
     }
 
-    private void saveProfilePicOnCloud(byte[] byteData) {
-        if (byteData != null) {
-            final AlertDialog profileSaveDialog = AlertDialogs.showProgressDialog(activity, "Saving Image on Cloud");
-            final ParseFile profilePic = new ParseFile(Constants.USER_PICTURE_FILE_NAME, byteData);
-            profilePic.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        profileSaveDialog.cancel();
-                        attachProfileToUser(profilePic);
-                    } else {
-                        AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!!");
-                    }
-                }
-            });
-        }
-    }
-
     private void attachProfileToUser(ParseFile file) {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            final AlertDialog attachFileDialog = AlertDialogs.showProgressDialog(activity, "Finalizing the Registration..");
             currentUser.put(Constants.USER_PROFILE_PICTURE, file);
-            currentUser.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    attachFileDialog.cancel();
-                    if (e == null) {
-                        Utilities.snackIt(activity, "Profile Picture Saved", "Okay");
-                    } else {
-                        AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
-                    }
-                }
-            });
+            file.saveInBackground();
+            currentUser.saveInBackground();
+            Utilities.snackIt(activity, "Profile Attached", "Okay");
         }
     }
 
@@ -137,7 +113,7 @@ public class Signup extends Activity {
     }
 
     private void registerUser() {
-        final AlertDialog registrationDialog = AlertDialogs.showProgressDialog(activity, "Signing up...");
+        final AlertDialog registrationDialog = AlertDialogs.showProgressDialog(activity, "Registering you...");
         final ParseUser newUser = new ParseUser();
         newUser.setUsername(emailBox.getText().toString());
         newUser.setPassword(passwordBox.getText().toString());
@@ -149,29 +125,11 @@ public class Signup extends Activity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    registrationDialog.cancel();
                     Utilities.snackIt(activity, "Registration Successful", "Okay");
-                    ParseObject settings = new ParseObject(Constants.USER_SETTINGS_CLASS);
+                    addDefaultSettingsToUser();
+                    pickProfilePicture();
 
-                    // add settings
-                    settings.add(Constants.SEND_SMS, true);
-                    settings.add(Constants.SEND_EMAIL, true);
-                    settings.add(Constants.SEND_PUSH, true);
-                    settings.add(Constants.RESCUER, false);
-                    settings.add(Constants.RECEIVE_SMS, false);
-                    settings.add(Constants.RECEIVE_PUSH, false);
-                    settings.add(Constants.RECEIVE_EMAIL, false);
-                    settings.add(Constants.SEND_ALERT_RANGE, 400);
-                    settings.add(Constants.RECEIVE_ALERT_RANGE, 400);
-
-                    newUser.add(Constants.USER_SETTINGS, settings);
-                    newUser.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            registrationDialog.cancel();
-                            Utilities.snackIt(activity, "Saved settings", "Okay");
-                            getProfilePicIfPossible();
-                        }
-                    });
                 } else {
                     registrationDialog.cancel();
                     Utilities.logIt(e.getMessage());
@@ -181,22 +139,45 @@ public class Signup extends Activity {
         });
     }
 
-    private void getProfilePicIfPossible() {
+    private void addDefaultSettingsToUser() {
+
+        ParseObject settings = new ParseObject(Constants.USER_SETTINGS_CLASS);
+
+        settings.add(Constants.SEND_SMS, true);
+        settings.add(Constants.SEND_EMAIL, true);
+        settings.add(Constants.SEND_PUSH, true);
+        settings.add(Constants.RESCUER, false);
+        settings.add(Constants.RECEIVE_SMS, false);
+        settings.add(Constants.RECEIVE_PUSH, false);
+        settings.add(Constants.RECEIVE_EMAIL, false);
+        settings.add(Constants.SEND_ALERT_RANGE, 400);
+        settings.add(Constants.RECEIVE_ALERT_RANGE, 400);
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            currentUser.add(Constants.USER_SETTINGS, settings);
+            currentUser.saveInBackground();
+        }
+    }
+
+    private void pickProfilePicture() {
         if (profileUrl != null) {
             Utilities.logIt("Profile URL Found");
             new DownloadImageTask().execute(profileUrl);
         } else {
-            startCropActivity(null);
+            startCropActivity(null, null);
         }
     }
 
-    private void startCropActivity(Bitmap bitmap) {
+    private void startCropActivity(Bitmap bitmap, AlertDialog cropDialog) {
         Intent cropIntent = new Intent(activity, ImageCrop.class);
         if (bitmap != null) {
             cropIntent.putExtra(Constants.ORIGINAL_IMAGE_ARRAY, Utilities.getBlob(bitmap));
         }
         startActivityForResult(cropIntent, Constants.CROP_IMAGE_CODE);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+        if (cropDialog != null && cropDialog.isShowing()) {
+            cropDialog.cancel();
+        }
     }
 
     private void getFacebookProfile() {
@@ -372,13 +353,13 @@ public class Signup extends Activity {
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
-        AlertDialog profileDownloadDialog;
+        AlertDialog picDownloadDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             Utilities.logIt("Downloading your Profile Picture...");
-            profileDownloadDialog = AlertDialogs.showProgressDialog(activity, "Downloading your Profile Pic...");
+            picDownloadDialog = AlertDialogs.showProgressDialog(activity, "Downloading your Profile Picture...");
         }
 
         @Override
@@ -397,9 +378,9 @@ public class Signup extends Activity {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            profileDownloadDialog.cancel();
+            bitmap = Utilities.compressBitmap(bitmap);
             if (bitmap != null) {
-                startCropActivity(bitmap);
+                startCropActivity(bitmap, picDownloadDialog);
             }
         }
     }
