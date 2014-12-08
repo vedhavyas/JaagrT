@@ -87,15 +87,14 @@
     <orderEntry type="library" exported="" name="support-v4-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="facebook-android-sdk-3.21.0" level="project" />
     <orderEntry type="library" exported="" name="simple.facebook-2.2" level="project" />
-    <orderEntry type="library" exported="" name="play-services-6.1.71" level="project" />
     <orderEntry type="library" exported="" name="materialish-progress-1.0" level="project" />
     <orderEntry type="library" exported="" name="Parse-1.7.1" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.2" level="project" />
-    <orderEntry type="library" exported="" name="material-dialogs-0.3.6" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="android-form-edittext-1.1.0" level="project" />
     <orderEntry type="library" exported="" name="bolts-android-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="snackbar-2.3.0" level="project" />
+    <orderEntry type="library" exported="" name="material-dialogs-0.4.3" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-21.0.2" level="project" />
   </component>
 </module>

@@ -7,11 +7,6 @@ package org.jaagrT.utils;
 
 public class Constants {
 
-    // Activity on request codes
-    public static final int GOOGLE_CONNECTION_CODE = 1;
-    public static final int CROP_IMAGE_CODE = 2;
-
-
     //Settings
     public static final String SEND_SMS = "sendSms";
     public static final String SEND_PUSH = "sendPush";
@@ -26,7 +21,7 @@ public class Constants {
 
     //Parse related Constants
     public static final String USER_SETTINGS_CLASS = "UserSettings";
-    public static final String USER_SETTINGS = "settings";
+    public static final String USER_SETTINGS = "settingsObject";
     public static final String USER_PICTURE_FILE_NAME = "ProfilePicture.jpeg";
     public static final String USER_PROFILE_PICTURE = "profilePicture";
 

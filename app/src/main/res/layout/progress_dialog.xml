@@ -31,6 +31,6 @@
             android:text="@string/loading"
             android:textColor="@color/black"
             android:textSize="15sp"
-            android:typeface="monospace" />
+            android:typeface="sans" />
     </LinearLayout>
 </RelativeLayout>

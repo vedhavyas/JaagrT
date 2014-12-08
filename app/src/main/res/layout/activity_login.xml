@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:validator="http://schemas.android.com/apk/res-auto"
+    style="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
-    android:orientation="vertical">
+    android:background="@android:color/black">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="60sp"
             android:orientation="vertical">
 
 
@@ -24,7 +23,6 @@
                 android:id="@+id/fbBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20sp"
                 android:background="@drawable/facebook_btn"
                 android:paddingEnd="10sp"
                 android:paddingStart="35sp"
@@ -32,16 +30,6 @@
                 android:textColor="@android:color/white"
                 android:typeface="monospace" />
 
-            <Button
-                android:id="@+id/googleBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/google_btn"
-                android:paddingEnd="23sp"
-                android:paddingStart="43sp"
-                android:text="@string/login_google"
-                android:textColor="@android:color/white"
-                android:typeface="monospace" />
         </LinearLayout>
 
         <TextView
