@@ -12,8 +12,8 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import org.jaagrT.utils.AlertDialogs;
-import org.jaagrT.utils.Utilities;
+import org.jaagrT.utilities.AlertDialogs;
+import org.jaagrT.utilities.Utilities;
 
 
 public class Login extends Activity {

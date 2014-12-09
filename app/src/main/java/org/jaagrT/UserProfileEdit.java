@@ -8,8 +8,8 @@ import android.widget.ImageView;
 
 import com.andreabaccega.widget.FormEditText;
 
-import org.jaagrT.utils.FormValidators;
-import org.jaagrT.utils.Utilities;
+import org.jaagrT.utilities.FormValidators;
+import org.jaagrT.utilities.Utilities;
 
 
 public class UserProfileEdit extends Activity {

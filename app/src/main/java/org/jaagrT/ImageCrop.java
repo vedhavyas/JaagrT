@@ -10,8 +10,8 @@ import android.widget.Button;
 
 import com.edmodo.cropper.CropImageView;
 
-import org.jaagrT.utils.Constants;
-import org.jaagrT.utils.Utilities;
+import org.jaagrT.utilities.Constants;
+import org.jaagrT.utilities.Utilities;
 
 
 public class ImageCrop extends Activity {

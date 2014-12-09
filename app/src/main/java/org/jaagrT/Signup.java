@@ -12,16 +12,18 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
-import org.jaagrT.utils.AlertDialogs;
-import org.jaagrT.utils.Constants;
-import org.jaagrT.utils.Utilities;
+import org.jaagrT.utilities.AlertDialogs;
+import org.jaagrT.utilities.Constants;
+import org.jaagrT.utilities.Utilities;
 
 import java.util.Arrays;
 
@@ -90,9 +92,8 @@ public class Signup extends Activity {
                             if (user == null) {
                                 Utilities.snackIt(activity, "Failed to login with Facebook", "Okay");
                             } else if (user.isNew()) {
-                                saveDataToCloud();
+                                getFbProfileData();
                             } else {
-                                Utilities.logIt("User Logged in");
                                 Utilities.logIt(user.getEmail());
                             }
                         } else {
@@ -118,7 +119,10 @@ public class Signup extends Activity {
                 registrationDialog.cancel();
                 if (e == null) {
                     Utilities.snackIt(activity, "Registration Successful", "Okay");
-                    //addDefaultSettingsToUser();
+                    ParseUser parseUser = ParseUser.getCurrentUser();
+                    if (parseUser != null) {
+                        saveUserDetails(parseUser);
+                    }
                 } else {
                     Utilities.logIt(e.getMessage());
                     AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
@@ -127,17 +131,35 @@ public class Signup extends Activity {
         });
     }
 
-    private void saveDataToCloud() {
+    private void saveUserDetails(final ParseUser parseUser) {
+        ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
+        userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
+        userDetailsObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    saveDefaultPreferences(parseUser);
+                }
+            }
+        });
+
+        parseUser.put(Constants.USER_DETAILS_ROW, userDetailsObject);
+        parseUser.saveInBackground();
+
+    }
+
+    private void getFbProfileData() {
         Session session = ParseFacebookUtils.getSession();
         Request.newMeRequest(session, new Request.GraphUserCallback() {
             @Override
-            public void onCompleted(GraphUser user, Response response) {
+            public void onCompleted(GraphUser fbUser, Response response) {
                 if (response != null) {
                     try {
-                        String email = (String) user.getProperty("email");
+                        String email = (String) fbUser.getProperty("email");
                         ParseUser parseUser = ParseUser.getCurrentUser();
                         parseUser.setEmail(email);
                         parseUser.saveInBackground();
+                        saveFbUserDetails(parseUser, fbUser);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Utilities.logIt(e.toString());
@@ -148,26 +170,48 @@ public class Signup extends Activity {
         }).executeAsync();
     }
 
+    private void saveFbUserDetails(final ParseUser parseUser, GraphUser fbUser) {
+        final ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
+        userDetailsObject.put(Constants.USER_FIRST_NAME, fbUser.getFirstName());
+        userDetailsObject.put(Constants.USER_LAST_NAME, fbUser.getLastName());
+        userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
+        userDetailsObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                saveDefaultPreferences(parseUser);
+            }
+        });
+        parseUser.put(Constants.USER_DETAILS_ROW, userDetailsObject);
+        parseUser.saveInBackground();
 
-    private void addDefaultSettingsToUser() {
+    }
 
-        ParseObject settings = new ParseObject(Constants.USER_SETTINGS_CLASS);
+    private void saveDefaultPreferences(final ParseUser parseUser) {
 
-        settings.put(Constants.SEND_SMS, true);
-        settings.put(Constants.SEND_EMAIL, true);
-        settings.put(Constants.SEND_PUSH, true);
-        settings.put(Constants.RESCUER, false);
-        settings.put(Constants.RECEIVE_SMS, false);
-        settings.put(Constants.RECEIVE_PUSH, false);
-        settings.put(Constants.RECEIVE_EMAIL, false);
-        settings.put(Constants.SEND_ALERT_RANGE, 400);
-        settings.put(Constants.RECEIVE_ALERT_RANGE, 400);
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            settings.saveInBackground();
-            currentUser.put(Constants.USER_SETTINGS, settings);
-            currentUser.saveInBackground();
-        }
+        final ParseObject userPreferenceObject = new ParseObject(Constants.USER_COMMUNICATION_PREFERENCE_CLASS);
+        userPreferenceObject.put(Constants.SEND_SMS, true);
+        userPreferenceObject.put(Constants.SEND_EMAIL, true);
+        userPreferenceObject.put(Constants.SEND_PUSH, true);
+        userPreferenceObject.put(Constants.IS_RESPONDER, false);
+        userPreferenceObject.put(Constants.RECEIVE_SMS, false);
+        userPreferenceObject.put(Constants.RECEIVE_PUSH, false);
+        userPreferenceObject.put(Constants.RECEIVE_EMAIL, false);
+        userPreferenceObject.put(Constants.NOTIFY_WITH_IN, 400);
+        userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, 400);
+
+        userPreferenceObject.saveInBackground();
+        parseUser.getParseObject(Constants.USER_DETAILS_ROW)
+                .fetchInBackground(new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject userDetailsObject, ParseException e) {
+                        if (e == null) {
+                            userDetailsObject.put(Constants.USER_COMMUNICATION_PREFERENCE_ROW, userPreferenceObject);
+                            userDetailsObject.saveInBackground();
+                        } else {
+                            AlertDialogs.showErrorDialog(activity, "Error Fetching", e.getMessage(), "Oops!");
+                        }
+                    }
+                });
     }
 
 

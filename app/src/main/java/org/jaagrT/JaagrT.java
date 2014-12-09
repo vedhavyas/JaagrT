@@ -5,7 +5,7 @@ import android.app.Application;
 import com.parse.Parse;
 import com.parse.ParseInstallation;
 
-import org.jaagrT.utils.Utilities;
+import org.jaagrT.utilities.Constants;
 
 /**
  * Authored by vedhavyas on 1/12/14.
@@ -20,8 +20,7 @@ public class JaagrT extends Application {
         super.onCreate();
 
         {
-            Utilities.logIt("Initiating parse");
-            Parse.initialize(this, "XRlRRJWTJL3czveTq3WLf5BCqyvo0gSwee4SKLFO", "gF7bTRj305xcbT1PdwQeZZ1rOFnCaZASWA4VkEkn");
+            Parse.initialize(this, Constants.APPLICATION_ID, Constants.CLIENT_ID);
             ParseInstallation.getCurrentInstallation().saveInBackground();
         }
 

@@ -1,4 +1,4 @@
-package org.jaagrT.utils;
+package org.jaagrT.utilities;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
