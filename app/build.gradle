@@ -27,8 +27,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.2'
     compile 'com.android.support:support-annotations:21.0.2'
     compile 'com.andreabaccega:android-form-edittext:1.1.0@aar'
-    compile 'com.pnikosis:materialish-progress:1.0'
     compile 'com.parse.bolts:bolts-android:1.1.2'
     compile 'com.edmodo:cropper:1.0.1'
     compile 'com.afollestad:material-dialogs:0.4.3'
+    compile 'cn.pedant.sweetalert:library:1.3'
 }

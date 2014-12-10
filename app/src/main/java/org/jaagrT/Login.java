@@ -1,7 +1,6 @@
 package org.jaagrT;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -65,11 +64,9 @@ public class Login extends Activity {
             @Override
             public void onClick(View v) {
                 if (Utilities.isEditBoxesValid(editTexts)) {
-                    final AlertDialog loginDialog = AlertDialogs.showProgressDialog(activity, "Logging you in...");
                     ParseUser.logInInBackground(emailBox.getText().toString(), passwordBox.getText().toString(), new LogInCallback() {
                         @Override
                         public void done(ParseUser user, ParseException e) {
-                            loginDialog.cancel();
                             if (e == null) {
                                 Utilities.snackIt(activity, "Login Successful", "Okay");
                             } else {

@@ -35,6 +35,11 @@ public class Constants {
     public static final String RESPOND_ALERT_WITH_IN = "willRespondWithIn";
 
     //Bundle Strings
+    public static final String PICTURE_URL_STRING = "pictureUrlString";
     public static final String ORIGINAL_IMAGE_ARRAY = "originalImage";
     public static final String CROPPED_IMAGE_ARRAY = "croppedImage";
+
+    //Preferences
+    public static final String PREFERENCES_NAME = "JaagrTPreferences";
+    public static final String LOCAL_USER_ID = "localUserID";
 }

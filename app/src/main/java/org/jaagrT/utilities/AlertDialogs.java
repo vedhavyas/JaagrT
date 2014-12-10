@@ -1,15 +1,14 @@
 package org.jaagrT.utilities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
+import android.graphics.Color;
 
 import com.afollestad.materialdialogs.Alignment;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.jaagrT.R;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Authored by vedhavyas on 5/12/14.
@@ -17,19 +16,6 @@ import org.jaagrT.R;
  */
 public class AlertDialogs {
 
-
-    public static AlertDialog showProgressDialog(Activity activity, String progressText) {
-
-        final AlertDialog.Builder progressDialog = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.progress_dialog, null);
-        TextView progressTextView = (TextView) view.findViewById(R.id.progressText);
-        progressTextView.setText(progressText);
-        progressDialog.setView(view);
-        progressDialog.setCancelable(false);
-        return progressDialog.show();
-
-    }
 
     public static void showErrorDialog(Activity activity, String title, String content, String negativeBtnText) {
 
@@ -41,5 +27,12 @@ public class AlertDialogs {
                 .negativeColor(activity.getResources().getColor(R.color.red_dark))
                 .titleAlignment(Alignment.CENTER)
                 .show();
+    }
+
+    public static SweetAlertDialog showSweetProgress(Activity activity) {
+        SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setCancelable(false);
+        return pDialog;
     }
 }

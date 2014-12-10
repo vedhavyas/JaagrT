@@ -30,6 +30,10 @@ public class User {
         return ID;
     }
 
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -96,5 +100,9 @@ public class User {
 
     public byte[] getThumbnailPictureRaw() {
         return thumbnailPicture;
+    }
+
+    public void setMemberOfMasterCircleRaw(int memberOfMasterCircle) {
+        this.memberOfMasterCircle = memberOfMasterCircle;
     }
 }

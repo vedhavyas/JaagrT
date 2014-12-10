@@ -2,8 +2,11 @@ package org.jaagrT.model;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import org.jaagrT.utilities.Utilities;
 
 /**
  * Authored by vedhavyas on 10/12/14.
@@ -11,8 +14,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class Database extends SQLiteOpenHelper {
 
+    public static final String USER_TABLE = "user_details";
     private static final String DB_NAME = "JaagrT.db";
-    private static final String USER_TABLE = "user_details";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_FIRST_NAME = "firstName";
     private static final String COLUMN_LAST_NAME = "lastName";
@@ -62,7 +65,7 @@ public class Database extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long registerUserTODB(User user) {
+    public long saveUser(User user) {
         long result;
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -95,6 +98,36 @@ public class Database extends SQLiteOpenHelper {
 
         result = db.insert(tableName, null, contentValues);
         return result;
+    }
+
+    public User getUser(int id) {
+        if (id > 0) {
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            String sqlQuery = "SELECT * FROM " + tableName + " WHERE " + COLUMN_ID
+                    + " = " + String.valueOf(id);
+            Cursor cursor = db.rawQuery(sqlQuery, null);
+
+            if (cursor.moveToFirst()) {
+                User user = new User();
+                do {
+                    user.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                    user.setFirstName(cursor.getString(cursor.getColumnIndex(COLUMN_FIRST_NAME)));
+                    user.setLastName(cursor.getString(cursor.getColumnIndex(COLUMN_LAST_NAME)));
+                    user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
+                    user.setPhoneNumber(cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER)));
+                    user.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
+                    user.setPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE))));
+                    user.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
+                } while (cursor.moveToNext());
+
+                return user;
+            }
+            return null;
+
+        } else {
+            return null;
+        }
     }
 
 

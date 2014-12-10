@@ -37,7 +37,7 @@
             android:label="@string/title_activity_signup"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ImageCrop"
+            android:name=".PickPicture"
             android:label="@string/title_activity_image_crop"
             android:screenOrientation="portrait" />
         <activity
