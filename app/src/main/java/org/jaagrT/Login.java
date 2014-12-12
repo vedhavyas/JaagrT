@@ -9,10 +9,17 @@ import android.widget.Button;
 import com.andreabaccega.widget.FormEditText;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
+import org.jaagrT.controller.RegistrationController;
+import org.jaagrT.listeners.RegisterListener;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Utilities;
+
+import java.util.Arrays;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class Login extends Activity {
@@ -47,6 +54,35 @@ public class Login extends Activity {
         fbBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
+                pDialog.setTitleText("Connecting to Facebook...");
+                pDialog.show();
+                ParseFacebookUtils.logIn(Arrays.asList(ParseFacebookUtils.Permissions.User.EMAIL), activity, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser parseUser, ParseException e) {
+                        if (e == null) {
+                            if (parseUser == null) {
+                                pDialog.cancel();
+                                Utilities.snackIt(activity, "Failed to login with Facebook", "Okay");
+                            } else if (parseUser.isNew()) {
+                                pDialog.setTitleText("Connected to Facebook...");
+                                RegistrationController registrationController = new RegistrationController(activity, new RegisterListener() {
+
+                                    @Override
+                                    public void onComplete() {
+                                        startPickPictureActivity();
+                                    }
+                                }, pDialog);
+                                registrationController.facebookRegistration();
+                            } else {
+                                Utilities.logIt(parseUser.getEmail());
+                            }
+                        } else {
+                            pDialog.cancel();
+                            AlertDialogs.showErrorDialog(activity, "Login Error", e.getMessage(), "Oops!");
+                        }
+                    }
+                });
             }
         });
 
@@ -85,5 +121,13 @@ public class Login extends Activity {
                 startActivity(cropIntent);
             }
         });
+    }
+
+    private void startPickPictureActivity() {
+        Intent pickPictureIntent = new Intent(this, PickPicture.class);
+        pickPictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        pickPictureIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(pickPictureIntent);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 }

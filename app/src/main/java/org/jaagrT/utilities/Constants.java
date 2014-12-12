@@ -42,4 +42,7 @@ public class Constants {
     //Preferences
     public static final String PREFERENCES_NAME = "JaagrTPreferences";
     public static final String LOCAL_USER_ID = "localUserID";
+
+    //Activity codes
+    public static final int SELECT_PICTURE = 1;
 }

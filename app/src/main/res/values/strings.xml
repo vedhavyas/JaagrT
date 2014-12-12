@@ -24,10 +24,14 @@
     <string name="create_with_email">Or create an account with Email</string>
     <string name="loading">loading...</string>
     <string name="title_activity_image_crop">Crop Activity</string>
-    <string name="choose_pic">Choose another</string>
+    <string name="choose_pic">Pick from</string>
     <string name="title_activity_profile_edit">Edit Profile</string>
     <string name="update_profile">Update</string>
     <string name="profile_pic">Profile Picture</string>
     <string name="title_activity_login_act">Login_act</string>
+    <string name="camera">Camera</string>
+    <string name="camera_content_description">Choose Picture from Camera</string>
+    <string name="gallery_content_description">Choose picture from Gallery</string>
+    <string name="gallery">Gallery</string>
 
 </resources>
