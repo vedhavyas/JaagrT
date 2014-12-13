@@ -33,5 +33,6 @@
     <string name="camera_content_description">Choose Picture from Camera</string>
     <string name="gallery_content_description">Choose picture from Gallery</string>
     <string name="gallery">Gallery</string>
+    <string name="title_activity_get_user_details">GetUserDetails</string>
 
 </resources>

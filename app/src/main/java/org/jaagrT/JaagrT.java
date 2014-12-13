@@ -3,6 +3,7 @@ package org.jaagrT;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseInstallation;
 
 import org.jaagrT.utilities.Constants;
@@ -22,6 +23,10 @@ public class JaagrT extends Application {
         {
             Parse.initialize(this, Constants.APPLICATION_ID, Constants.CLIENT_ID);
             ParseInstallation.getCurrentInstallation().saveInBackground();
+            ParseACL defaultACL = new ParseACL();
+            defaultACL.setPublicReadAccess(false);
+            defaultACL.setPublicWriteAccess(false);
+            ParseACL.setDefaultACL(defaultACL, true);
         }
 
     }

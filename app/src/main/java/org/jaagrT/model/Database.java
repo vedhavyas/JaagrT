@@ -3,6 +3,7 @@ package org.jaagrT.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -69,32 +70,7 @@ public class Database extends SQLiteOpenHelper {
         long result;
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues contentValues = new ContentValues();
-        if (user.getFirstName() != null) {
-            contentValues.put(COLUMN_FIRST_NAME, user.getFirstName());
-        }
-
-        if (user.getLastName() != null) {
-            contentValues.put(COLUMN_LAST_NAME, user.getLastName());
-        }
-
-        if (user.getEmail() != null) {
-            contentValues.put(COLUMN_EMAIL, user.getEmail());
-        }
-
-        if (user.getPhoneNumber() != null) {
-            contentValues.put(COLUMN_PHONE_NUMBER, user.getPhoneNumber());
-        }
-
-        if (user.getPictureRaw() != null) {
-            contentValues.put(COLUMN_PICTURE, user.getPictureRaw());
-        }
-
-        if (user.getThumbnailPictureRaw() != null) {
-            contentValues.put(COLUMN_THUMBNAIL_PICTURE, user.getThumbnailPictureRaw());
-        }
-
-        contentValues.put(COLUMN_MEMBER_OF_MASTER_CIRCLE, user.isMemberOfMasterCircleRaw());
+        ContentValues contentValues = getContentValuesFromObject(user);
 
         result = db.insert(tableName, null, contentValues);
         return result;
@@ -128,6 +104,54 @@ public class Database extends SQLiteOpenHelper {
         } else {
             return null;
         }
+    }
+
+    public int updateUserData(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = -1;
+
+        ContentValues contentValues = getContentValuesFromObject(user);
+
+        try {
+            result = db.update(tableName, contentValues, COLUMN_ID + " = " + user.getID(), null);
+        } catch (SQLiteConstraintException e) {
+            return result;
+        }
+
+
+        return result;
+    }
+
+    private ContentValues getContentValuesFromObject(User user) {
+        ContentValues contentValues = new ContentValues();
+
+        if (user.getFirstName() != null) {
+            contentValues.put(COLUMN_FIRST_NAME, user.getFirstName());
+        }
+
+        if (user.getLastName() != null) {
+            contentValues.put(COLUMN_LAST_NAME, user.getLastName());
+        }
+
+        if (user.getEmail() != null) {
+            contentValues.put(COLUMN_EMAIL, user.getEmail());
+        }
+
+        if (user.getPhoneNumber() != null) {
+            contentValues.put(COLUMN_PHONE_NUMBER, user.getPhoneNumber());
+        }
+
+        if (user.getPictureRaw() != null) {
+            contentValues.put(COLUMN_PICTURE, user.getPictureRaw());
+        }
+
+        if (user.getThumbnailPictureRaw() != null) {
+            contentValues.put(COLUMN_THUMBNAIL_PICTURE, user.getThumbnailPictureRaw());
+        }
+
+        contentValues.put(COLUMN_MEMBER_OF_MASTER_CIRCLE, user.isMemberOfMasterCircleRaw());
+
+        return contentValues;
     }
 
 

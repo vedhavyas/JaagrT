@@ -18,7 +18,8 @@ public class Constants {
     public static final String USER_LAST_NAME = "lastName";
     public static final String USER_MEMBER_OF_MASTER_CIRCLE = "isMemberOfMasterCircle";
     public static final String USER_COMMUNICATION_PREFERENCE_ROW = "communicationPreference";
-    public static final String USER_PICTURE_FILE_NAME = "ProfilePicture.jpeg";
+    public static final String USER_PICTURE_FILE_NAME = "Picture.jpeg";
+    public static final String USER_THUMBNAIL_PICTURE_FILE_NAME = "ThumbNail.jpeg";
     public static final String USER_PROFILE_PICTURE = "picture";
     public static final String USER_THUMBNAIL_PICTURE = "thumbNailPicture";
 
@@ -33,11 +34,6 @@ public class Constants {
     public static final String RECEIVE_EMAIL = "receiveEmail";
     public static final String NOTIFY_WITH_IN = "notifyWithIn";
     public static final String RESPOND_ALERT_WITH_IN = "willRespondWithIn";
-
-    //Bundle Strings
-    public static final String PICTURE_URL_STRING = "pictureUrlString";
-    public static final String ORIGINAL_IMAGE_ARRAY = "originalImage";
-    public static final String CROPPED_IMAGE_ARRAY = "croppedImage";
 
     //Preferences
     public static final String PREFERENCES_NAME = "JaagrTPreferences";

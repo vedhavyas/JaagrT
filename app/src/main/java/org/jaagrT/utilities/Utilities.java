@@ -76,4 +76,28 @@ public class Utilities {
         return compressed;
     }
 
+    public static Bitmap getReSizedBitmap(Bitmap image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int maxSize = 150;
+        Bitmap reSizedBitmap = null;
+
+        float bitmapRatio = (float) width / (float) height;
+        try {
+            if (bitmapRatio > 0) {
+                width = maxSize;
+                height = (int) (width / bitmapRatio);
+            } else {
+                height = maxSize;
+                width = (int) (height * bitmapRatio);
+            }
+            reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
+        } catch (Exception e) {
+            Utilities.logIt(e.getMessage());
+        }
+
+        return reSizedBitmap;
+    }
+
+
 }
