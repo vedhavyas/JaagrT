@@ -34,5 +34,13 @@
     <string name="gallery_content_description">Choose picture from Gallery</string>
     <string name="gallery">Gallery</string>
     <string name="title_activity_get_user_details">GetUserDetails</string>
+    <string name="additional_info">Addition Information</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="title_activity_verify_phone">VerifyPhone</string>
+    <string name="skip">Skip</string>
+    <string name="change_number">Change</string>
+    <string name="verify_number">Verify</string>
+    <string name="verification_code">Verification Code</string>
 
 </resources>

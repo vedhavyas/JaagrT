@@ -2,7 +2,6 @@ package org.jaagrT;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -20,13 +19,12 @@ import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
-import com.parse.GetCallback;
-import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
+import org.jaagrT.controller.ObjectRetriever;
+import org.jaagrT.listeners.ParseListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.utilities.AlertDialogs;
@@ -47,7 +45,6 @@ public class PickPicture extends Activity {
     private CropImageView cropImageView;
     private Activity activity;
     private User user;
-    private SharedPreferences prefs;
     private Bitmap originalImage, croppedImage;
     private MaterialDialog pictureDialog;
     private ParseObject userDetailsObject;
@@ -57,10 +54,8 @@ public class PickPicture extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_crop);
         activity = this;
-        prefs = getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
         ParseFacebookUtils.initialize(Constants.APPLICATION_ID);
-
-        setUIElements();
+        setUpActivity();
     }
 
     @Override
@@ -82,7 +77,7 @@ public class PickPicture extends Activity {
         }
     }
 
-    private void setUIElements() {
+    private void setUpActivity() {
         SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
         pDialog.setTitleText("Please wait...");
         pDialog.show();
@@ -116,9 +111,17 @@ public class PickPicture extends Activity {
         });
 
         cropImageView.setFixedAspectRatio(true);
+        ObjectRetriever retriever = ObjectRetriever.getInstance(activity);
         setChoosePickPopUp();
-        getLocalUser();
-        getParseUser();
+
+        userDetailsObject = retriever.getUserDetailsObject(new ParseListener() {
+            @Override
+            public void onComplete(ParseObject parseObject) {
+                userDetailsObject = parseObject;
+            }
+        });
+
+        user = retriever.getLocalUser();
         if (user != null) {
             if (user.getPicture() != null) {
                 cropImageView.setImageBitmap(user.getPicture());
@@ -128,25 +131,6 @@ public class PickPicture extends Activity {
             }
         } else {
             pDialog.cancel();
-        }
-    }
-
-
-    private void getParseUser() {
-        ParseUser parseUser = ParseUser.getCurrentUser();
-        if (parseUser != null) {
-            parseUser.getParseObject(Constants.USER_DETAILS_ROW)
-                    .fetchInBackground(new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject parseObject, ParseException e) {
-                            if (e == null) {
-                                userDetailsObject = parseObject;
-                            } else {
-                                Utilities.logIt("Failed to get object");
-                                Utilities.logIt(e.getMessage());
-                            }
-                        }
-                    });
         }
     }
 
@@ -177,12 +161,6 @@ public class PickPicture extends Activity {
                 .title("Choose")
                 .customView(popView)
                 .build();
-    }
-
-    private void getLocalUser() {
-        Database db = Database.getInstance(activity);
-        db.setTableName(Database.USER_TABLE);
-        user = db.getUser(prefs.getInt(Constants.LOCAL_USER_ID, -1));
     }
 
     private void getFBProfilePicture(final SweetAlertDialog pDialog) {
@@ -228,6 +206,14 @@ public class PickPicture extends Activity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.SELECT_PICTURE);
+    }
+
+    private void startUserDetailsActivity() {
+        Intent userDetailsIntent = new Intent(activity, GetUserDetails.class);
+        userDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        userDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(userDetailsIntent);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
     private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
@@ -289,23 +275,24 @@ public class PickPicture extends Activity {
                 userDetailsObject.saveInBackground();
             }
 
-            Database db = Database.getInstance(activity);
-            db.setTableName(Database.USER_TABLE);
+            Database db = Database.getInstance(activity, Database.USER_TABLE);
             return db.updateUserData(user);
         }
-
-        SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
 
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             pDialog.cancel();
             if (result > 0) {
-                Utilities.snackIt(activity, "Saved to DB", "Okay");
+                Utilities.snackIt(activity, "Picture Saved", "Okay");
             } else {
-                Utilities.snackIt(activity, "Failed to save", "Okay");
+                Utilities.snackIt(activity, "Save failed", "Okay");
             }
+
+            startUserDetailsActivity();
         }
+
+        SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
 
 
     }

@@ -15,6 +15,7 @@ public class User {
     private String firstName;
     private String lastName;
     private int memberOfMasterCircle;
+    private int phoneVerified;
     private String phoneNumber;
     private String email;
     private long currentLat;
@@ -62,6 +63,26 @@ public class User {
         return memberOfMasterCircle;
     }
 
+    public void setMemberOfMasterCircleRaw(int memberOfMasterCircle) {
+        this.memberOfMasterCircle = memberOfMasterCircle;
+    }
+
+    public boolean isPhoneVerified() {
+        return phoneVerified == 1;
+    }
+
+    public void setPhoneVerified(boolean phoneVerified) {
+        this.phoneVerified = (phoneVerified) ? 1 : 0;
+    }
+
+    public void setPhoneVerifiedRaw(int phoneVerified) {
+        this.phoneVerified = phoneVerified;
+    }
+
+    public int isPhoneVerifiedRaw() {
+        return phoneVerified;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -102,7 +123,5 @@ public class User {
         return thumbnailPicture;
     }
 
-    public void setMemberOfMasterCircleRaw(int memberOfMasterCircle) {
-        this.memberOfMasterCircle = memberOfMasterCircle;
-    }
+
 }

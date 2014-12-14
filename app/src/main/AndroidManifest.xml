@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:name=".JaagrT"
@@ -47,7 +50,20 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".GetUserDetails"
-            android:label="@string/title_activity_get_user_details" />
+            android:label="@string/title_activity_get_user_details"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VerifyPhone"
+            android:label="@string/title_activity_verify_phone"
+            android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".broadcast.receivers.SMSReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

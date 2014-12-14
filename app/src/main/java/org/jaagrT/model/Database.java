@@ -23,6 +23,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_PHONE_NUMBER = "phoneNumber";
     private static final String COLUMN_MEMBER_OF_MASTER_CIRCLE = "memberOfMasterCircle";
+    private static final String COLUMN_PHONE_VERIFIED = "phoneVerified";
     private static final String COLUMN_PICTURE = "picture";
     private static final String COLUMN_THUMBNAIL_PICTURE = "thumbnailPicture";
     private static final String SQL_USER_TABLE_CREATE_QUERY = "CREATE TABLE " + USER_TABLE
@@ -32,6 +33,7 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_EMAIL + " TEXT UNIQUE,"
             + COLUMN_PHONE_NUMBER + " TEXT UNIQUE, "
             + COLUMN_MEMBER_OF_MASTER_CIRCLE + " INTEGER, "
+            + COLUMN_PHONE_VERIFIED + " INTEGER, "
             + COLUMN_PICTURE + " BLOB ,"
             + COLUMN_THUMBNAIL_PICTURE + " BLOB)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS  ";
@@ -42,11 +44,13 @@ public class Database extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 1);
     }
 
-    public static Database getInstance(Context context) {
+    public static Database getInstance(Context context, String tableName) {
         if (dbFactory == null) {
 
             dbFactory = new Database(context);
         }
+
+        dbFactory.setTableName(tableName);
 
         return dbFactory;
     }
@@ -93,6 +97,7 @@ public class Database extends SQLiteOpenHelper {
                     user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
                     user.setPhoneNumber(cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER)));
                     user.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
+                    user.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
                     user.setPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE))));
                     user.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
                 } while (cursor.moveToNext());
@@ -115,6 +120,7 @@ public class Database extends SQLiteOpenHelper {
         try {
             result = db.update(tableName, contentValues, COLUMN_ID + " = " + user.getID(), null);
         } catch (SQLiteConstraintException e) {
+            Utilities.logIt(e.getMessage());
             return result;
         }
 
@@ -150,6 +156,7 @@ public class Database extends SQLiteOpenHelper {
         }
 
         contentValues.put(COLUMN_MEMBER_OF_MASTER_CIRCLE, user.isMemberOfMasterCircleRaw());
+        contentValues.put(COLUMN_PHONE_VERIFIED, user.isPhoneVerifiedRaw());
 
         return contentValues;
     }

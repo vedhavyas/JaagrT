@@ -17,11 +17,13 @@ public class Constants {
     public static final String USER_FIRST_NAME = "firstName";
     public static final String USER_LAST_NAME = "lastName";
     public static final String USER_MEMBER_OF_MASTER_CIRCLE = "isMemberOfMasterCircle";
+    public static final String USER_PRIMARY_PHONE_VERIFIED = "isPrimaryPhoneVerified";
     public static final String USER_COMMUNICATION_PREFERENCE_ROW = "communicationPreference";
     public static final String USER_PICTURE_FILE_NAME = "Picture.jpeg";
     public static final String USER_THUMBNAIL_PICTURE_FILE_NAME = "ThumbNail.jpeg";
     public static final String USER_PROFILE_PICTURE = "picture";
     public static final String USER_THUMBNAIL_PICTURE = "thumbNailPicture";
+    public static final String USER_PRIMARY_PHONE = "primaryPhone";
 
 
     public static final String USER_COMMUNICATION_PREFERENCE_CLASS = "UserCommunicationPreference";

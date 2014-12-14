@@ -35,11 +35,13 @@ public class RegistrationController {
     private SweetAlertDialog pDialog;
     private User localUser;
     private RegisterListener listener;
+    private ObjectRetriever retriever;
 
     public RegistrationController(Activity activity, RegisterListener listener, SweetAlertDialog pDialog) {
         this.activity = activity;
         this.listener = listener;
         this.pDialog = pDialog;
+        this.retriever = ObjectRetriever.getInstance(activity);
     }
 
     public void registerUser(String email, String password) {
@@ -69,17 +71,18 @@ public class RegistrationController {
 
     private void saveUserDetails(final ParseUser parseUser) {
         pDialog.setTitleText("Finalizing Registration...");
-        ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
+        final ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
+        retriever.setUserDetailsObject(userDetailsObject);
         userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
         userDetailsObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    localUser.setMemberOfMasterCircle(false);
                     saveDefaultPreferences(parseUser);
                 } else {
                     pDialog.cancel();
                     AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
+                    new SaveUserLocally().execute();
                     listener.onComplete();
                 }
             }
@@ -87,7 +90,6 @@ public class RegistrationController {
 
         parseUser.put(Constants.USER_DETAILS_ROW, userDetailsObject);
         parseUser.saveInBackground();
-
     }
 
     public void facebookRegistration() {
@@ -105,7 +107,6 @@ public class RegistrationController {
                         localUser.setEmail(email);
                         localUser.setFirstName(fbUser.getFirstName());
                         localUser.setLastName(fbUser.getLastName());
-                        localUser.setMemberOfMasterCircle(false);
                         saveFbUserDetails(parseUser, fbUser);
                     } catch (Exception e) {
                         pDialog.cancel();
@@ -120,6 +121,7 @@ public class RegistrationController {
     private void saveFbUserDetails(final ParseUser parseUser, GraphUser fbUser) {
         pDialog.setTitleText("Completing Registration...");
         final ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
+        retriever.setUserDetailsObject(userDetailsObject);
         userDetailsObject.put(Constants.USER_FIRST_NAME, fbUser.getFirstName());
         userDetailsObject.put(Constants.USER_LAST_NAME, fbUser.getLastName());
         userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
@@ -130,7 +132,9 @@ public class RegistrationController {
                     saveDefaultPreferences(parseUser);
                 } else {
                     pDialog.cancel();
+                    new SaveUserLocally().execute();
                     AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
+                    listener.onComplete();
                 }
             }
         });
@@ -152,6 +156,7 @@ public class RegistrationController {
         userPreferenceObject.put(Constants.NOTIFY_WITH_IN, 400);
         userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, 400);
         userPreferenceObject.saveInBackground();
+        retriever.setUserPreferenceObject(userPreferenceObject);
 
         parseUser.getParseObject(Constants.USER_DETAILS_ROW)
                 .fetchInBackground(new GetCallback<ParseObject>() {
@@ -187,8 +192,8 @@ public class RegistrationController {
             prefs.edit().putInt(Constants.NOTIFY_WITH_IN, 400).apply();
             prefs.edit().putInt(Constants.RESPOND_ALERT_WITH_IN, 400).apply();
 
-            Database db = Database.getInstance(activity);
-            db.setTableName(Database.USER_TABLE);
+            Database db = Database.getInstance(activity, Database.USER_TABLE);
+            localUser.setMemberOfMasterCircle(false);
             int result = (int) db.saveUser(localUser);
             if (result > 0) {
                 prefs.edit().putInt(Constants.LOCAL_USER_ID, result).apply();

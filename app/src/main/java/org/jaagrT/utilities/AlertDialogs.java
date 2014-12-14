@@ -35,4 +35,11 @@ public class AlertDialogs {
         pDialog.setCancelable(false);
         return pDialog;
     }
+
+    public static void showPositiveDialog(Activity activity, String title, String content) {
+        new SweetAlertDialog(activity, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(title)
+                .setContentText(content)
+                .show();
+    }
 }
