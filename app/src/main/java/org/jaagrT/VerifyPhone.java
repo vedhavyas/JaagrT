@@ -26,8 +26,9 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class VerifyPhone extends Activity {
 
-    private static final String MESSAGE = "The verification code is:";
-    public static Activity phoneVerifyActivity;
+    private static final String MESSAGE = "The-verification-code-is";
+    public static VerifyPhone verifyPhoneActivity;
+    private Activity activity;
     private FormEditText phoneBox, verifyCodeBox;
     private User localUser;
     private ParseObject userDetailsObject;
@@ -37,20 +38,21 @@ public class VerifyPhone extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_phone);
-        phoneVerifyActivity = this;
+        activity = this;
+        verifyPhoneActivity = this;
         setUpActivity();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        phoneVerifyActivity = this;
+        verifyPhoneActivity = this;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        phoneVerifyActivity = this;
+        verifyPhoneActivity = this;
     }
 
     private void setUpActivity() {
@@ -106,13 +108,17 @@ public class VerifyPhone extends Activity {
         if (verifyCodeBox.getText().toString().equalsIgnoreCase(randomString)) {
             new UpdateUserData().execute();
         } else {
-            Utilities.snackIt(phoneVerifyActivity, "Wrong Code", "Oops!");
+            Utilities.snackIt(activity, "Wrong Code", "Oops!");
         }
     }
 
-    public void setVerificationCode(String code) {
-        verifyCodeBox.setText(code);
-        verifyAndUpdate();
+    public void setVerificationCode(String phoneNumber, String messageBody) {
+        String code = getCodeFromMessage(messageBody);
+
+        if (phoneNumber.contains(phoneBox.getText().toString()) && code != null) {
+            verifyCodeBox.setText(code);
+            verifyAndUpdate();
+        }
     }
 
     private void generateRandomNumber() {
@@ -125,13 +131,21 @@ public class VerifyPhone extends Activity {
         randomString = String.valueOf(randomInt);
     }
 
+    private String getCodeFromMessage(String messageBody) {
+        String[] data = messageBody.split(":");
+        if (data.length == 2 && data[0].equalsIgnoreCase(MESSAGE)) {
+            return data[1];
+        }
+        return null;
+    }
+
     private class SendSMS extends AsyncTask<Void, Void, Void> {
         SweetAlertDialog pDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = AlertDialogs.showSweetProgress(phoneVerifyActivity);
+            pDialog = AlertDialogs.showSweetProgress(activity);
             pDialog.setTitleText("Sending SMS...");
             pDialog.show();
         }
@@ -139,7 +153,7 @@ public class VerifyPhone extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneBox.getText().toString(), null, MESSAGE + randomString, null, null);
+            smsManager.sendTextMessage(phoneBox.getText().toString(), null, MESSAGE + ":" + randomString, null, null);
             return null;
         }
 
@@ -147,7 +161,7 @@ public class VerifyPhone extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             pDialog.cancel();
-            AlertDialogs.showPositiveDialog(phoneVerifyActivity, "Success", "SMS triggered!");
+            AlertDialogs.showPositiveDialog(activity, "Success", "SMS triggered!");
         }
     }
 
@@ -158,14 +172,14 @@ public class VerifyPhone extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = AlertDialogs.showSweetProgress(phoneVerifyActivity);
+            pDialog = AlertDialogs.showSweetProgress(activity);
             pDialog.setTitleText("Please wait...");
             pDialog.show();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            ObjectRetriever retriever = ObjectRetriever.getInstance(phoneVerifyActivity);
+            ObjectRetriever retriever = ObjectRetriever.getInstance(activity);
             localUser = retriever.getLocalUser();
             userDetailsObject = retriever.getUserDetailsObject(new ParseListener() {
                 @Override
@@ -195,7 +209,7 @@ public class VerifyPhone extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = AlertDialogs.showSweetProgress(phoneVerifyActivity);
+            pDialog = AlertDialogs.showSweetProgress(activity);
             pDialog.setTitleText("Saving...");
             pDialog.show();
         }
@@ -210,7 +224,7 @@ public class VerifyPhone extends Activity {
 
             localUser.setPhoneNumber(phoneBox.getText().toString());
             localUser.setPhoneVerified(true);
-            Database db = Database.getInstance(phoneVerifyActivity, Database.USER_TABLE);
+            Database db = Database.getInstance(activity, Database.USER_TABLE);
             return db.updateUserData(localUser);
         }
 
@@ -219,9 +233,9 @@ public class VerifyPhone extends Activity {
             super.onPostExecute(result);
             pDialog.cancel();
             if (result > 0) {
-                Utilities.snackIt(phoneVerifyActivity, "Save successful", "Okay");
+                Utilities.snackIt(activity, "Save successful", "Okay");
             } else {
-                Utilities.snackIt(phoneVerifyActivity, "Failed to save", "Okay");
+                Utilities.snackIt(activity, "Failed to save", "Okay");
             }
         }
     }

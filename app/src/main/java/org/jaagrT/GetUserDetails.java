@@ -93,6 +93,15 @@ public class GetUserDetails extends Activity {
     }
 
     private class GetObjects extends AsyncTask<Void, Void, Void> {
+        SweetAlertDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = AlertDialogs.showSweetProgress(activity);
+            pDialog.setTitleText("Please wait...");
+            pDialog.show();
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -111,6 +120,7 @@ public class GetUserDetails extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             fillBoxesIfPossible();
+            pDialog.cancel();
         }
     }
 
