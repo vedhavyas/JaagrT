@@ -12,7 +12,9 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
+import org.jaagrT.controller.LoginController;
 import org.jaagrT.controller.RegistrationController;
+import org.jaagrT.listeners.LoginListener;
 import org.jaagrT.listeners.RegisterListener;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Utilities;
@@ -107,7 +109,14 @@ public class Signup extends Activity {
                                 }, pDialog);
                                 registrationController.facebookRegistration();
                             } else {
-                                Utilities.logIt(parseUser.getEmail());
+                                pDialog.setTitleText("Connected to Facebook...");
+                                LoginController loginController = new LoginController(activity, new LoginListener() {
+                                    @Override
+                                    public void onComplete() {
+                                        Utilities.snackIt(activity, "Download Complete", "Okay");
+                                    }
+                                });
+                                loginController.getUserData(parseUser, pDialog);
                             }
                         } else {
                             pDialog.cancel();

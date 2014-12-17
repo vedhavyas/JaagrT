@@ -12,7 +12,9 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
+import org.jaagrT.controller.LoginController;
 import org.jaagrT.controller.RegistrationController;
+import org.jaagrT.listeners.LoginListener;
 import org.jaagrT.listeners.RegisterListener;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Utilities;
@@ -75,7 +77,14 @@ public class Login extends Activity {
                                 }, pDialog);
                                 registrationController.facebookRegistration();
                             } else {
-                                Utilities.logIt(parseUser.getEmail());
+                                pDialog.setTitleText("Connected to Facebook...");
+                                LoginController loginController = new LoginController(activity, new LoginListener() {
+                                    @Override
+                                    public void onComplete() {
+                                        Utilities.snackIt(activity, "Download Complete", "Okay");
+                                    }
+                                });
+                                loginController.getUserData(parseUser, pDialog);
                             }
                         } else {
                             pDialog.cancel();
@@ -100,12 +109,23 @@ public class Login extends Activity {
             @Override
             public void onClick(View v) {
                 if (Utilities.isEditBoxesValid(editTexts)) {
+                    final SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
+                    pDialog.setTitleText("Logging you in...");
+                    pDialog.show();
                     ParseUser.logInInBackground(emailBox.getText().toString(), passwordBox.getText().toString(), new LogInCallback() {
                         @Override
                         public void done(ParseUser user, ParseException e) {
                             if (e == null) {
-                                Utilities.snackIt(activity, "Login Successful", "Okay");
+                                pDialog.setTitleText("Logged in...");
+                                LoginController loginController = new LoginController(activity, new LoginListener() {
+                                    @Override
+                                    public void onComplete() {
+                                        Utilities.snackIt(activity, "Download Complete", "Okay");
+                                    }
+                                });
+                                loginController.getUserData(user, pDialog);
                             } else {
+                                pDialog.cancel();
                                 AlertDialogs.showErrorDialog(activity, "Login Error", e.getMessage(), "Oops!");
                             }
                         }

@@ -22,7 +22,9 @@ public class Utilities {
 
 
     public static void logIt(String data) {
-        Log.i("JaagrT", data);
+        if (data != null) {
+            Log.i("JaagrT", data);
+        }
     }
 
     public static boolean isEditBoxesValid(FormEditText[] editTexts) {

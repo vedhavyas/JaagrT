@@ -22,7 +22,6 @@ public class ObjectRetriever {
     private static ObjectRetriever objectRetriever;
     private Activity activity;
     private ParseObject userDetailsObject, userPreferenceObject;
-    private User localUser;
     private SharedPreferences prefs;
 
     private ObjectRetriever(Activity activity) {
@@ -85,8 +84,7 @@ public class ObjectRetriever {
 
     public User getLocalUser() {
         Database db = Database.getInstance(activity, Database.USER_TABLE);
-        localUser = db.getUser(prefs.getInt(Constants.LOCAL_USER_ID, -1));
-        return localUser;
+        return db.getUser(prefs.getInt(Constants.LOCAL_USER_ID, -1));
     }
 
     public SharedPreferences getPrefs() {
