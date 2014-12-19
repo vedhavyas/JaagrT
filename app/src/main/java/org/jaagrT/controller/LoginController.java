@@ -57,8 +57,8 @@ public class LoginController {
                                 localUser.setEmail(parseUser.getEmail());
                                 fetchUserPreferences();
                             } else {
+                                ParseUser.logOut();
                                 pDialog.cancel();
-                                Utilities.logIt(String.valueOf(e.getCode()));
                                 AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Okay");
                             }
                         }

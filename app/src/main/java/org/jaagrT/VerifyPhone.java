@@ -1,6 +1,7 @@
 package org.jaagrT;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -55,6 +56,14 @@ public class VerifyPhone extends Activity {
         verifyPhoneActivity = this;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constants.SELECT_PICTURE) {
+            startPanicActivity();
+        }
+    }
+
     private void setUpActivity() {
         Button editPhoneBtn = (Button) findViewById(R.id.editPhoneBtn);
         Button skipBtn = (Button) findViewById(R.id.skipBtn);
@@ -78,7 +87,7 @@ public class VerifyPhone extends Activity {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startPanicActivity();
             }
         });
 
@@ -137,6 +146,22 @@ public class VerifyPhone extends Activity {
             return data[1];
         }
         return null;
+    }
+
+    private void startPicturePickActivity() {
+        Intent intent = new Intent(this, PickPicture.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivityForResult(intent, Constants.SELECT_PICTURE);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    }
+
+    private void startPanicActivity() {
+        Intent panicActivityIntent = new Intent(activity, Panic.class);
+        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(panicActivityIntent);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
     private class SendSMS extends AsyncTask<Void, Void, Void> {
@@ -237,6 +262,8 @@ public class VerifyPhone extends Activity {
             } else {
                 Utilities.snackIt(activity, "Failed to save", "Okay");
             }
+
+            startPicturePickActivity();
         }
     }
 

@@ -24,7 +24,7 @@ import java.util.Arrays;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
-public class Signup extends Activity {
+public class Register extends Activity {
 
     private FormEditText emailBox, passwordBox;
     private Activity activity;
@@ -69,7 +69,7 @@ public class Signup extends Activity {
                     RegistrationController registrationController = new RegistrationController(activity, new RegisterListener() {
                         @Override
                         public void onComplete() {
-                            startPickPictureActivity();
+                            startGetUserDetails();
                         }
                     }, pDialog);
                     registrationController.registerUser(emailBox.getText().toString(), passwordBox.getText().toString());
@@ -104,7 +104,7 @@ public class Signup extends Activity {
 
                                     @Override
                                     public void onComplete() {
-                                        startPickPictureActivity();
+                                        startGetUserDetails();
                                     }
                                 }, pDialog);
                                 registrationController.facebookRegistration();
@@ -130,11 +130,11 @@ public class Signup extends Activity {
     }
 
 
-    private void startPickPictureActivity() {
-        Intent pickPictureIntent = new Intent(this, PickPicture.class);
-        pickPictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        pickPictureIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(pickPictureIntent);
+    private void startGetUserDetails() {
+        Intent intent = new Intent(this, GetUserDetails.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 

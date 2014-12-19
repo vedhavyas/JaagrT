@@ -14,7 +14,7 @@
     <string name="login">Login</string>
     <string name="forgot_password">I forgot my password</string>
     <string name="app_id">630451703747709</string>
-    <string name="title_activity_signup">JaagrT Signup</string>
+    <string name="title_activity_register">JaagrT Register</string>
     <string name="name">Name</string>
     <string name="verify_password">Verify Password</string>
     <string name="phone_number">Phone Number</string>
@@ -42,5 +42,13 @@
     <string name="change_number">Change</string>
     <string name="verify_number">Verify</string>
     <string name="verification_code">Verification Code</string>
+    <string name="title_activity_panic">Panic</string>
+    <string name="title_activity_drawer_test">DrawerTest</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
 
 </resources>

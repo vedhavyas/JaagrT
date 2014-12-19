@@ -2,10 +2,14 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_pressed="true">
-        <shape android:shape="oval">
-            <size android:width="350dp" android:height="350dp" />
-            <solid android:color="#424242" />
-        </shape>
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <size android:width="350dp" android:height="350dp" />
+                    <solid android:color="#009688" />
+                </shape>
+            </item>
+        </layer-list>
     </item>
 
 
@@ -14,13 +18,8 @@
             <item>
                 <shape android:shape="oval">
                     <size android:width="350dp" android:height="350dp" />
-                    <solid android:color="#6E6E6E" />
-                </shape>
-            </item>
-            <item android:bottom="15dp">
-                <shape android:shape="oval">
-                    <size android:width="350dp" android:height="350dp" />
-                    <gradient android:angle="90" android:centerColor="#585858" android:endColor="#2E2E2E" android:startColor="#424242" android:type="linear" />
+                    <gradient android:centerColor="#009688" android:endColor="#00796B" android:gradientRadius="700" android:startColor="#00796B" android:type="radial" />
+                    <stroke android:width="2dp" android:color="#009688" />
                 </shape>
             </item>
         </layer-list>

@@ -52,7 +52,7 @@ public class PickPicture extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_crop);
+        setContentView(R.layout.activity_pick_picture);
         activity = this;
         ParseFacebookUtils.initialize(Constants.APPLICATION_ID);
         setUpActivity();
@@ -77,6 +77,11 @@ public class PickPicture extends Activity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        returnResult(Activity.RESULT_CANCELED);
+    }
+
     private void setUpActivity() {
         SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
         pDialog.setTitleText("Please wait...");
@@ -84,6 +89,7 @@ public class PickPicture extends Activity {
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
         Button acceptBtn = (Button) findViewById(R.id.acceptBtn);
         Button rotateBtn = (Button) findViewById(R.id.rotateBtn);
+        Button skipBtn = (Button) findViewById(R.id.skipBtn);
         final Button choosePicBtn = (Button) findViewById(R.id.choosePicBtn);
 
         acceptBtn.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +106,13 @@ public class PickPicture extends Activity {
 
                 cropImageView.rotateImage(ROTATE_NINETY_DEGREES);
 
+            }
+        });
+
+        skipBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnResult(Activity.RESULT_CANCELED);
             }
         });
 
@@ -208,13 +221,12 @@ public class PickPicture extends Activity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.SELECT_PICTURE);
     }
 
-    private void startUserDetailsActivity() {
-        Intent userDetailsIntent = new Intent(activity, GetUserDetails.class);
-        userDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        userDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(userDetailsIntent);
-        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    private void returnResult(int result) {
+        Intent intent = new Intent();
+        setResult(result, intent);
+        finish();
     }
+
 
     private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
@@ -250,6 +262,12 @@ public class PickPicture extends Activity {
     }
 
     private class SavePicture extends AsyncTask<Void, Void, Integer> {
+
+        SweetAlertDialog pDialog;
+
+        private SavePicture() {
+            pDialog = AlertDialogs.showSweetProgress(activity);
+        }
 
         @Override
         protected void onPreExecute() {
@@ -289,11 +307,8 @@ public class PickPicture extends Activity {
                 Utilities.snackIt(activity, "Save failed", "Okay");
             }
 
-            startUserDetailsActivity();
+            returnResult(Activity.RESULT_OK);
         }
-
-        SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
-
 
     }
 }

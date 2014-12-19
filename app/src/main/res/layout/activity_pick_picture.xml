@@ -42,11 +42,23 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_gravity="start|top"
             android:background="@drawable/btn_holder"
             android:paddingEnd="15sp"
             android:paddingStart="15sp"
             android:text="@string/choose_pic"
+            android:typeface="monospace" />
+
+        <Button
+            android:id="@+id/skipBtn"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:background="@drawable/btn_holder"
+            android:paddingEnd="15sp"
+            android:paddingStart="15sp"
+            android:text="@string/skip"
             android:typeface="monospace" />
 
     </FrameLayout>

@@ -1,0 +1,14 @@
+package org.jaagrT;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+public class Panic extends Activity {
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_panic);
+    }
+}

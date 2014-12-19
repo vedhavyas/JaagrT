@@ -72,7 +72,7 @@ public class Login extends Activity {
 
                                     @Override
                                     public void onComplete() {
-                                        startPickPictureActivity();
+                                        startGetUserDetails();
                                     }
                                 }, pDialog);
                                 registrationController.facebookRegistration();
@@ -99,7 +99,7 @@ public class Login extends Activity {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent signUpIntent = new Intent(activity, Signup.class);
+                Intent signUpIntent = new Intent(activity, Register.class);
                 startActivity(signUpIntent);
                 overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
             }
@@ -121,6 +121,7 @@ public class Login extends Activity {
                                     @Override
                                     public void onComplete() {
                                         Utilities.snackIt(activity, "Download Complete", "Okay");
+                                        startPanicActivity();
                                     }
                                 });
                                 loginController.getUserData(user, pDialog);
@@ -143,11 +144,19 @@ public class Login extends Activity {
         });
     }
 
-    private void startPickPictureActivity() {
-        Intent pickPictureIntent = new Intent(this, PickPicture.class);
-        pickPictureIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        pickPictureIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(pickPictureIntent);
+    private void startGetUserDetails() {
+        Intent intent = new Intent(this, GetUserDetails.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    }
+
+    private void startPanicActivity() {
+        Intent panicActivityIntent = new Intent(activity, Panic.class);
+        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(panicActivityIntent);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 }
