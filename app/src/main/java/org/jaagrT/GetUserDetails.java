@@ -61,7 +61,7 @@ public class GetUserDetails extends Activity {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPanicActivity();
+                startMainActivity();
             }
         });
 
@@ -92,11 +92,11 @@ public class GetUserDetails extends Activity {
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
-    private void startPanicActivity() {
-        Intent panicIntent = new Intent(activity, Panic.class);
-        panicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        panicIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(panicIntent);
+    private void startMainActivity() {
+        Intent mainActivityIntent = new Intent(activity, Main.class);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainActivityIntent);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 

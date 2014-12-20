@@ -6,7 +6,7 @@
             <item>
                 <shape android:shape="oval">
                     <size android:width="350dp" android:height="350dp" />
-                    <solid android:color="#009688" />
+                    <solid android:color="@color/teal_500" />
                 </shape>
             </item>
         </layer-list>
@@ -18,8 +18,8 @@
             <item>
                 <shape android:shape="oval">
                     <size android:width="350dp" android:height="350dp" />
-                    <gradient android:centerColor="#009688" android:endColor="#00796B" android:gradientRadius="700" android:startColor="#00796B" android:type="radial" />
-                    <stroke android:width="2dp" android:color="#009688" />
+                    <gradient android:centerColor="@color/teal_500" android:endColor="@color/teal_700" android:gradientRadius="700" android:startColor="#00796B" android:type="radial" />
+                    <stroke android:width="2dp" android:color="@color/teal_500" />
                 </shape>
             </item>
         </layer-list>

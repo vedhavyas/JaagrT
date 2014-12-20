@@ -121,7 +121,7 @@ public class Login extends Activity {
                                     @Override
                                     public void onComplete() {
                                         Utilities.snackIt(activity, "Download Complete", "Okay");
-                                        startPanicActivity();
+                                        startMainActivity();
                                     }
                                 });
                                 loginController.getUserData(user, pDialog);
@@ -152,11 +152,11 @@ public class Login extends Activity {
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
-    private void startPanicActivity() {
-        Intent panicActivityIntent = new Intent(activity, Panic.class);
-        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(panicActivityIntent);
+    private void startMainActivity() {
+        Intent mainActivityIntent = new Intent(activity, Main.class);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainActivityIntent);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 }

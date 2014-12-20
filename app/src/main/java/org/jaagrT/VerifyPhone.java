@@ -60,7 +60,7 @@ public class VerifyPhone extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.SELECT_PICTURE) {
-            startPanicActivity();
+            startMainActivity();
         }
     }
 
@@ -87,7 +87,8 @@ public class VerifyPhone extends Activity {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPanicActivity();
+                Utilities.logIt("starting activity");
+                startPicturePickActivity();
             }
         });
 
@@ -149,18 +150,16 @@ public class VerifyPhone extends Activity {
     }
 
     private void startPicturePickActivity() {
-        Intent intent = new Intent(this, PickPicture.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivityForResult(intent, Constants.SELECT_PICTURE);
+        Intent pickPictureActivity = new Intent(this, PickPicture.class);
+        startActivityForResult(pickPictureActivity, Constants.SELECT_PICTURE);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
-    private void startPanicActivity() {
-        Intent panicActivityIntent = new Intent(activity, Panic.class);
-        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        panicActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(panicActivityIntent);
+    private void startMainActivity() {
+        Intent mainActivityIntent = new Intent(activity, Main.class);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainActivityIntent);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
