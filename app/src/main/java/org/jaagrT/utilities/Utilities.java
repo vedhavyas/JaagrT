@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.andreabaccega.widget.FormEditText;
 import com.nispok.snackbar.Snackbar;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 
@@ -27,11 +27,11 @@ public class Utilities {
         }
     }
 
-    public static boolean isEditBoxesValid(FormEditText[] editTexts) {
+    public static boolean isEditBoxesValid(MaterialEditText[] editTexts) {
         boolean allValid = true;
 
-        for (FormEditText editText : editTexts) {
-            allValid = editText.testValidity() && allValid;
+        for (MaterialEditText editText : editTexts) {
+            allValid = editText.validate() && allValid;
         }
 
         return allValid;
@@ -43,7 +43,7 @@ public class Utilities {
         snackbar.text(text)
                 .textColorResource(R.color.white)
                 .actionLabel(actionLabel)
-                .actionColorResource(R.color.blue)
+                .actionColorResource(R.color.teal_400)
                 .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
                 .show(activity);
     }

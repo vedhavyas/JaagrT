@@ -9,7 +9,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import org.jaagrT.listeners.LoginListener;
+import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.utilities.AlertDialogs;
@@ -25,13 +25,13 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class LoginController {
 
     private Activity activity;
-    private LoginListener listener;
+    private BasicListener listener;
     private User localUser;
     private SweetAlertDialog pDialog;
     private ObjectRetriever retriever;
     private ParseObject userDetailsObject;
 
-    public LoginController(Activity activity, LoginListener listener) {
+    public LoginController(Activity activity, BasicListener listener) {
         this.activity = activity;
         this.listener = listener;
         this.retriever = ObjectRetriever.getInstance(activity);

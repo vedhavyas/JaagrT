@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
-import org.jaagrT.VerifyPhone;
 import org.jaagrT.utilities.Utilities;
+import org.jaagrT.views.VerifyPhone;
 
 public class SMSReceiver extends BroadcastReceiver {
 

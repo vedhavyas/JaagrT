@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <selector>
+            <item android:state_pressed="true">
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/corner_radius" />
+                    <solid android:color="#425B8B" />
+                </shape>
+            </item>
 
-    <item android:drawable="@drawable/btn_holder" />
-    <item android:top="3sp" android:bottom="3sp" android:left="3sp">
-        <bitmap android:src="@drawable/ic_facebook" android:gravity="start" />
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/corner_radius" />
+                    <solid android:color="#4F71A8" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+
+    <item
+        android:bottom="5dp"
+        android:left="10dp"
+        android:top="5dp">
+        <bitmap
+            android:gravity="start"
+            android:src="@drawable/ic_facebook" />
     </item>
 
 </layer-list>

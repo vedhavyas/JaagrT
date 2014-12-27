@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item android:state_pressed="true">
-        <layer-list>
-            <item>
-                <shape android:shape="oval">
-                    <size android:width="350dp" android:height="350dp" />
-                    <solid android:color="@color/teal_500" />
-                </shape>
-            </item>
-        </layer-list>
+        <shape android:shape="oval">
+            <size android:width="300dp" android:height="300dp" />
+            <solid android:color="@color/teal_700" />
+        </shape>
     </item>
-
 
     <item>
         <layer-list>
-            <item>
+
+            <item android:top="10dp">
                 <shape android:shape="oval">
-                    <size android:width="350dp" android:height="350dp" />
-                    <gradient android:centerColor="@color/teal_500" android:endColor="@color/teal_700" android:gradientRadius="700" android:startColor="#00796B" android:type="radial" />
-                    <stroke android:width="2dp" android:color="@color/teal_500" />
+                    <size android:width="300dp" android:height="300dp" />
+                    <solid android:color="@color/teal_700" />
                 </shape>
             </item>
+
+            <item android:bottom="10dp">
+                <shape android:shape="oval">
+                    <size android:width="300dp" android:height="300dp" />
+                    <solid android:color="@color/teal_400" />
+                </shape>
+            </item>
+
         </layer-list>
     </item>
-
 </selector>

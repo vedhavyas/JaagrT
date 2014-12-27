@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">@android:color/white</color>
-    <color name="orange_light">@android:color/holo_orange_light</color>
-    <color name="green_light">@android:color/holo_green_light</color>
-    <color name="black">@android:color/black</color>
-    <color name="orange_dark">@android:color/holo_orange_dark</color>
-    <color name="blue">@android:color/holo_blue_bright</color>
-    <color name="gray">@android:color/darker_gray</color>
-    <color name="transparent">#33000000</color>
-    <color name="red_dark">@android:color/holo_red_dark</color>
+    <color name="teal_300">#4DB6AC</color>
+    <color name="teal_400">#26A69A</color>
     <color name="teal_500">#009688</color>
     <color name="teal_700">#00796B</color>
+    <color name="teal_900">#004D40</color>
+    <color name="white">@android:color/white</color>
+    <color name="red_dark">@android:color/holo_red_dark</color>
 </resources>

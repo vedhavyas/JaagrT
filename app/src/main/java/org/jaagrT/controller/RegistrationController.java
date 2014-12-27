@@ -17,7 +17,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
-import org.jaagrT.listeners.RegisterListener;
+import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.utilities.AlertDialogs;
@@ -34,10 +34,10 @@ public class RegistrationController {
     private Activity activity;
     private SweetAlertDialog pDialog;
     private User localUser;
-    private RegisterListener listener;
+    private BasicListener listener;
     private ObjectRetriever retriever;
 
-    public RegistrationController(Activity activity, RegisterListener listener, SweetAlertDialog pDialog) {
+    public RegistrationController(Activity activity, BasicListener listener, SweetAlertDialog pDialog) {
         this.activity = activity;
         this.listener = listener;
         this.pDialog = pDialog;

@@ -18,15 +18,10 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Login"
+            android:name=".views.Login"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:screenOrientation="portrait">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.facebook.LoginActivity"
@@ -38,30 +33,21 @@
             android:value="@string/app_id" />
 
         <activity
-            android:name=".Register"
+            android:name=".views.SignUp"
             android:label="@string/title_activity_register"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".PickPicture"
-            android:label="@string/title_activity_image_crop"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+            android:name=".views.PickPicture"
+            android:label="@string/title_activity_pick_pic"
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".UserProfileEdit"
-            android:label="@string/title_activity_profile_edit"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
-        <activity
-            android:name=".GetUserDetails"
+            android:name=".views.UserAdditionalInfo"
             android:label="@string/title_activity_get_user_details"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".VerifyPhone"
+            android:name=".views.VerifyPhone"
             android:label="@string/title_activity_verify_phone"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".broadcast.receivers.SMSReceiver"
@@ -73,9 +59,16 @@
         </receiver>
 
         <activity
-            android:name=".Main"
+            android:name=".views.Main"
             android:label="@string/title_activity_main"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationDrawer">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

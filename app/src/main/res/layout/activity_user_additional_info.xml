@@ -11,9 +11,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="?attr/actionBarSize"
-        android:text="@string/verify_phone"
+        android:text="@string/additional_info"
         android:textAllCaps="true"
-        android:textColor="@color/teal_500"
+        android:textColor="@color/teal_400"
         android:textSize="30sp" />
 
     <LinearLayout
@@ -24,57 +24,40 @@
         android:layout_margin="20dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/phoneBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/phone_number"
-                android:inputType="phone"
-                android:textCursorDrawable="@drawable/edit_text_cursor"
-                app:baseColor="@android:color/black"
-                app:floatingLabel="highlight"
-                app:minCharacters="10"
-                app:primaryColor="@color/teal_400" />
-
-            <ImageButton
-                android:id="@+id/editPhoneBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="30dp"
-                android:background="@null"
-                android:contentDescription="@string/edit_phone_number"
-                android:src="@drawable/edit_btn" />
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/sendSMSBtn"
-            style="@style/Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/flat_button"
-            android:text="@string/send_verification_code" />
-
         <com.rengwuxian.materialedittext.MaterialEditText
-            android:id="@+id/verificationCodeBox"
+            android:id="@+id/firstNameBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:hint="@string/verification_code"
-            android:inputType="phone"
+            android:hint="@string/first_name"
+            android:inputType="textPersonName"
             android:textCursorDrawable="@drawable/edit_text_cursor"
             app:baseColor="@android:color/black"
             app:floatingLabel="highlight"
             app:minCharacters="3"
+            app:primaryColor="@color/teal_400" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/lastNameBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/last_name"
+            android:inputType="textPersonName"
+            android:textCursorDrawable="@drawable/edit_text_cursor"
+            app:baseColor="@android:color/black"
+            app:floatingLabel="highlight"
+            app:minCharacters="1"
+            app:primaryColor="@color/teal_400" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/phoneBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/phone_number"
+            android:inputType="phone"
+            android:textCursorDrawable="@drawable/edit_text_cursor"
+            app:baseColor="@android:color/black"
+            app:floatingLabel="highlight"
+            app:minCharacters="10"
             app:primaryColor="@color/teal_400" />
 
     </LinearLayout>
@@ -109,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/bottom_button"
-                android:text="@string/verify"
+                android:text="@string/next"
                 android:textColor="@android:color/black" />
         </LinearLayout>
     </LinearLayout>

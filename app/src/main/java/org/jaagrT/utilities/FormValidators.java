@@ -1,9 +1,9 @@
 package org.jaagrT.utilities;
 
-import android.widget.EditText;
+import android.support.annotation.NonNull;
 
-import com.andreabaccega.formedittextvalidator.Validator;
-import com.andreabaccega.widget.FormEditText;
+import com.rengwuxian.materialedittext.validation.METValidator;
+import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
 /**
  * Authored by vedhavyas on 5/12/14.
@@ -11,31 +11,38 @@ import com.andreabaccega.widget.FormEditText;
  */
 public class FormValidators {
 
-    public static class PhoneNumberValidator extends Validator {
+    private static final String EMAIL_NOT_VALID = "Not a valid Email";
+    private static final String EMAIL_REGEX = "[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}";
 
-        public PhoneNumberValidator() {
-            super("Phone Number is not valid");
-        }
+    private static final String FIELD_CANNOT_BE_EMPTY = "Field cannot be Empty";
 
-        @Override
-        public boolean isValid(EditText editText) {
-            return editText.getText().length() >= 10;
+    private static final String PHONE_NUMBER_NOT_VALID = "Not a valid Phone Number";
+    private static final String PHONE_NUMBER_REGEX = "(\\+[0-9]+[\\- \\.]*)?(\\([0-9]+\\)[\\- \\.]*)?([0-9][0-9\\- \\.][0-9\\- \\.]+[0-9])";
+
+    public static class EmailValidator extends RegexpValidator {
+
+        public EmailValidator() {
+            super(EMAIL_NOT_VALID, EMAIL_REGEX);
         }
     }
 
-    public static class PasswordVerifyValidator extends Validator {
+    public static class EmptyFieldValidator extends METValidator {
 
-        private FormEditText passwordBox;
-
-        public PasswordVerifyValidator(FormEditText passwordBox) {
-            super("Passwords didn't match");
-            this.passwordBox = passwordBox;
+        public EmptyFieldValidator() {
+            super(FIELD_CANNOT_BE_EMPTY);
         }
 
         @Override
-        public boolean isValid(EditText verifyPasswordBox) {
-            return passwordBox.getText().toString().isEmpty() && !verifyPasswordBox.getText().toString().isEmpty() ||
-                    verifyPasswordBox.getText().toString().equals(passwordBox.getText().toString());
+        public boolean isValid(@NonNull CharSequence charSequence, boolean result) {
+            return !result;
+        }
+    }
+
+    public static class PhoneNumberValidator extends RegexpValidator {
+
+
+        public PhoneNumberValidator() {
+            super(PHONE_NUMBER_NOT_VALID, PHONE_NUMBER_REGEX);
         }
     }
 }

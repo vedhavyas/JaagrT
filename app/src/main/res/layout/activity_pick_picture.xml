@@ -1,14 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.jaagrT.PickPicture">
+    android:background="@color/background_material_light">
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -19,49 +13,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            custom:imageResource="@drawable/ic_profile_big" />
+            android:background="@color/background_material_light"
+            custom:imageResource="@drawable/ic_user_big" />
 
         <Button
             android:id="@+id/acceptBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="end|bottom"
-            android:layout_marginEnd="20sp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/accept_btn" />
 
         <Button
             android:id="@+id/rotateBtn"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="start|bottom"
-            android:layout_marginStart="20sp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
             android:background="@drawable/rotate_btn" />
 
         <Button
-            android:id="@+id/choosePicBtn"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/pickPicBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="start|top"
-            android:background="@drawable/btn_holder"
-            android:paddingEnd="15sp"
-            android:paddingStart="15sp"
-            android:text="@string/choose_pic"
-            android:typeface="monospace" />
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/pick_pic_btn" />
 
         <Button
             android:id="@+id/skipBtn"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="end|top"
-            android:background="@drawable/btn_holder"
-            android:paddingEnd="15sp"
-            android:paddingStart="15sp"
-            android:text="@string/skip"
-            android:typeface="monospace" />
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/forward_btn" />
 
     </FrameLayout>
 
-
-</LinearLayout>
+</RelativeLayout>

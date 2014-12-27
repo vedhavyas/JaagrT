@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:drawable="@drawable/btn_holder"/>
-    <item android:top="3sp" android:bottom="3sp" android:left="8sp">
-        <bitmap android:src="@drawable/ic_google_plus" android:gravity="start"/>
-    </item>
-
-</layer-list>

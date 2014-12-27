@@ -1,7 +1,6 @@
 package org.jaagrT.utilities;
 
 import android.app.Activity;
-import android.graphics.Color;
 
 import com.afollestad.materialdialogs.Alignment;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -31,7 +30,7 @@ public class AlertDialogs {
 
     public static SweetAlertDialog showSweetProgress(Activity activity) {
         SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.getProgressHelper().setBarColor(activity.getResources().getColor(R.color.teal_500));
         pDialog.setCancelable(false);
         return pDialog;
     }
