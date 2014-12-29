@@ -53,6 +53,7 @@ public class SignUp extends Activity {
     private void setUpActivity() {
         emailBox = (MaterialEditText) findViewById(R.id.emailBox);
         passwordBox = (MaterialEditText) findViewById(R.id.passwordBox);
+        emailBox.addValidator(new FormValidators.EmptyFieldValidator());
         emailBox.addValidator(new FormValidators.EmailValidator());
         passwordBox.addValidator(new FormValidators.EmptyFieldValidator());
 

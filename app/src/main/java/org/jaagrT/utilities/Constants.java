@@ -43,4 +43,6 @@ public class Constants {
 
     //Activity Request codes
     public static final int SELECT_PICTURE = 1;
+    public static final int VERIFY_PHONE = 2;
+    public static final int PICK_PICTURE = 3;
 }

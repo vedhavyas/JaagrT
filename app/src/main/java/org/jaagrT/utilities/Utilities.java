@@ -1,9 +1,11 @@
 package org.jaagrT.utilities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.nispok.snackbar.Snackbar;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -48,6 +50,12 @@ public class Utilities {
                 .show(activity);
     }
 
+    public static void toastIt(Context context, String data) {
+        if (data != null) {
+            Toast.makeText(context, data, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static byte[] getBlob(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         byte[] blob = null;
@@ -81,7 +89,7 @@ public class Utilities {
     public static Bitmap getReSizedBitmap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        int maxSize = 150;
+        int maxSize = 100;
         Bitmap reSizedBitmap = null;
 
         float bitmapRatio = (float) width / (float) height;

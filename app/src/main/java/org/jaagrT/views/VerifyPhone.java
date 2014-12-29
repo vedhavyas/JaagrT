@@ -29,7 +29,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class VerifyPhone extends Activity {
 
-    private static final String MESSAGE = "The-verification-code-is";
+    private static final String MESSAGE = "JaagrT Verification Code";
     public static VerifyPhone verifyPhoneActivity;
     private Activity activity;
     private MaterialEditText phoneBox, verifyCodeBox;
@@ -60,11 +60,8 @@ public class VerifyPhone extends Activity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.SELECT_PICTURE) {
-            startMainActivity();
-        }
+    public void onBackPressed() {
+        returnResult(Activity.RESULT_CANCELED);
     }
 
     private void setUpActivity() {
@@ -93,8 +90,7 @@ public class VerifyPhone extends Activity {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utilities.logIt("starting activity");
-                startPicturePickActivity();
+                returnResult(Activity.RESULT_CANCELED);
             }
         });
 
@@ -158,18 +154,11 @@ public class VerifyPhone extends Activity {
         return null;
     }
 
-    private void startPicturePickActivity() {
-        Intent pickPictureActivity = new Intent(this, PickPicture.class);
-        startActivityForResult(pickPictureActivity, Constants.SELECT_PICTURE);
-        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
-    }
 
-    private void startMainActivity() {
-        Intent mainActivityIntent = new Intent(activity, Main.class);
-        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(mainActivityIntent);
-        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    private void returnResult(int result) {
+        Intent intent = new Intent();
+        setResult(result, intent);
+        finish();
     }
 
     private class SendSMS extends AsyncTask<Void, Void, Void> {
@@ -266,12 +255,11 @@ public class VerifyPhone extends Activity {
             super.onPostExecute(result);
             pDialog.cancel();
             if (result > 0) {
-                Utilities.snackIt(activity, "Verification Successful", "Okay");
+                returnResult(Activity.RESULT_OK);
             } else {
-                Utilities.snackIt(activity, "Failed to update Info", "Okay");
+                returnResult(Activity.RESULT_CANCELED);
             }
 
-            startPicturePickActivity();
         }
     }
 

@@ -2,6 +2,7 @@ package org.jaagrT.controller;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -23,6 +24,7 @@ public class ObjectRetriever {
     private Activity activity;
     private ParseObject userDetailsObject, userPreferenceObject;
     private SharedPreferences prefs;
+    private Bitmap userPicture;
 
     private ObjectRetriever(Activity activity) {
         this.activity = activity;
@@ -97,6 +99,11 @@ public class ObjectRetriever {
 
     public void setUserPreferenceObject(ParseObject userPreferenceObject) {
         this.userPreferenceObject = userPreferenceObject;
+    }
+
+    public Bitmap getUserPicture() {
+        Database db = Database.getInstance(activity, Database.USER_TABLE);
+        return db.getUserPicture(prefs.getInt(Constants.LOCAL_USER_ID, -1));
     }
 
 }

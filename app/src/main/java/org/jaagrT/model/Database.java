@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 
 import org.jaagrT.utilities.Utilities;
 
@@ -98,7 +99,6 @@ public class Database extends SQLiteOpenHelper {
                     user.setPhoneNumber(cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER)));
                     user.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
                     user.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
-                    user.setPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE))));
                     user.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
                 } while (cursor.moveToNext());
 
@@ -159,6 +159,25 @@ public class Database extends SQLiteOpenHelper {
         contentValues.put(COLUMN_PHONE_VERIFIED, user.isPhoneVerifiedRaw());
 
         return contentValues;
+    }
+
+    public Bitmap getUserPicture(int id) {
+        if (id > 0) {
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            String sqlQuery = "SELECT * FROM " + tableName + " WHERE " + COLUMN_ID
+                    + " = " + String.valueOf(id);
+            Cursor cursor = db.rawQuery(sqlQuery, null);
+
+            if (cursor.moveToFirst()) {
+
+                return Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+            }
+            return null;
+
+        } else {
+            return null;
+        }
     }
 
 

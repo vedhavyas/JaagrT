@@ -38,6 +38,19 @@ public class UserAdditionalInfo extends Activity {
         setUpActivity();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constants.PICK_PICTURE) {
+            startMainActivity();
+        } else if (requestCode == Constants.VERIFY_PHONE) {
+            if (resultCode == RESULT_OK) {
+                Utilities.toastIt(this, "Verification Successful");
+            }
+            startPickPictureActivity();
+        }
+    }
+
     private void setUpActivity() {
 
         Button nextBtn = (Button) findViewById(R.id.nextBtn);
@@ -90,11 +103,16 @@ public class UserAdditionalInfo extends Activity {
     }
 
     private void startVerifyPhoneActivity() {
-        Intent phoneActivityIntent = new Intent(activity, VerifyPhone.class);
-        phoneActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        phoneActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(phoneActivityIntent);
+        Intent verifyPhoneIntent = new Intent(activity, VerifyPhone.class);
+        startActivityForResult(verifyPhoneIntent, Constants.VERIFY_PHONE);
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    }
+
+    private void startPickPictureActivity() {
+        Intent pickPictureIntent = new Intent(activity, PickPicture.class);
+        startActivityForResult(pickPictureIntent, Constants.PICK_PICTURE);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+
     }
 
     private void startMainActivity() {
@@ -171,11 +189,6 @@ public class UserAdditionalInfo extends Activity {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             pDialog.cancel();
-            if (result > 0) {
-                Utilities.snackIt(activity, "Info updated", "Okay");
-            } else {
-                Utilities.snackIt(activity, "Failed to update your Info", "Okay");
-            }
 
             startVerifyPhoneActivity();
         }

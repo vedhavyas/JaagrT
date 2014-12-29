@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_material_light"
-    tools:context="org.jaagrT.views.Main$PlaceholderFragment">
+    tools:context="org.jaagrT.views.Settings">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Circles Fragment" />
+        android:text="Settings" />
 
 </FrameLayout>

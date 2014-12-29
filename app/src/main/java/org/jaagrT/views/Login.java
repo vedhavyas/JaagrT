@@ -51,6 +51,8 @@ public class Login extends Activity {
         Button forgotPassBtn = (Button) findViewById(R.id.forgotPasswordBtn);
         final MaterialEditText emailBox = (MaterialEditText) findViewById(R.id.emailBox);
         final MaterialEditText passwordBox = (MaterialEditText) findViewById(R.id.passwordBox);
+
+        emailBox.addValidator(new FormValidators.EmptyFieldValidator());
         emailBox.addValidator(new FormValidators.EmailValidator());
         passwordBox.addValidator(new FormValidators.EmptyFieldValidator());
         final MaterialEditText[] editTexts = {emailBox, passwordBox};

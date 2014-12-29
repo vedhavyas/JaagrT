@@ -19,6 +19,8 @@ public class Main extends MaterialNavigationDrawer {
 
     private static final String PANIC = "Panic";
     private static final String CIRCLE = "Circle";
+    private static final String SETTINGS = "Settings";
+    private static final String ABOUT = "About";
     private MaterialAccount account;
     private ObjectRetriever retriever;
     private User user;
@@ -34,8 +36,16 @@ public class Main extends MaterialNavigationDrawer {
         MaterialSection circleSection = newSection(CIRCLE, this.getResources().getDrawable(R.drawable.ic_circle), new Circle())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
+        MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
+                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
+
+        MaterialSection aboutSection = newSection(ABOUT, this.getResources().getDrawable(R.drawable.ic_about), new About())
+                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
+
         this.addSection(panicSection);
         this.addSection(circleSection);
+        this.addBottomSection(aboutSection);
+        this.addBottomSection(settingsSection);
         new GetUserAsync().execute();
 
         allowArrowAnimation();

@@ -24,7 +24,7 @@ public class JaagrT extends Application {
             Parse.initialize(this, Constants.APPLICATION_ID, Constants.CLIENT_ID);
             ParseInstallation.getCurrentInstallation().saveInBackground();
             ParseACL defaultACL = new ParseACL();
-            defaultACL.setPublicReadAccess(false);
+            defaultACL.setPublicReadAccess(true);
             defaultACL.setPublicWriteAccess(false);
             ParseACL.setDefaultACL(defaultACL, true);
         }

@@ -136,8 +136,8 @@ public class PickPicture extends Activity {
 
         user = retriever.getLocalUser();
         if (user != null) {
-            if (user.getPicture() != null) {
-                cropImageView.setImageBitmap(user.getPicture());
+            if (user.getThumbnailPicture() != null) {
+                cropImageView.setImageBitmap(retriever.getUserPicture());
                 pDialog.cancel();
             } else {
                 getFBProfilePicture(pDialog);
@@ -183,7 +183,7 @@ public class PickPicture extends Activity {
     private void showChoosePictureDialog() {
         new MaterialDialog.Builder(this)
                 .items(new String[]{CAMERA, GALLERY})
-                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                         if (text.toString().equalsIgnoreCase(CAMERA)) {
@@ -193,7 +193,10 @@ public class PickPicture extends Activity {
                         }
                     }
                 })
-                .positiveText("Choose")
+                .title("Get Picture from")
+                .titleColor(getResources().getColor(R.color.teal_500))
+                .positiveText("Done")
+                .positiveColor(getResources().getColor(R.color.teal_400))
                 .show();
     }
 
@@ -291,12 +294,10 @@ public class PickPicture extends Activity {
             super.onPostExecute(result);
             pDialog.cancel();
             if (result > 0) {
-                Utilities.snackIt(activity, "Picture Saved", "Okay");
+                returnResult(RESULT_OK);
             } else {
-                Utilities.snackIt(activity, "Failed to save the Picture", "Okay");
+                returnResult(RESULT_CANCELED);
             }
-
-            returnResult(Activity.RESULT_OK);
         }
 
     }
