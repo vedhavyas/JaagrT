@@ -20,7 +20,7 @@ import it.neokree.materialnavigationdrawer.MaterialSection;
 public class Main extends MaterialNavigationDrawer<Fragment> {
 
     private static final String PANIC = "Panic";
-    private static final String CIRCLE = "Circle";
+    private static final String CIRCLES = "Circles";
     private static final String SETTINGS = "Settings";
 
     private MaterialAccount account;
@@ -35,7 +35,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         this.addAccount(account);
         MaterialSection panicSection = newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
-        MaterialSection circleSection = newSection(CIRCLE, this.getResources().getDrawable(R.drawable.ic_circle), new Circle())
+        MaterialSection circleSection = newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circle), new Circle())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
         MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Intent(getBaseContext(), Settings.class))
