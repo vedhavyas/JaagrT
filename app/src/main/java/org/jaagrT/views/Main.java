@@ -1,10 +1,12 @@
 package org.jaagrT.views;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.ObjectRetriever;
@@ -15,12 +17,12 @@ import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import it.neokree.materialnavigationdrawer.MaterialSection;
 
 
-public class Main extends MaterialNavigationDrawer {
+public class Main extends MaterialNavigationDrawer<Fragment> {
 
     private static final String PANIC = "Panic";
     private static final String CIRCLE = "Circle";
     private static final String SETTINGS = "Settings";
-    private static final String ABOUT = "About";
+
     private MaterialAccount account;
     private ObjectRetriever retriever;
     private User user;
@@ -36,15 +38,12 @@ public class Main extends MaterialNavigationDrawer {
         MaterialSection circleSection = newSection(CIRCLE, this.getResources().getDrawable(R.drawable.ic_circle), new Circle())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
-        MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
+        MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Intent(getBaseContext(), Settings.class))
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
-        MaterialSection aboutSection = newSection(ABOUT, this.getResources().getDrawable(R.drawable.ic_about), new About())
-                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
         this.addSection(panicSection);
         this.addSection(circleSection);
-        this.addBottomSection(aboutSection);
         this.addBottomSection(settingsSection);
         new GetUserAsync().execute();
 

@@ -1,12 +1,10 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-
-        // add styles here</style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"></style>
 
     <style name="NavigationDrawer" parent="MaterialNavigationDrawerTheme.TranslucentKitKatStatusBar">
         <item name="colorPrimary">@color/teal_500</item>
-        <item name="colorPrimaryDark">@color/teal_900</item>
+        <item name="colorPrimaryDark">@color/teal_500</item>
         <item name="colorAccent">@android:color/black</item>
     </style>
 
@@ -28,6 +26,25 @@
         <item name="android:layout_width">1dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/teal_400</item>
+    </style>
+
+    <style name="HorizontalDividerThinGrayLight">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/light_gray</item>
+    </style>
+
+    <style name="HorizontalDividerThinGrayDark">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/dark_gray</item>
+    </style>
+
+    <style name="SettingsButton">
+        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:background">@drawable/settings_btn</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:padding">10dp</item>
     </style>
 
 

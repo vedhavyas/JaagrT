@@ -7,4 +7,7 @@
     <color name="teal_900">#004D40</color>
     <color name="white">@android:color/white</color>
     <color name="red_dark">@android:color/holo_red_dark</color>
+    <color name="dark_gray">#424242</color>
+    <color name="gray">#848484</color>
+    <color name="light_gray">#D8D8D8</color>
 </resources>

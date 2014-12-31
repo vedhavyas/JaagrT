@@ -2,7 +2,6 @@ package org.jaagrT.utilities;
 
 import android.app.Activity;
 
-import com.afollestad.materialdialogs.Alignment;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.jaagrT.R;
@@ -24,7 +23,6 @@ public class AlertDialogs {
                 .negativeText(negativeBtnText)
                 .titleColor(activity.getResources().getColor(R.color.red_dark))
                 .negativeColor(activity.getResources().getColor(R.color.red_dark))
-                .titleAlignment(Alignment.CENTER)
                 .show();
     }
 
