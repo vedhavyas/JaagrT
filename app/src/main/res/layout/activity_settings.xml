@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_below="@id/statusBar"
-        android:background="@color/teal_500"></android.support.v7.widget.Toolbar>
+        android:background="@color/teal_500"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -97,8 +97,24 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:drawableEnd="@drawable/ic_logout"
                         android:text="@string/logout" />
+
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <Button
                         android:id="@+id/aboutBtn"
@@ -109,17 +125,27 @@
                         android:text="@string/about" />
 
                     <Button
-                        android:id="@+id/helpAndFeedBackBtn"
+                        android:id="@+id/helpBtn"
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableEnd="@drawable/ic_right_arrow"
-                        android:text="@string/help_and_feedback" />
+                        android:text="@string/help" />
+
+                    <Button
+                        android:id="@+id/feedbackBtn"
+                        style="@style/SettingsButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:text="@string/feedback" />
+
 
 
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
+
 
         </LinearLayout>
 

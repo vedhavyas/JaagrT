@@ -41,6 +41,7 @@
     <string name="general">GENERAL</string>
     <string name="logout">Logout</string>
     <string name="about">About</string>
-    <string name="help_and_feedback">Help and Feedback</string>
+    <string name="help">Help</string>
+    <string name="feedback">Feedback</string>
 
 </resources>
