@@ -31,7 +31,7 @@
             android:hint="@string/first_name"
             android:inputType="textPersonName"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            app:baseColor="@android:color/black"
+            app:baseColor="@color/black"
             app:floatingLabel="highlight"
             app:minCharacters="3"
             app:primaryColor="@color/teal_400" />
@@ -43,7 +43,7 @@
             android:hint="@string/last_name"
             android:inputType="textPersonName"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            app:baseColor="@android:color/black"
+            app:baseColor="@color/black"
             app:floatingLabel="highlight"
             app:minCharacters="1"
             app:primaryColor="@color/teal_400" />
@@ -55,7 +55,7 @@
             android:hint="@string/phone_number"
             android:inputType="phone"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            app:baseColor="@android:color/black"
+            app:baseColor="@color/black"
             app:floatingLabel="highlight"
             app:minCharacters="10"
             app:primaryColor="@color/teal_400" />

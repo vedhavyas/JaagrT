@@ -17,6 +17,7 @@ import org.jaagrT.utilities.Utilities;
 public class Database extends SQLiteOpenHelper {
 
     public static final String USER_TABLE = "user_details";
+    private static final String[] TABLES = {USER_TABLE};
     private static final String DB_NAME = "JaagrT.db";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_FIRST_NAME = "firstName";
@@ -45,14 +46,18 @@ public class Database extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 1);
     }
 
-    public static Database getInstance(Context context, String tableName) {
+    public static Database getInstance(Context context) {
         if (dbFactory == null) {
 
             dbFactory = new Database(context);
         }
 
-        dbFactory.setTableName(tableName);
+        return dbFactory;
+    }
 
+    public static Database getInstance(Context context, String tableName) {
+        getInstance(context);
+        dbFactory.setTableName(tableName);
         return dbFactory;
     }
 
@@ -68,6 +73,20 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(DROP_TABLE + USER_TABLE);
+        onCreate(db);
+    }
+
+    public void dropAllTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (String table : TABLES) {
+            db.execSQL(DROP_TABLE + table);
+        }
+        onCreate(db);
+    }
+
+    public void dropTable(String tableName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(DROP_TABLE + tableName);
         onCreate(db);
     }
 

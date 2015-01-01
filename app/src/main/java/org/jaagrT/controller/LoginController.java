@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -28,13 +29,13 @@ public class LoginController {
     private BasicListener listener;
     private User localUser;
     private SweetAlertDialog pDialog;
-    private ObjectRetriever retriever;
+    private ObjectRetriever objectRetriever;
     private ParseObject userDetailsObject;
 
     public LoginController(Activity activity, BasicListener listener) {
         this.activity = activity;
         this.listener = listener;
-        this.retriever = ObjectRetriever.getInstance(activity);
+        this.objectRetriever = ObjectRetriever.getInstance(activity);
         this.localUser = new User();
     }
 
@@ -48,14 +49,26 @@ public class LoginController {
                         public void done(ParseObject parseObject, ParseException e) {
                             if (e == null) {
                                 userDetailsObject = parseObject;
-                                retriever.setUserDetailsObject(userDetailsObject);
+                                objectRetriever.setUserDetailsObject(userDetailsObject);
                                 localUser.setFirstName(userDetailsObject.getString(Constants.USER_FIRST_NAME));
                                 localUser.setLastName(userDetailsObject.getString(Constants.USER_LAST_NAME));
                                 localUser.setPhoneNumber(userDetailsObject.getString(Constants.USER_PRIMARY_PHONE));
                                 localUser.setPhoneVerified(userDetailsObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
                                 localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                                 localUser.setEmail(parseUser.getEmail());
-                                fetchUserPreferences();
+                                if (userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
+                                    userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getDataInBackground(new GetDataCallback() {
+                                        @Override
+                                        public void done(byte[] thumbnailBytes, ParseException e) {
+                                            if (e == null) {
+                                                localUser.setThumbnailPicture(Utilities.getBitmapFromBlob(thumbnailBytes));
+                                            }
+                                            fetchUserPreferences();
+                                        }
+                                    });
+                                } else {
+                                    fetchUserPreferences();
+                                }
                             } else {
                                 ParseUser.logOut();
                                 pDialog.cancel();
@@ -77,8 +90,8 @@ public class LoginController {
                     @Override
                     public void done(ParseObject userPreferenceObject, ParseException e) {
                         if (e == null) {
-                            retriever.setUserPreferenceObject(userPreferenceObject);
-                            SharedPreferences prefs = retriever.getPrefs();
+                            objectRetriever.setUserPreferenceObject(userPreferenceObject);
+                            SharedPreferences prefs = objectRetriever.getPrefs();
                             prefs.edit().putBoolean(Constants.SEND_SMS, userPreferenceObject.getBoolean(Constants.SEND_SMS)).apply();
                             prefs.edit().putBoolean(Constants.SEND_EMAIL, userPreferenceObject.getBoolean(Constants.SEND_EMAIL)).apply();
                             prefs.edit().putBoolean(Constants.SEND_PUSH, userPreferenceObject.getBoolean(Constants.SEND_PUSH)).apply();
@@ -88,12 +101,9 @@ public class LoginController {
                             prefs.edit().putBoolean(Constants.RECEIVE_EMAIL, userPreferenceObject.getBoolean(Constants.RECEIVE_EMAIL)).apply();
                             prefs.edit().putInt(Constants.NOTIFY_WITH_IN, userPreferenceObject.getInt(Constants.NOTIFY_WITH_IN)).apply();
                             prefs.edit().putInt(Constants.RESPOND_ALERT_WITH_IN, userPreferenceObject.getInt(Constants.RESPOND_ALERT_WITH_IN)).apply();
-                            new SaveLocalUser().execute();
-                        } else {
-                            AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Okay");
-                            Utilities.logIt(String.valueOf(e.getCode()));
-                            new SaveLocalUser().execute();
+                            prefs.edit().putString(Constants.ALERT_MESSAGE, userPreferenceObject.getString(Constants.ALERT_MESSAGE)).apply();
                         }
+                        new SaveLocalUser().execute();
                     }
                 });
     }
@@ -102,7 +112,7 @@ public class LoginController {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog.setTitleText("Saving UserData...");
+            pDialog.setTitleText("Saving  Data...");
         }
 
         @Override
@@ -116,7 +126,7 @@ public class LoginController {
             super.onPostExecute(result);
             pDialog.cancel();
             if (result > 0) {
-                SharedPreferences prefs = retriever.getPrefs();
+                SharedPreferences prefs = objectRetriever.getPrefs();
                 prefs.edit().putInt(Constants.LOCAL_USER_ID, result).apply();
                 listener.onComplete();
             } else {
@@ -124,4 +134,5 @@ public class LoginController {
             }
         }
     }
+
 }

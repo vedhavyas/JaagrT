@@ -36,6 +36,7 @@ public class Constants {
     public static final String RECEIVE_EMAIL = "receiveEmail";
     public static final String NOTIFY_WITH_IN = "notifyWithIn";
     public static final String RESPOND_ALERT_WITH_IN = "willRespondWithIn";
+    public static final String ALERT_MESSAGE = "alertMessage";
 
     //Preferences
     public static final String PREFERENCES_NAME = "JaagrTPreferences";
@@ -45,4 +46,10 @@ public class Constants {
     public static final int SELECT_PICTURE = 1;
     public static final int VERIFY_PHONE = 2;
     public static final int PICK_PICTURE = 3;
+
+    //General Strings
+
+    public static final String LOGIN_ERROR = "Login Error";
+    public static final String OOPS = "Oops!";
+    public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
 }

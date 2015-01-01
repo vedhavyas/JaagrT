@@ -99,7 +99,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/bottom_button"
                 android:text="@string/not_now"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/black" />
 
             <View style="@style/VerticalDivider" />
 
@@ -110,7 +110,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/bottom_button"
                 android:text="@string/verify"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/black" />
         </LinearLayout>
     </LinearLayout>
 

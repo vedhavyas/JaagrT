@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_below="@id/statusBar"
-        android:background="@color/teal_500"/>
+        android:background="@color/teal_500" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -55,7 +55,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:drawableEnd="@drawable/ic_incoming_alerts"
                         android:text="@string/incoming_alerts" />
 
                     <Button
@@ -63,7 +63,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:drawableEnd="@drawable/ic_outgoing_alerts"
                         android:text="@string/outgoing_alerts" />
 
 
@@ -91,6 +91,23 @@
                         android:textSize="14sp" />
 
                     <View style="@style/HorizontalDividerThinGrayLight" />
+
+                    <Button
+                        android:id="@+id/alertMessageBtn"
+                        style="@style/SettingsButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_alert_message"
+                        android:text="@string/alert_message" />
+
+                    <Button
+                        android:id="@+id/popUpWindowBtn"
+                        style="@style/SettingsButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_pop_up"
+                        android:text="@string/pop_up_notifications" />
+
 
                     <Button
                         android:id="@+id/logoutBtn"
@@ -121,7 +138,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:drawableEnd="@drawable/ic_about"
                         android:text="@string/about" />
 
                     <Button
@@ -129,7 +146,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:drawableEnd="@drawable/ic_help"
                         android:text="@string/help" />
 
                     <Button
@@ -137,9 +154,8 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:drawableEnd="@drawable/ic_feedback"
                         android:text="@string/feedback" />
-
 
 
                 </LinearLayout>

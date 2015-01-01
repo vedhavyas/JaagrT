@@ -17,6 +17,7 @@ import org.jaagrT.controller.LoginController;
 import org.jaagrT.controller.RegistrationController;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.utilities.AlertDialogs;
+import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
 import org.jaagrT.utilities.Utilities;
 
@@ -41,7 +42,7 @@ public class SignUp extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class SignUp extends Activity {
         final MaterialEditText[] editTexts = {emailBox, passwordBox};
 
         Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
-        Button loginBtn = (Button) findViewById(R.id.loginBtn);
+        Button backBtn = (Button) findViewById(R.id.backBtn);
         final Button fbBtn = (Button) findViewById(R.id.facebookBtn);
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +83,7 @@ public class SignUp extends Activity {
             }
         });
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -124,7 +125,7 @@ public class SignUp extends Activity {
                             }
                         } else {
                             pDialog.cancel();
-                            AlertDialogs.showErrorDialog(activity, "Login Error", e.getMessage(), "Oops!");
+                            AlertDialogs.showErrorDialog(activity, Constants.LOGIN_ERROR, e.getMessage(), Constants.OOPS);
                         }
                     }
                 });

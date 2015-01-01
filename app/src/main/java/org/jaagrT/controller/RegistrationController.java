@@ -1,7 +1,6 @@
 package org.jaagrT.controller;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
@@ -10,6 +9,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.parse.GetCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
@@ -35,13 +35,14 @@ public class RegistrationController {
     private SweetAlertDialog pDialog;
     private User localUser;
     private BasicListener listener;
-    private ObjectRetriever retriever;
+    private ObjectRetriever objectRetriever;
+
 
     public RegistrationController(Activity activity, BasicListener listener, SweetAlertDialog pDialog) {
         this.activity = activity;
         this.listener = listener;
         this.pDialog = pDialog;
-        this.retriever = ObjectRetriever.getInstance(activity);
+        this.objectRetriever = ObjectRetriever.getInstance(activity);
     }
 
     public void registerUser(String email, String password) {
@@ -70,9 +71,9 @@ public class RegistrationController {
     }
 
     private void saveUserDetails(final ParseUser parseUser) {
-        pDialog.setTitleText("Finalizing Registration...");
+        pDialog.setTitleText("Finalising Registration...");
         final ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
-        retriever.setUserDetailsObject(userDetailsObject);
+        objectRetriever.setUserDetailsObject(userDetailsObject);
         userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
         userDetailsObject.saveInBackground(new SaveCallback() {
             @Override
@@ -80,10 +81,7 @@ public class RegistrationController {
                 if (e == null) {
                     saveDefaultPreferences(parseUser);
                 } else {
-                    pDialog.cancel();
-                    AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
                     new SaveUserLocally().execute();
-                    listener.onComplete();
                 }
             }
         });
@@ -121,7 +119,7 @@ public class RegistrationController {
     private void saveFbUserDetails(final ParseUser parseUser, GraphUser fbUser) {
         pDialog.setTitleText("Completing Registration...");
         final ParseObject userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
-        retriever.setUserDetailsObject(userDetailsObject);
+        objectRetriever.setUserDetailsObject(userDetailsObject);
         userDetailsObject.put(Constants.USER_FIRST_NAME, fbUser.getFirstName());
         userDetailsObject.put(Constants.USER_LAST_NAME, fbUser.getLastName());
         userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
@@ -131,10 +129,7 @@ public class RegistrationController {
                 if (e == null) {
                     saveDefaultPreferences(parseUser);
                 } else {
-                    pDialog.cancel();
                     new SaveUserLocally().execute();
-                    AlertDialogs.showErrorDialog(activity, "Error", e.getMessage(), "Oops!");
-                    listener.onComplete();
                 }
             }
         });
@@ -144,7 +139,6 @@ public class RegistrationController {
     }
 
     private void saveDefaultPreferences(final ParseUser parseUser) {
-        new SaveUserLocally().execute();
         final ParseObject userPreferenceObject = new ParseObject(Constants.USER_COMMUNICATION_PREFERENCE_CLASS);
         userPreferenceObject.put(Constants.SEND_SMS, true);
         userPreferenceObject.put(Constants.SEND_EMAIL, true);
@@ -155,33 +149,40 @@ public class RegistrationController {
         userPreferenceObject.put(Constants.RECEIVE_EMAIL, false);
         userPreferenceObject.put(Constants.NOTIFY_WITH_IN, 400);
         userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, 400);
+        userPreferenceObject.put(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE);
+        ParseACL preferenceAcl = new ParseACL(parseUser);
+        preferenceAcl.setPublicWriteAccess(false);
+        preferenceAcl.setPublicReadAccess(false);
+        userPreferenceObject.setACL(preferenceAcl);
         userPreferenceObject.saveInBackground();
-        retriever.setUserPreferenceObject(userPreferenceObject);
+        objectRetriever.setUserPreferenceObject(userPreferenceObject);
 
         parseUser.getParseObject(Constants.USER_DETAILS_ROW)
                 .fetchInBackground(new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject userDetailsObject, ParseException e) {
-                        pDialog.cancel();
                         if (e == null) {
                             userDetailsObject.put(Constants.USER_COMMUNICATION_PREFERENCE_ROW, userPreferenceObject);
                             userDetailsObject.saveInBackground();
-                            listener.onComplete();
-
-                        } else {
-                            AlertDialogs.showErrorDialog(activity, "Error Fetching", e.getMessage(), "Oops!");
-                            listener.onComplete();
                         }
                     }
                 });
+
+        new SaveUserLocally().execute();
     }
 
 
     private class SaveUserLocally extends AsyncTask<Void, Void, Void> {
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog.setTitleText("Saving Data...");
+        }
+
+        @Override
         protected Void doInBackground(Void... params) {
-            SharedPreferences prefs = activity.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+            SharedPreferences prefs = objectRetriever.getPrefs();
             prefs.edit().putBoolean(Constants.SEND_SMS, true).apply();
             prefs.edit().putBoolean(Constants.SEND_EMAIL, true).apply();
             prefs.edit().putBoolean(Constants.SEND_PUSH, true).apply();
@@ -191,6 +192,7 @@ public class RegistrationController {
             prefs.edit().putBoolean(Constants.RECEIVE_EMAIL, false).apply();
             prefs.edit().putInt(Constants.NOTIFY_WITH_IN, 400).apply();
             prefs.edit().putInt(Constants.RESPOND_ALERT_WITH_IN, 400).apply();
+            prefs.edit().putString(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE).apply();
 
             Database db = Database.getInstance(activity, Database.USER_TABLE);
             localUser.setMemberOfMasterCircle(false);
@@ -200,6 +202,13 @@ public class RegistrationController {
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            pDialog.cancel();
+            listener.onComplete();
         }
     }
 }

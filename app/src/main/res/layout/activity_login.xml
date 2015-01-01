@@ -41,7 +41,7 @@
             android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            app:baseColor="@android:color/black"
+            app:baseColor="@color/black"
             app:floatingLabel="highlight"
             app:minCharacters="3"
             app:primaryColor="@color/teal_400" />
@@ -53,7 +53,7 @@
             android:hint="@string/password"
             android:inputType="textPassword"
             android:textCursorDrawable="@drawable/edit_text_cursor"
-            app:baseColor="@android:color/black"
+            app:baseColor="@color/black"
             app:floatingLabel="highlight"
             app:minCharacters="1"
             app:primaryColor="@color/teal_400" />
@@ -65,14 +65,14 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/signUpBtn"
+                android:id="@+id/backBtn"
                 style="@style/Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@drawable/flat_button"
-                android:text="@string/sign_up" />
+                android:text="@string/back" />
 
             <Button
                 android:id="@+id/loginBtn"
