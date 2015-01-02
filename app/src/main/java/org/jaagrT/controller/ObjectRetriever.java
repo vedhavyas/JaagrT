@@ -24,7 +24,6 @@ public class ObjectRetriever {
     private Activity activity;
     private ParseObject userDetailsObject, userPreferenceObject;
     private SharedPreferences prefs;
-    private Bitmap userPicture;
 
     private ObjectRetriever(Activity activity) {
         this.activity = activity;
@@ -104,6 +103,12 @@ public class ObjectRetriever {
     public Bitmap getUserPicture() {
         Database db = Database.getInstance(activity, Database.USER_TABLE);
         return db.getUserPicture(prefs.getInt(Constants.LOCAL_USER_ID, -1));
+    }
+
+    public void clearAllObjects() {
+        if (objectRetriever != null) {
+            objectRetriever = null;
+        }
     }
 
 }

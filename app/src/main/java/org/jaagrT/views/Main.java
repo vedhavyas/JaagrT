@@ -1,7 +1,6 @@
 package org.jaagrT.views;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -38,7 +37,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         MaterialSection circleSection = newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circle), new Circle())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
-        MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Intent(getBaseContext(), Settings.class))
+        MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="incomingAlerts">
+        <item>Receive SMS</item>
+        <item>Receive Push Notification</item>
+        <item>Receive Email</item>
+    </string-array>
+
+    <string-array name="outgoingAlerts">
+        <item>Send SMS</item>
+        <item>Send Push Notification</item>
+        <item>Send Email</item>
+    </string-array>
+
+    <string-array name="notificationPopUP">
+        <item>Display</item>
+        <item>Do not display</item>
+    </string-array>
+
+</resources>

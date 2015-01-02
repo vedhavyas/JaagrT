@@ -194,7 +194,7 @@ public class PickPicture extends Activity {
                     }
                 })
                 .title("Get Picture from")
-                .titleColor(getResources().getColor(R.color.teal_500))
+                .titleColor(getResources().getColor(R.color.teal_400))
                 .positiveText("Done")
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .show();

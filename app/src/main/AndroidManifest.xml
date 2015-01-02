@@ -61,10 +61,7 @@
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             android:theme="@style/NavigationDrawer"/>
-        <activity
-            android:name=".views.Settings"
-            android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name=".views.StartScreen"
             android:label="@string/app_name"
