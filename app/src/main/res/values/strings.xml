@@ -36,9 +36,9 @@
     <string name="edit_phone_number">Edit Phone Number</string>
     <string name="title_activity_settings">Settings</string>
     <string name="status_bar_desc">Status bar Replacement</string>
-    <string name="alerts">ALERTS SETTINGS</string>
-    <string name="incoming_alerts">Incoming</string>
-    <string name="outgoing_alerts">Outgoing</string>
+    <string name="alerts">Alerts</string>
+    <string name="incoming_alerts">Incoming Alerts</string>
+    <string name="outgoing_alerts">Outgoing Alerts</string>
     <string name="general">GENERAL SETTINGS</string>
     <string name="logout">Logout</string>
     <string name="about">About</string>
@@ -49,5 +49,9 @@
     <string name="pop_up_notifications">Notification Pop ups</string>
     <string name="attributions">Attributions</string>
     <string name="licenses">Licenses</string>
+    <string name="incoming_alert_settings">INCOMING ALERT SETTINGS</string>
+    <string name="outgoing_alert_settings">OUTGOING ALERT SETTINGS</string>
+    <string name="alert_range">Alert Range</string>
+    <string name="ten_kms">10 Kms</string>
 
 </resources>

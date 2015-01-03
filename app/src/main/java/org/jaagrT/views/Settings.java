@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.parse.ParseObject;
@@ -23,15 +24,25 @@ import org.jaagrT.model.Database;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
 import org.jaagrT.utilities.Utilities;
+import org.jaagrT.widgets.rangebar.RangeBar;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Settings extends Fragment {
 
     private static final String SET = "Set";
+    private static final String KMS = " Kms";
+    private static final int IN_ALERT_RANGE = 1;
+    private static final int OUT_ALERT_RANGE = 2;
+    private static final String[] INCOMING_ALERT_LIST = {Constants.RECEIVE_SMS, Constants.RECEIVE_PUSH, Constants.RECEIVE_EMAIL};
+    private static final String[] OUTGOING_ALERT_LIST = {Constants.SEND_SMS, Constants.SEND_PUSH, Constants.SEND_EMAIL};
     private Activity activity;
     private ObjectRetriever objectRetriever;
     private ParseObject userPreferenceObject;
     private SharedPreferences prefs;
+    private TextView inAlertRangeView, outAlertRangeView;
 
     public Settings() {
         // Required empty public constructor
@@ -66,6 +77,16 @@ public class Settings extends Fragment {
             }
         });
 
+        Button inAlertRangeBtn = (Button) rootView.findViewById(R.id.inAlertRange);
+        inAlertRangeView = (TextView) rootView.findViewById(R.id.inAlertRangeView);
+        inAlertRangeView.setText(prefs.getInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE) + KMS);
+        inAlertRangeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRangeSelector(IN_ALERT_RANGE);
+            }
+        });
+
         Button outAlertsBtn = (Button) rootView.findViewById(R.id.outAlertsBtn);
         outAlertsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +94,17 @@ public class Settings extends Fragment {
                 showOutAlertsDialog();
             }
         });
+
+        Button outAlertRangeBtn = (Button) rootView.findViewById(R.id.outAlertRange);
+        outAlertRangeView = (TextView) rootView.findViewById(R.id.outAlertRangeView);
+        outAlertRangeView.setText(prefs.getInt(Constants.NOTIFY_WITH_IN, Constants.DEFAULT_DISTANCE) + KMS);
+        outAlertRangeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRangeSelector(OUT_ALERT_RANGE);
+            }
+        });
+
 
         Button messageBtn = (Button) rootView.findViewById(R.id.alertMessageBtn);
         messageBtn.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +162,7 @@ public class Settings extends Fragment {
 
         new MaterialDialog.Builder(activity)
                 .customView(alertMessageView, false)
-                .title("Your Alert Message")
+                .title("Alert Message")
                 .titleColor(getResources().getColor(R.color.teal_400))
                 .positiveText(SET)
                 .positiveColor(getResources().getColor(R.color.teal_400))
@@ -162,10 +194,11 @@ public class Settings extends Fragment {
                 .positiveText(SET)
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .items(R.array.incomingAlerts)
-                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
+                .itemsCallbackMultiChoice(getUserAlertChoices(R.string.incoming_alerts), new MaterialDialog.ListCallbackMulti() {
                     @Override
-                    public void onSelection(MaterialDialog materialDialog, Integer[] integers, CharSequence[] charSequences) {
-
+                    public void onSelection(MaterialDialog dialog, Integer[] integers, CharSequence[] charSequences) {
+                        dialog.dismiss();
+                        setUserAlertChoices(R.string.incoming_alerts, integers);
                     }
                 })
                 .build()
@@ -181,10 +214,11 @@ public class Settings extends Fragment {
                 .positiveText(SET)
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .items(R.array.outgoingAlerts)
-                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
+                .itemsCallbackMultiChoice(getUserAlertChoices(R.string.outgoing_alerts), new MaterialDialog.ListCallbackMulti() {
                     @Override
-                    public void onSelection(MaterialDialog materialDialog, Integer[] integers, CharSequence[] charSequences) {
-
+                    public void onSelection(MaterialDialog dialog, Integer[] integers, CharSequence[] charSequences) {
+                        dialog.dismiss();
+                        setUserAlertChoices(R.string.outgoing_alerts, integers);
                     }
                 })
                 .build()
@@ -200,15 +234,142 @@ public class Settings extends Fragment {
                 .positiveText(SET)
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .items(R.array.notificationPopUP)
-                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
+                .itemsCallbackSingleChoice(getUserNotificationChoice(), new MaterialDialog.ListCallback() {
                     @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                    public void onSelection(MaterialDialog dialog, View view, int choice, CharSequence charSequence) {
+                        dialog.dismiss();
+                        if (choice == 0) {
+                            prefs.edit().putBoolean(Constants.SHOW_POP_UPS, true).apply();
+                            if (userPreferenceObject != null) {
+                                userPreferenceObject.put(Constants.SHOW_POP_UPS, true);
+                            }
+                        } else {
+                            prefs.edit().putBoolean(Constants.SHOW_POP_UPS, false).apply();
+                            if (userPreferenceObject != null) {
+                                userPreferenceObject.put(Constants.SHOW_POP_UPS, false);
+                            }
+                        }
 
+                        if (userPreferenceObject != null) {
+                            userPreferenceObject.saveEventually();
+                        }
                     }
                 })
                 .build()
                 .show();
     }
 
+    private Integer[] getUserAlertChoices(int whichAlert) {
+        if (whichAlert == R.string.incoming_alerts || whichAlert == R.string.outgoing_alerts) {
+            ArrayList<Integer> choices = new ArrayList<>();
+            String[] list;
+            if (whichAlert == R.string.incoming_alerts) {
+                list = INCOMING_ALERT_LIST;
+            } else {
+                list = OUTGOING_ALERT_LIST;
+            }
+            for (int i = 0; i < list.length; i++) {
+                if (prefs.getBoolean(list[i], true)) {
+                    choices.add(i);
+                }
+            }
+            return arrayToInteger(choices);
+        }
 
+        return null;
+    }
+
+    private int getUserNotificationChoice() {
+        if (prefs.getBoolean(Constants.SHOW_POP_UPS, true)) {
+            return 0;
+        }
+        return 1;
+    }
+
+    private void setUserAlertChoices(int whichAlert, Integer[] integers) {
+        String[] list;
+        ArrayList<Integer> userChoices = new ArrayList<>(Arrays.asList(integers));
+        if (whichAlert == R.string.incoming_alerts) {
+            list = INCOMING_ALERT_LIST;
+        } else {
+            list = OUTGOING_ALERT_LIST;
+        }
+        for (int i = 0; i < list.length; i++) {
+            if (userChoices.contains(i)) {
+                prefs.edit().putBoolean(list[i], true).apply();
+                if (userPreferenceObject != null) {
+                    userPreferenceObject.put(list[i], true);
+                }
+            } else {
+                prefs.edit().putBoolean(list[i], false).apply();
+                if (userPreferenceObject != null) {
+                    userPreferenceObject.put(list[i], false);
+                }
+            }
+        }
+
+        if (userPreferenceObject != null) {
+            userPreferenceObject.saveEventually();
+        }
+    }
+
+    private Integer[] arrayToInteger(ArrayList<Integer> choices) {
+        if (choices.size() > 0) {
+            Integer[] integerChoices = new Integer[choices.size()];
+            for (int i = 0; i < choices.size(); i++) {
+                integerChoices[i] = choices.get(i);
+            }
+
+            return integerChoices;
+        }
+        return null;
+    }
+
+    private void showRangeSelector(final int which) {
+        View rangeSelectorView = activity.getLayoutInflater().inflate(R.layout.range_selection, null);
+        final RangeBar seekBar = (RangeBar) rangeSelectorView.findViewById(R.id.seekBar);
+        if (which == IN_ALERT_RANGE) {
+            seekBar.setSeekPinByValue(prefs.getInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE));
+        } else {
+            seekBar.setSeekPinByValue(prefs.getInt(Constants.NOTIFY_WITH_IN, Constants.DEFAULT_DISTANCE));
+        }
+
+        MaterialDialog.Builder dialog = new MaterialDialog.Builder(activity)
+                .customView(rangeSelectorView, false)
+                .titleColor(getResources().getColor(R.color.teal_400))
+                .positiveText(SET)
+                .positiveColor(getResources().getColor(R.color.teal_400))
+                .cancelable(true)
+                .autoDismiss(false)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        dialog.dismiss();
+                        int choice = Integer.parseInt(seekBar.getPinValue(seekBar.getRightIndex()));
+                        if (which == IN_ALERT_RANGE) {
+                            inAlertRangeView.setText(String.valueOf(choice) + KMS);
+                            prefs.edit().putInt(Constants.RESPOND_ALERT_WITH_IN, choice).apply();
+                            if (userPreferenceObject != null) {
+                                userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, choice);
+                                userPreferenceObject.saveEventually();
+                            }
+                        } else {
+                            outAlertRangeView.setText(String.valueOf(choice) + KMS);
+                            prefs.edit().putInt(Constants.NOTIFY_WITH_IN, choice).apply();
+                            if (userPreferenceObject != null) {
+                                userPreferenceObject.put(Constants.NOTIFY_WITH_IN, choice);
+                                userPreferenceObject.saveEventually();
+                            }
+                        }
+                    }
+                });
+
+        if (which == IN_ALERT_RANGE) {
+            dialog.title("Respond with in");
+        } else {
+            dialog.title("Alert with in");
+        }
+
+        dialog.build().show();
+    }
 }

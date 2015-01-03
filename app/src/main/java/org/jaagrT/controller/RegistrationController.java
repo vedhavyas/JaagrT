@@ -143,12 +143,12 @@ public class RegistrationController {
         userPreferenceObject.put(Constants.SEND_SMS, true);
         userPreferenceObject.put(Constants.SEND_EMAIL, true);
         userPreferenceObject.put(Constants.SEND_PUSH, true);
-        userPreferenceObject.put(Constants.IS_RESPONDER, false);
-        userPreferenceObject.put(Constants.RECEIVE_SMS, false);
-        userPreferenceObject.put(Constants.RECEIVE_PUSH, false);
-        userPreferenceObject.put(Constants.RECEIVE_EMAIL, false);
-        userPreferenceObject.put(Constants.NOTIFY_WITH_IN, 400);
-        userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, 400);
+        userPreferenceObject.put(Constants.SHOW_POP_UPS, true);
+        userPreferenceObject.put(Constants.RECEIVE_SMS, true);
+        userPreferenceObject.put(Constants.RECEIVE_PUSH, true);
+        userPreferenceObject.put(Constants.RECEIVE_EMAIL, true);
+        userPreferenceObject.put(Constants.NOTIFY_WITH_IN, Constants.DEFAULT_DISTANCE);
+        userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE);
         userPreferenceObject.put(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE);
         ParseACL preferenceAcl = new ParseACL(parseUser);
         preferenceAcl.setPublicWriteAccess(false);
@@ -186,12 +186,12 @@ public class RegistrationController {
             prefs.edit().putBoolean(Constants.SEND_SMS, true).apply();
             prefs.edit().putBoolean(Constants.SEND_EMAIL, true).apply();
             prefs.edit().putBoolean(Constants.SEND_PUSH, true).apply();
-            prefs.edit().putBoolean(Constants.IS_RESPONDER, false).apply();
-            prefs.edit().putBoolean(Constants.RECEIVE_SMS, false).apply();
-            prefs.edit().putBoolean(Constants.RECEIVE_PUSH, false).apply();
-            prefs.edit().putBoolean(Constants.RECEIVE_EMAIL, false).apply();
-            prefs.edit().putInt(Constants.NOTIFY_WITH_IN, 400).apply();
-            prefs.edit().putInt(Constants.RESPOND_ALERT_WITH_IN, 400).apply();
+            prefs.edit().putBoolean(Constants.SHOW_POP_UPS, true).apply();
+            prefs.edit().putBoolean(Constants.RECEIVE_SMS, true).apply();
+            prefs.edit().putBoolean(Constants.RECEIVE_PUSH, true).apply();
+            prefs.edit().putBoolean(Constants.RECEIVE_EMAIL, true).apply();
+            prefs.edit().putInt(Constants.NOTIFY_WITH_IN, Constants.DEFAULT_DISTANCE).apply();
+            prefs.edit().putInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE).apply();
             prefs.edit().putString(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE).apply();
 
             Database db = Database.getInstance(activity, Database.USER_TABLE);

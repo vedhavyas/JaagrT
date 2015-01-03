@@ -30,7 +30,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:text="@string/alerts"
+                        android:text="@string/incoming_alert_settings"
                         android:textColor="@color/gray"
                         android:textSize="14sp" />
 
@@ -41,20 +41,92 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_incoming_alerts"
-                        android:text="@string/incoming_alerts" />
+                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:text="@string/alerts" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/inAlertRange"
+                            style="@style/SettingsButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/alert_range" />
+
+                        <TextView
+                            android:id="@+id/inAlertRangeView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/ten_kms"
+                            android:textColor="@color/dark_gray" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="@string/outgoing_alert_settings"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp" />
+
+                    <View style="@style/HorizontalDividerThinGrayLight" />
 
                     <Button
                         android:id="@+id/outAlertsBtn"
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_outgoing_alerts"
-                        android:text="@string/outgoing_alerts" />
+                        android:drawableEnd="@drawable/ic_right_arrow"
+                        android:text="@string/alerts" />
 
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/outAlertRange"
+                            style="@style/SettingsButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/alert_range" />
+
+                        <TextView
+                            android:id="@+id/outAlertRangeView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/ten_kms"
+                            android:textColor="@color/dark_gray" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -83,7 +155,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_alert_message"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/alert_message" />
 
                     <Button
@@ -91,7 +163,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_pop_up"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/pop_up_notifications" />
 
 
@@ -125,7 +197,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_about"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/about" />
 
                     <Button
@@ -133,7 +205,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_help"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/help" />
 
                     <Button
@@ -141,7 +213,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_feedback"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/feedback" />
 
                     <Button
@@ -149,7 +221,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_attributions"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/attributions" />
 
                     <Button
@@ -157,7 +229,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_licenses"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/licenses" />
 
 

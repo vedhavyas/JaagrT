@@ -30,13 +30,14 @@ public class Constants {
     public static final String SEND_SMS = "sendSms";
     public static final String SEND_PUSH = "sendPush";
     public static final String SEND_EMAIL = "sendEmail";
-    public static final String IS_RESPONDER = "isResponder";
     public static final String RECEIVE_SMS = "receiveSms";
     public static final String RECEIVE_PUSH = "receivePush";
     public static final String RECEIVE_EMAIL = "receiveEmail";
     public static final String NOTIFY_WITH_IN = "notifyWithIn";
     public static final String RESPOND_ALERT_WITH_IN = "willRespondWithIn";
     public static final String ALERT_MESSAGE = "alertMessage";
+    public static final String SHOW_POP_UPS = "showPopUps";
+    public static final int DEFAULT_DISTANCE = 10;
 
     //Preferences
     public static final String PREFERENCES_NAME = "JaagrTPreferences";

@@ -95,7 +95,7 @@ public class LoginController {
                             prefs.edit().putBoolean(Constants.SEND_SMS, userPreferenceObject.getBoolean(Constants.SEND_SMS)).apply();
                             prefs.edit().putBoolean(Constants.SEND_EMAIL, userPreferenceObject.getBoolean(Constants.SEND_EMAIL)).apply();
                             prefs.edit().putBoolean(Constants.SEND_PUSH, userPreferenceObject.getBoolean(Constants.SEND_PUSH)).apply();
-                            prefs.edit().putBoolean(Constants.IS_RESPONDER, userPreferenceObject.getBoolean(Constants.IS_RESPONDER)).apply();
+                            prefs.edit().putBoolean(Constants.SHOW_POP_UPS, userPreferenceObject.getBoolean(Constants.SHOW_POP_UPS)).apply();
                             prefs.edit().putBoolean(Constants.RECEIVE_SMS, userPreferenceObject.getBoolean(Constants.RECEIVE_SMS)).apply();
                             prefs.edit().putBoolean(Constants.RECEIVE_PUSH, userPreferenceObject.getBoolean(Constants.RECEIVE_PUSH)).apply();
                             prefs.edit().putBoolean(Constants.RECEIVE_EMAIL, userPreferenceObject.getBoolean(Constants.RECEIVE_EMAIL)).apply();
