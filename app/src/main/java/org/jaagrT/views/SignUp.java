@@ -14,8 +14,9 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.LoginController;
-import org.jaagrT.controller.RegistrationController;
+import org.jaagrT.controller.SignUpController;
 import org.jaagrT.listeners.BasicListener;
+import org.jaagrT.services.ObjectLocationService;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
@@ -71,13 +72,13 @@ public class SignUp extends Activity {
                     SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
                     pDialog.setTitleText("Registering you now...");
                     pDialog.show();
-                    RegistrationController registrationController = new RegistrationController(activity, new BasicListener() {
+                    SignUpController signUpController = new SignUpController(activity, new BasicListener() {
                         @Override
                         public void onComplete() {
                             startGetUserDetails();
                         }
                     }, pDialog);
-                    registrationController.registerUser(emailBox.getText().toString(), passwordBox.getText().toString());
+                    signUpController.registerUser(emailBox.getText().toString(), passwordBox.getText().toString());
                 }
 
             }
@@ -105,14 +106,14 @@ public class SignUp extends Activity {
                                 Utilities.snackIt(activity, "Failed to login with Facebook", "Okay");
                             } else if (parseUser.isNew()) {
                                 pDialog.setTitleText("Connected to Facebook...");
-                                RegistrationController registrationController = new RegistrationController(activity, new BasicListener() {
+                                SignUpController signUpController = new SignUpController(activity, new BasicListener() {
 
                                     @Override
                                     public void onComplete() {
                                         startGetUserDetails();
                                     }
                                 }, pDialog);
-                                registrationController.facebookRegistration();
+                                signUpController.facebookRegistration();
                             } else {
                                 pDialog.setTitleText("Connected to Facebook...");
                                 LoginController loginController = new LoginController(activity, new BasicListener() {
@@ -136,6 +137,7 @@ public class SignUp extends Activity {
 
 
     private void startGetUserDetails() {
+        startAppService();
         Intent intent = new Intent(this, UserAdditionalInfo.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -144,6 +146,7 @@ public class SignUp extends Activity {
     }
 
     private void startMainActivity() {
+        startAppService();
         Intent mainActivityIntent = new Intent(activity, Main.class);
         mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -151,5 +154,9 @@ public class SignUp extends Activity {
         overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
+    private void startAppService() {
+        Intent serviceIntent = new Intent(this, ObjectLocationService.class);
+        startService(serviceIntent);
+    }
 
 }

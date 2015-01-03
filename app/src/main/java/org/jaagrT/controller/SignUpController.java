@@ -29,7 +29,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  * Authored by vedhavyas on 12/12/14.
  * Project JaagrT
  */
-public class RegistrationController {
+public class SignUpController {
 
     private Activity activity;
     private SweetAlertDialog pDialog;
@@ -38,7 +38,7 @@ public class RegistrationController {
     private ObjectRetriever objectRetriever;
 
 
-    public RegistrationController(Activity activity, BasicListener listener, SweetAlertDialog pDialog) {
+    public SignUpController(Activity activity, BasicListener listener, SweetAlertDialog pDialog) {
         this.activity = activity;
         this.listener = listener;
         this.pDialog = pDialog;

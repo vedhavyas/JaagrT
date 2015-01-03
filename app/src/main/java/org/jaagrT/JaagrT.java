@@ -1,11 +1,14 @@
 package org.jaagrT;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseInstallation;
+import com.parse.ParseUser;
 
+import org.jaagrT.services.ObjectLocationService;
 import org.jaagrT.utilities.Constants;
 
 /**
@@ -27,6 +30,14 @@ public class JaagrT extends Application {
             defaultACL.setPublicReadAccess(true);
             defaultACL.setPublicWriteAccess(false);
             ParseACL.setDefaultACL(defaultACL, true);
+        }
+
+
+        {
+            if (ParseUser.getCurrentUser() != null) {
+                Intent serviceIntent = new Intent(getBaseContext(), ObjectLocationService.class);
+                startService(serviceIntent);
+            }
         }
 
     }

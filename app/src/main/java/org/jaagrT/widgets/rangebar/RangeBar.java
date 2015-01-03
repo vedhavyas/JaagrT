@@ -32,6 +32,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -90,8 +91,6 @@ public class RangeBar extends View {
     // setTickCount only resets indices before a thumb has been pressed or a
     // setThumbIndices() is called, to correspond with intended usage
     private boolean mFirstSetTickCount = true;
-    private int mDefaultWidth = 500;
-    private int mDefaultHeight = 150;
     private PinView mLeftThumb;
     private PinView mRightThumb;
     private Bar mBar;
@@ -217,10 +216,11 @@ public class RangeBar extends View {
         } else if (measureWidthMode == MeasureSpec.EXACTLY) {
             width = measureWidth;
         } else {
-            width = mDefaultWidth;
+            width = 500;
         }
 
         // The RangeBar height should be as small as possible.
+        int mDefaultHeight = 150;
         if (measureHeightMode == MeasureSpec.AT_MOST) {
             height = Math.min(mDefaultHeight, measureHeight);
         } else if (measureHeightMode == MeasureSpec.EXACTLY) {
@@ -302,7 +302,7 @@ public class RangeBar extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
 
         // If this View is not enabled, don't allow for touch interactions.
         if (!isEnabled()) {
@@ -719,7 +719,7 @@ public class RangeBar extends View {
     /**
      * Gets the type of the bar.
      *
-     * @return true if rangebar, false if seekbar.
+     * @return true if range bar, false if seekbar.
      */
     public boolean isRangeBar() {
         return mIsRangeBar;
@@ -823,9 +823,8 @@ public class RangeBar extends View {
      * @param attrs   AttributeSet from the constructor.
      */
     private void rangeBarInit(Context context, AttributeSet attrs) {
-        //TODO tick value map
         if (mTickMap == null) {
-            mTickMap = new HashMap<Float, String>();
+            mTickMap = new HashMap<>();
         }
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.RangeBar, 0, 0);
 
@@ -1215,9 +1214,7 @@ public class RangeBar extends View {
 
         // If the user has moved their finger outside the range of the bar,
         // do not move the thumbs past the edge.
-        if (x < mBar.getLeftX() || x > mBar.getRightX()) {
-            // Do nothing.
-        } else {
+        if (x >= mBar.getLeftX() && x <= mBar.getRightX()) {
             thumb.setX(x);
             invalidate();
         }

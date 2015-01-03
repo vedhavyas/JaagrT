@@ -21,6 +21,7 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -76,8 +77,6 @@ class PinView extends View {
 
     private Rect mBounds = new Rect();
 
-    private Resources mRes;
-
     private Paint mCirclePaint;
 
     private float mCircleRadiusPx;
@@ -111,7 +110,7 @@ class PinView extends View {
      */
     public void init(Context ctx, float y, float pinRadiusDP, int pinColor, int textColor,
                      float circleRadius, int circleColor) {
-        mRes = ctx.getResources();
+        Resources mRes = ctx.getResources();
         mPin = ctx.getResources().getDrawable(R.drawable.rotate);
 
         mPinPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -241,7 +240,7 @@ class PinView extends View {
 
     //Draw the circle regardless of pressed state. If pin size is >0 then also draw the pin and text
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         canvas.drawCircle(mX, mY, mCircleRadiusPx, mCirclePaint);
         //Draw pin if pressed
         if (mPinRadiusPx > 0) {

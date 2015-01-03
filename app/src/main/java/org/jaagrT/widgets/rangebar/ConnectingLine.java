@@ -62,7 +62,7 @@ public class ConnectingLine {
     // Package-Private Methods /////////////////////////////////////////////////
 
     /**
-     * Draw the connecting line between the two thumbs in rangebar.
+     * Draw the connecting line between the two thumbs in range bar.
      *
      * @param canvas     the Canvas to draw to
      * @param leftThumb  the left thumb

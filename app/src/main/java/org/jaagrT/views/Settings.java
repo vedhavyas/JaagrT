@@ -19,8 +19,8 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.ObjectRetriever;
-import org.jaagrT.listeners.ParseListener;
 import org.jaagrT.model.Database;
+import org.jaagrT.services.ObjectLocationService;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
 import org.jaagrT.utilities.Utilities;
@@ -61,12 +61,7 @@ public class Settings extends Fragment {
     private void setUpActivity(View rootView) {
 
         objectRetriever = ObjectRetriever.getInstance(activity);
-        userPreferenceObject = objectRetriever.getUserPreferenceObject(new ParseListener() {
-            @Override
-            public void onComplete(ParseObject parseObject) {
-                userPreferenceObject = parseObject;
-            }
-        });
+        userPreferenceObject = objectRetriever.getUserPreferenceObject();
         prefs = objectRetriever.getPrefs();
 
         Button inAlertsBtn = (Button) rootView.findViewById(R.id.inAlertsBtn);
@@ -150,6 +145,12 @@ public class Settings extends Fragment {
         db.dropAllTables();
         prefs.edit().clear().apply();
         objectRetriever.clearAllObjects();
+        stopService();
+    }
+
+    private void stopService() {
+        Intent serviceIntent = new Intent(activity, ObjectLocationService.class);
+        activity.stopService(serviceIntent);
     }
 
     private void showCustomMessageDialog() {

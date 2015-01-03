@@ -14,7 +14,6 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.ObjectRetriever;
-import org.jaagrT.listeners.ParseListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.utilities.AlertDialogs;
@@ -203,12 +202,7 @@ public class VerifyPhone extends Activity {
         protected Void doInBackground(Void... params) {
             ObjectRetriever retriever = ObjectRetriever.getInstance(activity);
             localUser = retriever.getLocalUser();
-            userDetailsObject = retriever.getUserDetailsObject(new ParseListener() {
-                @Override
-                public void onComplete(ParseObject parseObject) {
-                    userDetailsObject = parseObject;
-                }
-            });
+            userDetailsObject = retriever.getUserDetailsObject();
             return null;
         }
 
