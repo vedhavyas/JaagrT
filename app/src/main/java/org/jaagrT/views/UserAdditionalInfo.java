@@ -11,9 +11,9 @@ import com.parse.ParseObject;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
-import org.jaagrT.controller.ObjectRetriever;
-import org.jaagrT.model.Database;
+import org.jaagrT.controller.BasicController;
 import org.jaagrT.model.User;
+import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
@@ -24,10 +24,14 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class UserAdditionalInfo extends Activity {
 
+    private static final String VERIFICATION_SUCCESS = "Verification Successful";
+    private static final String PLEASE_WAIT = "Please wait...";
+    private static final String UPDATING = "Updating...";
     private MaterialEditText firstNameBox, lastNameBox, phoneBox;
     private User localUser;
     private ParseObject userDetailsObject;
     private Activity activity;
+    private BasicController basicController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +42,18 @@ public class UserAdditionalInfo extends Activity {
     }
 
     @Override
+    public void onBackPressed() {
+        startMainActivity();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.PICK_PICTURE) {
             startMainActivity();
         } else if (requestCode == Constants.VERIFY_PHONE) {
             if (resultCode == RESULT_OK) {
-                Utilities.toastIt(this, "Verification Successful");
+                Utilities.toastIt(this, VERIFICATION_SUCCESS);
             }
             startPickPictureActivity();
         }
@@ -129,15 +138,15 @@ public class UserAdditionalInfo extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText("Please wait...");
+            pDialog.setTitleText(PLEASE_WAIT);
             pDialog.show();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            ObjectRetriever retriever = ObjectRetriever.getInstance(activity);
-            localUser = retriever.getLocalUser();
-            userDetailsObject = retriever.getUserDetailsObject();
+            basicController = BasicController.getInstance(activity);
+            localUser = basicController.getLocalUser();
+            userDetailsObject = ObjectService.getUserDetailsObject();
             return null;
         }
 
@@ -157,7 +166,7 @@ public class UserAdditionalInfo extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText("Updating...");
+            pDialog.setTitleText(UPDATING);
             pDialog.show();
         }
 
@@ -171,19 +180,17 @@ public class UserAdditionalInfo extends Activity {
                 userDetailsObject.saveEventually();
             }
 
-            Database db = Database.getInstance(activity, Database.USER_TABLE);
             localUser.setFirstName(firstNameBox.getText().toString());
             localUser.setLastName(lastNameBox.getText().toString());
             localUser.setPhoneNumber(phoneBox.getText().toString());
             localUser.setPhoneVerified(false);
-            return db.updateUserData(localUser);
+            return basicController.updateUser(localUser);
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             pDialog.cancel();
-
             startVerifyPhoneActivity();
         }
     }

@@ -18,9 +18,8 @@ import com.parse.ParseUser;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
-import org.jaagrT.controller.ObjectRetriever;
-import org.jaagrT.model.Database;
-import org.jaagrT.services.ObjectLocationService;
+import org.jaagrT.controller.BasicController;
+import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
 import org.jaagrT.utilities.Utilities;
@@ -34,12 +33,16 @@ public class Settings extends Fragment {
 
     private static final String SET = "Set";
     private static final String KMS = " Kms";
+    private static final String ALERT_MESSAGE = "Alert Message";
+    private static final String RESPOND_WITH_IN = "Respond with in";
+    private static final String ALERT_WITH_IN = "Alert with in";
+
     private static final int IN_ALERT_RANGE = 1;
     private static final int OUT_ALERT_RANGE = 2;
     private static final String[] INCOMING_ALERT_LIST = {Constants.RECEIVE_SMS, Constants.RECEIVE_PUSH, Constants.RECEIVE_EMAIL};
     private static final String[] OUTGOING_ALERT_LIST = {Constants.SEND_SMS, Constants.SEND_PUSH, Constants.SEND_EMAIL};
     private Activity activity;
-    private ObjectRetriever objectRetriever;
+    private BasicController basicController;
     private ParseObject userPreferenceObject;
     private SharedPreferences prefs;
     private TextView inAlertRangeView, outAlertRangeView;
@@ -60,9 +63,9 @@ public class Settings extends Fragment {
 
     private void setUpActivity(View rootView) {
 
-        objectRetriever = ObjectRetriever.getInstance(activity);
-        userPreferenceObject = objectRetriever.getUserPreferenceObject();
-        prefs = objectRetriever.getPrefs();
+        basicController = BasicController.getInstance(activity);
+        userPreferenceObject = ObjectService.getUserPreferenceObject();
+        prefs = basicController.getPrefs();
 
         Button inAlertsBtn = (Button) rootView.findViewById(R.id.inAlertsBtn);
         inAlertsBtn.setOnClickListener(new View.OnClickListener() {
@@ -141,15 +144,13 @@ public class Settings extends Fragment {
     }
 
     private void clearUserData() {
-        Database db = Database.getInstance(activity);
-        db.dropAllTables();
+        basicController.dropAllTables();
         prefs.edit().clear().apply();
-        objectRetriever.clearAllObjects();
         stopService();
     }
 
     private void stopService() {
-        Intent serviceIntent = new Intent(activity, ObjectLocationService.class);
+        Intent serviceIntent = new Intent(activity, ObjectService.class);
         activity.stopService(serviceIntent);
     }
 
@@ -163,7 +164,7 @@ public class Settings extends Fragment {
 
         new MaterialDialog.Builder(activity)
                 .customView(alertMessageView, false)
-                .title("Alert Message")
+                .title(ALERT_MESSAGE)
                 .titleColor(getResources().getColor(R.color.teal_400))
                 .positiveText(SET)
                 .positiveColor(getResources().getColor(R.color.teal_400))
@@ -366,9 +367,9 @@ public class Settings extends Fragment {
                 });
 
         if (which == IN_ALERT_RANGE) {
-            dialog.title("Respond with in");
+            dialog.title(RESPOND_WITH_IN);
         } else {
-            dialog.title("Alert with in");
+            dialog.title(ALERT_WITH_IN);
         }
 
         dialog.build().show();

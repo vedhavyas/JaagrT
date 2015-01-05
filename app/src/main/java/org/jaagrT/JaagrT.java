@@ -8,7 +8,7 @@ import com.parse.ParseACL;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
-import org.jaagrT.services.ObjectLocationService;
+import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.Constants;
 
 /**
@@ -35,7 +35,7 @@ public class JaagrT extends Application {
 
         {
             if (ParseUser.getCurrentUser() != null) {
-                Intent serviceIntent = new Intent(getBaseContext(), ObjectLocationService.class);
+                Intent serviceIntent = new Intent(getBaseContext(), ObjectService.class);
                 startService(serviceIntent);
             }
         }

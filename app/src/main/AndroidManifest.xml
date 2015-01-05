@@ -73,7 +73,7 @@
         </activity>
 
         <service
-            android:name=".services.ObjectLocationService"
+            android:name=".services.ObjectService"
             android:enabled="true"
             android:exported="false" />
     </application>

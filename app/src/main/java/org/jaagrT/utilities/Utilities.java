@@ -21,11 +21,12 @@ import java.io.ByteArrayOutputStream;
  */
 
 public class Utilities {
+    private static final String JAAGRT = "JaagrT";
 
 
     public static void logIt(String data) {
         if (data != null) {
-            Log.i("JaagrT", data);
+            Log.i(JAAGRT, data);
         }
     }
 

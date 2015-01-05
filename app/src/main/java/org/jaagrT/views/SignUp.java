@@ -16,9 +16,8 @@ import org.jaagrT.R;
 import org.jaagrT.controller.LoginController;
 import org.jaagrT.controller.SignUpController;
 import org.jaagrT.listeners.BasicListener;
-import org.jaagrT.services.ObjectLocationService;
+import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
 import org.jaagrT.utilities.Utilities;
 
@@ -29,6 +28,12 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class SignUp extends Activity {
 
+    private static final String SIGNING_UP = "Signing up...";
+    private static final String CONNECTING_TO_FB = "Connecting to Facebook...";
+    private static final String ERROR = "Error";
+    private static final String OKAY = "Okay";
+    private static final String CONNECTION_ESTABLISHED = "Connection SuccessFul!!";
+    private static final String CONNECTION_FAILED = "Connection failed!!";
     private MaterialEditText emailBox, passwordBox;
     private Activity activity;
 
@@ -70,7 +75,7 @@ public class SignUp extends Activity {
             public void onClick(View v) {
                 if (Utilities.isEditBoxesValid(editTexts)) {
                     SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
-                    pDialog.setTitleText("Registering you now...");
+                    pDialog.setTitleText(SIGNING_UP);
                     pDialog.show();
                     SignUpController signUpController = new SignUpController(activity, new BasicListener() {
                         @Override
@@ -95,7 +100,7 @@ public class SignUp extends Activity {
             @Override
             public void onClick(View v) {
                 final SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
-                pDialog.setTitleText("Connecting to Facebook...");
+                pDialog.setTitleText(CONNECTING_TO_FB);
                 pDialog.show();
                 ParseFacebookUtils.logIn(Arrays.asList(ParseFacebookUtils.Permissions.User.EMAIL), activity, new LogInCallback() {
                     @Override
@@ -103,9 +108,9 @@ public class SignUp extends Activity {
                         if (e == null) {
                             if (parseUser == null) {
                                 pDialog.cancel();
-                                Utilities.snackIt(activity, "Failed to login with Facebook", "Okay");
+                                AlertDialogs.showErrorDialog(activity, ERROR, CONNECTION_FAILED, OKAY);
                             } else if (parseUser.isNew()) {
-                                pDialog.setTitleText("Connected to Facebook...");
+                                pDialog.setTitleText(CONNECTION_ESTABLISHED);
                                 SignUpController signUpController = new SignUpController(activity, new BasicListener() {
 
                                     @Override
@@ -115,7 +120,7 @@ public class SignUp extends Activity {
                                 }, pDialog);
                                 signUpController.facebookRegistration();
                             } else {
-                                pDialog.setTitleText("Connected to Facebook...");
+                                pDialog.setTitleText(CONNECTION_ESTABLISHED);
                                 LoginController loginController = new LoginController(activity, new BasicListener() {
                                     @Override
                                     public void onComplete() {
@@ -126,7 +131,7 @@ public class SignUp extends Activity {
                             }
                         } else {
                             pDialog.cancel();
-                            AlertDialogs.showErrorDialog(activity, Constants.LOGIN_ERROR, e.getMessage(), Constants.OOPS);
+                            AlertDialogs.showErrorDialog(activity, ERROR, e.getMessage(), OKAY);
                         }
                     }
                 });
@@ -155,7 +160,7 @@ public class SignUp extends Activity {
     }
 
     private void startAppService() {
-        Intent serviceIntent = new Intent(this, ObjectLocationService.class);
+        Intent serviceIntent = new Intent(this, ObjectService.class);
         startService(serviceIntent);
     }
 

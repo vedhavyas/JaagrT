@@ -49,8 +49,5 @@ public class Constants {
     public static final int PICK_PICTURE = 3;
 
     //General Strings
-
-    public static final String LOGIN_ERROR = "Login Error";
-    public static final String OOPS = "Oops!";
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
 }

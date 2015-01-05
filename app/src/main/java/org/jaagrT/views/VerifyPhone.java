@@ -13,9 +13,9 @@ import com.parse.ParseObject;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
-import org.jaagrT.controller.ObjectRetriever;
-import org.jaagrT.model.Database;
+import org.jaagrT.controller.BasicController;
 import org.jaagrT.model.User;
+import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
@@ -29,6 +29,14 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class VerifyPhone extends Activity {
 
     private static final String MESSAGE = "JaagrT Verification Code";
+    private static final String WRONG_CODE = "Wrong Code!!";
+    private static final String OKAY = "Okay";
+    private static final String SENDING_SMS = "Sending SMS";
+    private static final String SMS_SENT = "SMS Sent!!";
+    private static final String SUCCESS = "Success";
+    private static final String PLEASE_WAIT = "Please wait...";
+    private static final String UPDATING = "Updating...";
+
     public static VerifyPhone verifyPhoneActivity;
     private Activity activity;
     private MaterialEditText phoneBox, verifyCodeBox;
@@ -36,6 +44,7 @@ public class VerifyPhone extends Activity {
     private ParseObject userDetailsObject;
     private String randomString;
     private String phoneNumber;
+    private BasicController basicController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +130,7 @@ public class VerifyPhone extends Activity {
             phoneBox.setText(phoneNumber);
             new UpdateUserData().execute();
         } else {
-            Utilities.snackIt(activity, "Wrong Code", "Oops!");
+            Utilities.snackIt(activity, WRONG_CODE, OKAY);
         }
     }
 
@@ -167,7 +176,7 @@ public class VerifyPhone extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText("Sending SMS...");
+            pDialog.setTitleText(SENDING_SMS);
             pDialog.show();
         }
 
@@ -182,7 +191,7 @@ public class VerifyPhone extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             pDialog.cancel();
-            AlertDialogs.showPositiveDialog(activity, "Success", "SMS triggered!");
+            AlertDialogs.showPositiveDialog(activity, SUCCESS, SMS_SENT);
         }
     }
 
@@ -194,15 +203,15 @@ public class VerifyPhone extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText("Please wait...");
+            pDialog.setTitleText(PLEASE_WAIT);
             pDialog.show();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            ObjectRetriever retriever = ObjectRetriever.getInstance(activity);
-            localUser = retriever.getLocalUser();
-            userDetailsObject = retriever.getUserDetailsObject();
+            basicController = BasicController.getInstance(activity);
+            localUser = basicController.getLocalUser();
+            userDetailsObject = ObjectService.getUserDetailsObject();
             return null;
         }
 
@@ -226,7 +235,7 @@ public class VerifyPhone extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText("Saving...");
+            pDialog.setTitleText(UPDATING);
             pDialog.show();
         }
 
@@ -240,8 +249,7 @@ public class VerifyPhone extends Activity {
 
             localUser.setPhoneNumber(phoneBox.getText().toString());
             localUser.setPhoneVerified(true);
-            Database db = Database.getInstance(activity, Database.USER_TABLE);
-            return db.updateUserData(localUser);
+            return basicController.updateUser(localUser);
         }
 
         @Override

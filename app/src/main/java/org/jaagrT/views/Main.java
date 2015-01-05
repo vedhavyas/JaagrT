@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
-import org.jaagrT.controller.ObjectRetriever;
+import org.jaagrT.controller.BasicController;
 import org.jaagrT.model.User;
 
 import it.neokree.materialnavigationdrawer.MaterialAccount;
@@ -21,16 +21,15 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private static final String PANIC = "Panic";
     private static final String CIRCLES = "Circles";
     private static final String SETTINGS = "Settings";
+    private static final String TRANSPARENT_COLOR = "#9e9e9e";
 
     private MaterialAccount account;
-    private ObjectRetriever retriever;
-    private User user;
     private Activity activity;
 
     @Override
     public void init(Bundle bundle) {
         activity = this;
-        account = new MaterialAccount("", "", new ColorDrawable(Color.parseColor("#9e9e9e")), getResources().getDrawable(R.drawable.ic_nav_background));
+        account = new MaterialAccount("", "", new ColorDrawable(Color.parseColor(TRANSPARENT_COLOR)), getResources().getDrawable(R.drawable.ic_nav_background));
         this.addAccount(account);
         MaterialSection panicSection = newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
@@ -45,7 +44,6 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         this.addSection(circleSection);
         this.addBottomSection(settingsSection);
         new GetUserAsync().execute();
-
         allowArrowAnimation();
         addMultiPaneSupport();
     }
@@ -53,14 +51,13 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private class GetUserAsync extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            retriever = ObjectRetriever.getInstance(activity);
-            user = retriever.getLocalUser();
-            account.setTitle(user.getFirstName());
-            account.setSubTitle(user.getEmail());
-            if (user.getThumbnailPicture() != null) {
-                account.setPhoto(user.getThumbnailPicture());
+            BasicController basicController = BasicController.getInstance(activity);
+            User localUser = basicController.getLocalUser();
+            account.setTitle(localUser.getFirstName());
+            account.setSubTitle(localUser.getEmail());
+            if (localUser.getThumbnailPicture() != null) {
+                account.setPhoto(localUser.getThumbnailPicture());
             }
-
             return null;
         }
 

@@ -11,6 +11,8 @@ import org.jaagrT.views.VerifyPhone;
 
 public class SMSReceiver extends BroadcastReceiver {
 
+    private static final String PDUS = "pdus";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         final Bundle bundle = intent.getExtras();
@@ -21,7 +23,7 @@ public class SMSReceiver extends BroadcastReceiver {
             if (bundle != null) {
                 if (phoneVerifyActivity != null) {
 
-                    final Object[] pDusObj = (Object[]) bundle.get("pdus");
+                    final Object[] pDusObj = (Object[]) bundle.get(PDUS);
 
                     for (Object aPDusObj : pDusObj) {
 

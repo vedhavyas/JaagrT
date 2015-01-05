@@ -23,9 +23,9 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 import org.jaagrT.R;
-import org.jaagrT.controller.ObjectRetriever;
-import org.jaagrT.model.Database;
+import org.jaagrT.controller.BasicController;
 import org.jaagrT.model.User;
+import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.AlertDialogs;
 import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.Utilities;
@@ -43,10 +43,18 @@ public class PickPicture extends Activity {
     private static final int ROTATE_NINETY_DEGREES = 90;
     private static final String CAMERA = "Camera";
     private static final String GALLERY = "Gallery";
+    private static final String PLEASE_WAIT = "Please wait...";
+    private static final String SAVING_DATA = "Saving Data...";
+    private static final String SELECT_PICTURE = "Select Picture";
+    private static final String IMAGE = "image/*";
+    private static final String SET = "Set";
+    private static final String GET_PICTURE_FROM = "Get Picture from";
+    private static final String FETCHING_PICTURE = "Fetching Picture... ";
     private CropImageView cropImageView;
     private Activity activity;
-    private User user;
+    private User localUser;
     private Bitmap originalImage, croppedImage;
+    private BasicController basicController;
     private ParseObject userDetailsObject;
 
     @Override
@@ -84,7 +92,7 @@ public class PickPicture extends Activity {
 
     private void setUpActivity() {
         SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
-        pDialog.setTitleText("Please wait...");
+        pDialog.setTitleText(PLEASE_WAIT);
         pDialog.show();
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
         Button acceptBtn = (Button) findViewById(R.id.acceptBtn);
@@ -124,14 +132,14 @@ public class PickPicture extends Activity {
         });
 
         cropImageView.setFixedAspectRatio(true);
-        ObjectRetriever retriever = ObjectRetriever.getInstance(activity);
 
-        userDetailsObject = retriever.getUserDetailsObject();
+        basicController = BasicController.getInstance(activity);
+        userDetailsObject = ObjectService.getUserDetailsObject();
 
-        user = retriever.getLocalUser();
-        if (user != null) {
-            if (user.getThumbnailPicture() != null) {
-                cropImageView.setImageBitmap(retriever.getUserPicture());
+        localUser = basicController.getLocalUser();
+        if (localUser != null) {
+            if (localUser.getThumbnailPicture() != null) {
+                cropImageView.setImageBitmap(basicController.getUserPicture());
                 pDialog.cancel();
             } else {
                 getFBProfilePicture(pDialog);
@@ -145,7 +153,7 @@ public class PickPicture extends Activity {
     private void getFBProfilePicture(final SweetAlertDialog pDialog) {
         Session session = ParseFacebookUtils.getSession();
         if (session != null) {
-            pDialog.setTitleText("Downloading Picture... ");
+            pDialog.setTitleText(FETCHING_PICTURE);
             Bundle params = new Bundle();
             params.putBoolean("redirect", false);
             params.putString("height", "800");
@@ -187,9 +195,9 @@ public class PickPicture extends Activity {
                         }
                     }
                 })
-                .title("Get Picture from")
+                .title(GET_PICTURE_FROM)
                 .titleColor(getResources().getColor(R.color.teal_400))
-                .positiveText("Done")
+                .positiveText(SET)
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .show();
     }
@@ -202,9 +210,9 @@ public class PickPicture extends Activity {
 
     private void getImageFromGallery() {
         Intent intent = new Intent();
-        intent.setType("image/*");
+        intent.setType(IMAGE);
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.SELECT_PICTURE);
+        startActivityForResult(Intent.createChooser(intent, SELECT_PICTURE), Constants.SELECT_PICTURE);
     }
 
     private void returnResult(int result) {
@@ -258,7 +266,7 @@ public class PickPicture extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog.setTitleText("Saving...");
+            pDialog.setTitleText(SAVING_DATA);
             pDialog.show();
         }
 
@@ -266,8 +274,8 @@ public class PickPicture extends Activity {
         protected Integer doInBackground(Void... params) {
             Bitmap reSizedBitmap = Utilities.getReSizedBitmap(croppedImage);
 
-            user.setPicture(croppedImage);
-            user.setThumbnailPicture(Utilities.getReSizedBitmap(croppedImage));
+            localUser.setPicture(croppedImage);
+            localUser.setThumbnailPicture(Utilities.getReSizedBitmap(croppedImage));
 
             if (userDetailsObject != null) {
                 ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, Utilities.getBlob(croppedImage));
@@ -278,9 +286,7 @@ public class PickPicture extends Activity {
                 userDetailsObject.put(Constants.USER_THUMBNAIL_PICTURE, thumbFile);
                 userDetailsObject.saveInBackground();
             }
-
-            Database db = Database.getInstance(activity, Database.USER_TABLE);
-            return db.updateUserData(user);
+            return basicController.updateUser(localUser);
         }
 
         @Override
