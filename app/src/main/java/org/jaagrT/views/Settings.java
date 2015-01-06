@@ -328,7 +328,7 @@ public class Settings extends Fragment {
     }
 
     private void showRangeSelector(final int which) {
-        View rangeSelectorView = activity.getLayoutInflater().inflate(R.layout.range_selection, null);
+        View rangeSelectorView = activity.getLayoutInflater().inflate(R.layout.alert_distance, null);
         final RangeBar seekBar = (RangeBar) rangeSelectorView.findViewById(R.id.seekBar);
         if (which == IN_ALERT_RANGE) {
             seekBar.setSeekPinByValue(prefs.getInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE));
