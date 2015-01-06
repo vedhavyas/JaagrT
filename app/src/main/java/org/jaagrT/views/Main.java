@@ -33,7 +33,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         this.addAccount(account);
         MaterialSection panicSection = newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
-        MaterialSection circleSection = newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circle), new Circle())
+        MaterialSection circleSection = newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
         MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())

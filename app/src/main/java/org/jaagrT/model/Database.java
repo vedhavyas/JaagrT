@@ -10,6 +10,9 @@ import android.graphics.Bitmap;
 
 import org.jaagrT.utilities.Utilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Authored by vedhavyas on 10/12/14.
  * Project JaagrT
@@ -17,7 +20,8 @@ import org.jaagrT.utilities.Utilities;
 public class Database extends SQLiteOpenHelper {
 
     public static final String USER_TABLE = "user_details";
-    private static final String[] TABLES = {USER_TABLE};
+    public static final String CONTACTS_TABLE = "contacts_list";
+    private static final String[] TABLES = {USER_TABLE, CONTACTS_TABLE};
     private static final String DB_NAME = "JaagrT.db";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_FIRST_NAME = "firstName";
@@ -38,9 +42,17 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_PHONE_VERIFIED + " INTEGER, "
             + COLUMN_PICTURE + " BLOB ,"
             + COLUMN_THUMBNAIL_PICTURE + " BLOB)";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_EMAIL_LIST = "emailList";
+    private static final String SQL_CONTACT_TABLE_CREATE_QUERY = "CREATE TABLE " + CONTACTS_TABLE
+            + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_NAME + " TEXT,"
+            + COLUMN_EMAIL_LIST + " TEXT,"
+            + COLUMN_PICTURE + " BLOB)";
+
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS  ";
+    private static final String SQL_SELECT_ALL_QUERY = "SELECT * FROM ";
     private static Database dbFactory;
-    private String tableName;
 
     private Database(Context context) {
         super(context, DB_NAME, null, 1);
@@ -55,24 +67,17 @@ public class Database extends SQLiteOpenHelper {
         return dbFactory;
     }
 
-    public static Database getInstance(Context context, String tableName) {
-        getInstance(context);
-        dbFactory.setTableName(tableName);
-        return dbFactory;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_USER_TABLE_CREATE_QUERY);
+        db.execSQL(SQL_CONTACT_TABLE_CREATE_QUERY);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(DROP_TABLE + USER_TABLE);
+        for (String table : TABLES) {
+            db.execSQL(DROP_TABLE + table);
+        }
         onCreate(db);
     }
 
@@ -87,16 +92,25 @@ public class Database extends SQLiteOpenHelper {
     public void dropTable(String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(DROP_TABLE + tableName);
-        onCreate(db);
+        createDB(db, tableName);
     }
+
+    private void createDB(SQLiteDatabase db, String tableName) {
+        if (tableName.equalsIgnoreCase(USER_TABLE)) {
+            db.execSQL(SQL_USER_TABLE_CREATE_QUERY);
+        } else if (tableName.equalsIgnoreCase(CONTACTS_TABLE)) {
+            db.execSQL(SQL_CONTACT_TABLE_CREATE_QUERY);
+        }
+    }
+
 
     public long saveUser(User user) {
         long result;
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues contentValues = getContentValuesFromObject(user);
+        ContentValues contentValues = getContentValuesFromUserObject(user);
 
-        result = db.insert(tableName, null, contentValues);
+        result = db.insert(USER_TABLE, null, contentValues);
         return result;
     }
 
@@ -104,7 +118,7 @@ public class Database extends SQLiteOpenHelper {
         if (id > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
-            String sqlQuery = "SELECT * FROM " + tableName + " WHERE " + COLUMN_ID
+            String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(id);
             Cursor cursor = db.rawQuery(sqlQuery, null);
 
@@ -134,10 +148,10 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int result = -1;
 
-        ContentValues contentValues = getContentValuesFromObject(user);
+        ContentValues contentValues = getContentValuesFromUserObject(user);
 
         try {
-            result = db.update(tableName, contentValues, COLUMN_ID + " = " + user.getID(), null);
+            result = db.update(USER_TABLE, contentValues, COLUMN_ID + " = " + user.getID(), null);
         } catch (SQLiteConstraintException e) {
             Utilities.logIt(e.getMessage());
             return result;
@@ -147,7 +161,7 @@ public class Database extends SQLiteOpenHelper {
         return result;
     }
 
-    private ContentValues getContentValuesFromObject(User user) {
+    private ContentValues getContentValuesFromUserObject(User user) {
         ContentValues contentValues = new ContentValues();
 
         if (user.getFirstName() != null) {
@@ -184,7 +198,7 @@ public class Database extends SQLiteOpenHelper {
         if (id > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
-            String sqlQuery = "SELECT * FROM " + tableName + " WHERE " + COLUMN_ID
+            String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(id);
             Cursor cursor = db.rawQuery(sqlQuery, null);
 
@@ -194,6 +208,69 @@ public class Database extends SQLiteOpenHelper {
             }
             return null;
 
+        } else {
+            return null;
+        }
+    }
+
+    public List<UserContact> getContacts() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<UserContact> contacts = new ArrayList<>();
+
+        String sqlQuery = SQL_SELECT_ALL_QUERY + CONTACTS_TABLE;
+        Cursor cursor = db.rawQuery(sqlQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                UserContact contact = new UserContact();
+                contact.setID(String.valueOf(cursor.getInt(cursor.getColumnIndex(COLUMN_ID))));
+                contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
+                contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
+                contact.setImage(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+                contacts.add(contact);
+            } while (cursor.moveToNext());
+
+            return contacts;
+        }
+
+        return null;
+    }
+
+    public void saveContacts(List<UserContact> contacts) {
+        if (contacts != null) {
+            for (UserContact contact : contacts) {
+                saveContact(contact);
+            }
+        }
+    }
+
+    private long saveContact(UserContact contact) {
+        long result = -1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = getContentValuesFromContactObject(contact);
+        if (contentValues != null) {
+            result = db.insert(CONTACTS_TABLE, null, contentValues);
+        }
+        return result;
+    }
+
+    private ContentValues getContentValuesFromContactObject(UserContact contact) {
+        ContentValues contentValues = new ContentValues();
+
+        if (contact.getName() != null) {
+            contentValues.put(COLUMN_NAME, contact.getName());
+        }
+
+        if (contact.getEmails() != null) {
+            contentValues.put(COLUMN_EMAIL_LIST, contact.getEmails());
+        }
+
+        if (contact.getImageBlob() != null) {
+            contentValues.put(COLUMN_PICTURE, contact.getImageBlob());
+        }
+
+        if (contentValues.size() > 0) {
+            return contentValues;
         } else {
             return null;
         }

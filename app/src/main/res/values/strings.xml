@@ -12,6 +12,7 @@
     <string name="title_activity_panic">Panic</string>
     <string name="title_activity_main">Main</string>
     <string name="title_activity_start_screen">StartScreen</string>
+    <string name="title_activity_pick_contact">PickContact</string>
     <string name="app_id">630451703747709</string>
     <string name="forgot_password"><u>Forgot password ?</u></string>
     <string name="login_with_facebook">Login with Facebook</string>
@@ -53,5 +54,8 @@
     <string name="outgoing_alert_settings">OUTGOING ALERT SETTINGS</string>
     <string name="alert_range">Alert Range</string>
     <string name="ten_kms">10 Kms</string>
+    <string name="contact_profile_desc">Contact profile picture</string>
+    <string name="contact_name">Contact Name</string>
+    <string name="status_bar_replacement">Status bar Replacement</string>
 
 </resources>

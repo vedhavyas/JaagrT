@@ -34,4 +34,5 @@ dependencies {
     compile 'cn.pedant.sweetalert:library:1.+'
     compile 'it.neokree:MaterialNavigationDrawer:1.2.+'
     compile 'com.rengwuxian.materialedittext:library:1.7.+'
+    compile 'com.melnykov:floatingactionbutton:1.1.+'
 }
