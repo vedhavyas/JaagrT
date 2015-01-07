@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import org.jaagrT.utilities.Utilities;
 import org.jaagrT.views.VerifyPhone;
@@ -36,8 +37,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 }
             }
         } catch (Exception e) {
-            Utilities.logIt(e.getMessage());
-
+            Utilities.logData(e.getMessage(), Log.ERROR);
         }
     }
 }

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.jaagrT.utilities.Utilities;
 
@@ -155,11 +156,8 @@ public class Database extends SQLiteOpenHelper {
         try {
             result = db.update(USER_TABLE, contentValues, COLUMN_ID + " = " + user.getID(), null);
         } catch (SQLiteConstraintException e) {
-            Utilities.logIt(e.getMessage());
-            return result;
+            Utilities.logData(e.getMessage(), Log.ERROR);
         }
-
-
         return result;
     }
 

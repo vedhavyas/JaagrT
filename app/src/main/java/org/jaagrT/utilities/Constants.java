@@ -16,6 +16,7 @@ public class Constants {
     public static final String USER_CURRENT_LOCATION = "currentLocation";
     public static final String USER_FIRST_NAME = "firstName";
     public static final String USER_LAST_NAME = "lastName";
+    public static final String USER_PRIMARY_EMAIL = "primaryEmail";
     public static final String USER_MEMBER_OF_MASTER_CIRCLE = "isMemberOfMasterCircle";
     public static final String USER_PRIMARY_PHONE_VERIFIED = "isPrimaryPhoneVerified";
     public static final String USER_COMMUNICATION_PREFERENCE_ROW = "communicationPreference";
@@ -24,6 +25,8 @@ public class Constants {
     public static final String USER_PROFILE_PICTURE = "picture";
     public static final String USER_THUMBNAIL_PICTURE = "thumbNailPicture";
     public static final String USER_PRIMARY_PHONE = "primaryPhone";
+
+    public static final String USER_CIRCLE_RELATION = "myCircle";
 
 
     public static final String USER_COMMUNICATION_PREFERENCE_CLASS = "UserCommunicationPreference";
@@ -52,4 +55,11 @@ public class Constants {
     //General Strings
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
     public static final String CONTACT_ID = "contactID";
+
+    //common Strings
+    public static final String ERROR = "Error";
+    public static final String ERROR_UNKNOWN = "Unknown Error!!";
+    public static final String CHECK_INTERNET = "Connection timed-out. Please check your Internet connection.";
+    public static final String OKAY = "Okay";
+    public static final String PLEASE_WAIT = "Please wait...";
 }

@@ -82,6 +82,7 @@ public class SignUpController {
         pDialog.setTitleText(FINALIZING_SIGNUP);
         userDetailsObject = new ParseObject(Constants.USER_DETAILS_CLASS);
         userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
+        userDetailsObject.put(Constants.USER_PRIMARY_EMAIL, parseUser.getEmail());
         userDetailsObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -129,6 +130,7 @@ public class SignUpController {
         userDetailsObject.put(Constants.USER_FIRST_NAME, fbUser.getFirstName());
         userDetailsObject.put(Constants.USER_LAST_NAME, fbUser.getLastName());
         userDetailsObject.put(Constants.USER_MEMBER_OF_MASTER_CIRCLE, false);
+        userDetailsObject.put(Constants.USER_PRIMARY_EMAIL, localUser.getEmail());
         userDetailsObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {

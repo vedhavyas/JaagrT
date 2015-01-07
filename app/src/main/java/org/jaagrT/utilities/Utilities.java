@@ -24,9 +24,15 @@ public class Utilities {
     private static final String JAAGRT = "JaagrT";
 
 
-    public static void logIt(String data) {
+    public static void logData(String data, int logType) {
         if (data != null) {
-            Log.i(JAAGRT, data);
+            if (logType == Log.INFO) {
+                Log.i(JAAGRT, data);
+            } else if (logType == Log.DEBUG) {
+                Log.d(JAAGRT, data);
+            } else {
+                Log.e(JAAGRT, data);
+            }
         }
     }
 
@@ -104,7 +110,7 @@ public class Utilities {
             }
             reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
         } catch (Exception e) {
-            Utilities.logIt(e.getMessage());
+            Utilities.logData(e.getMessage(), Log.ERROR);
         }
 
         return reSizedBitmap;

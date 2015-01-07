@@ -61,14 +61,13 @@ public class LoginController {
                                 localUser.setPhoneNumber(userDetailsObject.getString(Constants.USER_PRIMARY_PHONE));
                                 localUser.setPhoneVerified(userDetailsObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
                                 localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
-                                localUser.setEmail(parseUser.getEmail());
+                                localUser.setEmail(userDetailsObject.getString(Constants.USER_PRIMARY_EMAIL));
                                 if (userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
                                     userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE)
                                             .getDataInBackground(new GetDataCallback() {
                                                 @Override
                                                 public void done(byte[] thumbnailBytes, ParseException e) {
                                                     if (e == null) {
-                                                        Utilities.logIt("fetched pic");
                                                         localUser.setThumbnailPicture(Utilities.getBitmapFromBlob(thumbnailBytes));
                                                     }
                                                     fetchUserPreferences();

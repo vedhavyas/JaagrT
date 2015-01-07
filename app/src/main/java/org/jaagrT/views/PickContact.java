@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 
 import org.jaagrT.R;
@@ -110,6 +111,14 @@ public class PickContact extends ActionBarActivity {
         });
 
         new GetContacts().execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            returnResult(Activity.RESULT_CANCELED, -1);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
