@@ -68,6 +68,7 @@ public class LoginController {
                                                 @Override
                                                 public void done(byte[] thumbnailBytes, ParseException e) {
                                                     if (e == null) {
+                                                        Utilities.logIt("fetched pic");
                                                         localUser.setThumbnailPicture(Utilities.getBitmapFromBlob(thumbnailBytes));
                                                     }
                                                     fetchUserPreferences();

@@ -12,10 +12,15 @@ import android.view.ViewGroup;
 import com.melnykov.fab.FloatingActionButton;
 
 import org.jaagrT.R;
+import org.jaagrT.controller.BasicController;
+import org.jaagrT.model.UserContact;
+import org.jaagrT.utilities.Constants;
+import org.jaagrT.utilities.Utilities;
 
 public class Circles extends Fragment {
 
     private Activity activity;
+    private BasicController basicController;
 
     public Circles() {
         // Required empty public constructor
@@ -32,6 +37,7 @@ public class Circles extends Fragment {
 
     private void setUpActivity(View rootView) {
         activity = getActivity();
+        basicController = BasicController.getInstance(activity);
         FloatingActionButton addBtn = (FloatingActionButton) rootView.findViewById(R.id.addBtn);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,7 +49,19 @@ public class Circles extends Fragment {
 
     private void startPickContactActivity() {
         Intent pickContactIntent = new Intent(activity, PickContact.class);
-        startActivity(pickContactIntent);
+        startActivityForResult(pickContactIntent, Constants.PICK_CONTACT);
         activity.overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constants.PICK_CONTACT && resultCode == Activity.RESULT_OK) {
+            int contactID = data.getIntExtra(Constants.CONTACT_ID, -1);
+            UserContact contact = basicController.getContact(contactID);
+            if (contact != null) {
+                Utilities.logIt(contact.getName());
+            }
+        }
     }
 }

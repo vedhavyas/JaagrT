@@ -3,6 +3,7 @@ package org.jaagrT.views;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import org.jaagrT.R;
@@ -24,6 +24,7 @@ import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.UserContact;
 import org.jaagrT.utilities.AlertDialogs;
+import org.jaagrT.utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,6 +112,26 @@ public class PickContact extends ActionBarActivity {
         new GetContacts().execute();
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
+    }
+
+    @Override
+    public void onBackPressed() {
+        returnResult(Activity.RESULT_CANCELED, -1);
+    }
+
+    private void returnResult(int result, int contactID) {
+        Intent intent = new Intent();
+        if (contactID > 0) {
+            intent.putExtra(Constants.CONTACT_ID, contactID);
+        }
+        setResult(result, intent);
+        finish();
+    }
+
     private void showContacts(final List<UserContact> contacts) {
         if (contacts != null) {
             Collections.sort(contacts, new Comparator<UserContact>() {
@@ -123,11 +144,7 @@ public class PickContact extends ActionBarActivity {
             adapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position) {
-                    Log.i("click", contacts.get(position).getName());
-                    String[] emails = contacts.get(position).getEmailList();
-                    for (String email : emails) {
-                        Log.i("Email", email);
-                    }
+                    returnResult(Activity.RESULT_OK, contacts.get(position).getID());
                 }
             });
             recList.setAdapter(adapter);

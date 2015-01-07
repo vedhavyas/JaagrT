@@ -25,13 +25,14 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
 
     private MaterialAccount account;
     private Activity activity;
+    private MaterialSection panicSection;
 
     @Override
     public void init(Bundle bundle) {
         activity = this;
         account = new MaterialAccount("", "", new ColorDrawable(Color.parseColor(TRANSPARENT_COLOR)), getResources().getDrawable(R.drawable.ic_nav_background));
         this.addAccount(account);
-        MaterialSection panicSection = newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
+        panicSection = newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
         MaterialSection circleSection = newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
@@ -46,6 +47,11 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         new GetUserAsync().execute();
         allowArrowAnimation();
         addMultiPaneSupport();
+    }
+
+    @Override
+    protected MaterialSection backToSection(MaterialSection currentSection) {
+        return super.backToSection(panicSection);
     }
 
     private class GetUserAsync extends AsyncTask<Void, Void, Void> {

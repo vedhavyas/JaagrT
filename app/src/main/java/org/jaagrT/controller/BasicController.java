@@ -71,4 +71,8 @@ public class BasicController {
     public List<UserContact> getContacts() {
         return db.getContacts();
     }
+
+    public UserContact getContact(int contactID) {
+        return db.getContact(contactID);
+    }
 }

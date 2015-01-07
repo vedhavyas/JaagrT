@@ -42,10 +42,12 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_PHONE_VERIFIED + " INTEGER, "
             + COLUMN_PICTURE + " BLOB ,"
             + COLUMN_THUMBNAIL_PICTURE + " BLOB)";
+    private static final String COLUMN_CONTACT_ID = "contactID";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_EMAIL_LIST = "emailList";
     private static final String SQL_CONTACT_TABLE_CREATE_QUERY = "CREATE TABLE " + CONTACTS_TABLE
             + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_CONTACT_ID + " TEXT,"
             + COLUMN_NAME + " TEXT,"
             + COLUMN_EMAIL_LIST + " TEXT,"
             + COLUMN_PICTURE + " BLOB)";
@@ -223,7 +225,8 @@ public class Database extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 UserContact contact = new UserContact();
-                contact.setID(String.valueOf(cursor.getInt(cursor.getColumnIndex(COLUMN_ID))));
+                contact.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
                 contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
                 contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
                 contact.setImage(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
@@ -261,6 +264,10 @@ public class Database extends SQLiteOpenHelper {
             contentValues.put(COLUMN_NAME, contact.getName());
         }
 
+        if (contact.getContactID() != null) {
+            contentValues.put(COLUMN_CONTACT_ID, contact.getContactID());
+        }
+
         if (contact.getEmails() != null) {
             contentValues.put(COLUMN_EMAIL_LIST, contact.getEmails());
         }
@@ -276,5 +283,32 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    public UserContact getContact(int contactID) {
+        if (contactID > 0) {
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            String sqlQuery = "SELECT * FROM " + CONTACTS_TABLE + " WHERE " + COLUMN_ID
+                    + " = " + String.valueOf(contactID);
+            Cursor cursor = db.rawQuery(sqlQuery, null);
+
+            if (cursor.moveToFirst()) {
+                UserContact contact = new UserContact();
+                do {
+                    contact.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                    contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
+                    contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
+                    contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
+                    contact.setImage(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+                } while (cursor.moveToNext());
+
+                return contact;
+            }
+            return null;
+
+        } else {
+            return null;
+        }
+
+    }
 
 }

@@ -11,7 +11,8 @@ import org.jaagrT.utilities.Utilities;
  */
 public class UserContact {
 
-    private String ID;
+    private int ID;
+    private String contactID;
     private String name;
     private String emails;
     private Bitmap image;
@@ -21,8 +22,8 @@ public class UserContact {
         //empty constructor
     }
 
-    public UserContact(String ID, String title, Drawable drawable) {
-        this.ID = ID;
+    public UserContact(String contactID, String title, Drawable drawable) {
+        this.contactID = contactID;
         this.name = title;
         this.image = ((BitmapDrawable) drawable).getBitmap();
         this.imageBlob = Utilities.getBlob(this.image);
@@ -45,11 +46,11 @@ public class UserContact {
         this.imageBlob = data;
     }
 
-    public String getID() {
+    public int getID() {
         return ID;
     }
 
-    public void setID(String ID) {
+    public void setID(int ID) {
         this.ID = ID;
     }
 
@@ -67,6 +68,14 @@ public class UserContact {
 
     public byte[] getImageBlob() {
         return imageBlob;
+    }
+
+    public String getContactID() {
+        return contactID;
+    }
+
+    public void setContactID(String contactID) {
+        this.contactID = contactID;
     }
 
     public void addEmail(String email) {

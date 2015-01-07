@@ -47,7 +47,9 @@ public class Constants {
     public static final int SELECT_PICTURE = 1;
     public static final int VERIFY_PHONE = 2;
     public static final int PICK_PICTURE = 3;
+    public static final int PICK_CONTACT = 4;
 
     //General Strings
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
+    public static final String CONTACT_ID = "contactID";
 }

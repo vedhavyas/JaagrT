@@ -20,7 +20,7 @@
 
     <item
         android:bottom="5dp"
-        android:left="10dp"
+        android:left="5dp"
         android:top="5dp">
         <bitmap
             android:gravity="start"
