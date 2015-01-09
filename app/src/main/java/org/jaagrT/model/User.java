@@ -12,6 +12,7 @@ import org.jaagrT.utilities.Utilities;
 public class User {
 
     private int ID;
+    private String objectID;
     private String firstName;
     private String lastName;
     private int memberOfMasterCircle;
@@ -123,5 +124,11 @@ public class User {
         return thumbnailPicture;
     }
 
+    public String getObjectID() {
+        return objectID;
+    }
 
+    public void setObjectID(String objectID) {
+        this.objectID = objectID;
+    }
 }

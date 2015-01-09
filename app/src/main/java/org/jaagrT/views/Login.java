@@ -18,6 +18,7 @@ import org.jaagrT.controller.SignUpController;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.services.ObjectService;
 import org.jaagrT.utilities.AlertDialogs;
+import org.jaagrT.utilities.Constants;
 import org.jaagrT.utilities.FormValidators;
 import org.jaagrT.utilities.Utilities;
 
@@ -28,13 +29,8 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class Login extends Activity {
 
-    private static final String CONNECTING_TO_FB = "Connecting to Facebook...";
     private static final String LOGIN_SUCCESS = "Login Successful!!";
-    private static final String ERROR = "Error";
-    private static final String OKAY = "Okay";
     private static final String LOGGING_IN = "Authenticating...";
-    private static final String CONNECTION_ESTABLISHED = "Connection SuccessFul!!";
-    private static final String CONNECTION_FAILED = "Connection failed!!";
     private Activity activity;
 
     @Override
@@ -70,7 +66,7 @@ public class Login extends Activity {
             @Override
             public void onClick(View v) {
                 final SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
-                pDialog.setTitleText(CONNECTING_TO_FB);
+                pDialog.setTitleText(Constants.CONNECTING_TO_FB);
                 pDialog.show();
                 ParseFacebookUtils.logIn(Arrays.asList(ParseFacebookUtils.Permissions.User.EMAIL), activity, new LogInCallback() {
                     @Override
@@ -78,9 +74,9 @@ public class Login extends Activity {
                         if (e == null) {
                             if (parseUser == null) {
                                 pDialog.cancel();
-                                AlertDialogs.showErrorDialog(activity, ERROR, CONNECTION_FAILED, OKAY);
+                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CONNECTION_FAILED, Constants.OKAY);
                             } else if (parseUser.isNew()) {
-                                pDialog.setTitleText(CONNECTION_ESTABLISHED);
+                                pDialog.setTitleText(Constants.CONNECTION_ESTABLISHED);
                                 SignUpController signUpController = new SignUpController(activity, new BasicListener() {
 
                                     @Override
@@ -90,7 +86,7 @@ public class Login extends Activity {
                                 }, pDialog);
                                 signUpController.facebookRegistration();
                             } else {
-                                pDialog.setTitleText(CONNECTION_ESTABLISHED);
+                                pDialog.setTitleText(Constants.CONNECTION_ESTABLISHED);
                                 LoginController loginController = new LoginController(activity, new BasicListener() {
                                     @Override
                                     public void onComplete() {
@@ -101,7 +97,13 @@ public class Login extends Activity {
                             }
                         } else {
                             pDialog.cancel();
-                            AlertDialogs.showErrorDialog(activity, ERROR, e.getMessage(), OKAY);
+                            if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
+                            } else if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
+                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
+                            } else {
+                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, e.getMessage(), Constants.OKAY);
+                            }
                         }
                     }
                 });
@@ -137,7 +139,13 @@ public class Login extends Activity {
                                 loginController.getUserData(user, pDialog);
                             } else {
                                 pDialog.cancel();
-                                AlertDialogs.showErrorDialog(activity, ERROR, e.getMessage(), OKAY);
+                                if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
+                                } else if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
+                                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
+                                } else {
+                                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, e.getMessage(), Constants.OKAY);
+                                }
                             }
                         }
                     });

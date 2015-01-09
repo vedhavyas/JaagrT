@@ -41,14 +41,10 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class PickPicture extends Activity {
 
     private static final int ROTATE_NINETY_DEGREES = 90;
-    private static final String CAMERA = "Camera";
-    private static final String GALLERY = "Gallery";
-    private static final String PLEASE_WAIT = "Please wait...";
-    private static final String SAVING_DATA = "Saving Data...";
+    private static final String CAMERA = "From Camera";
+    private static final String GALLERY = "From Gallery";
     private static final String SELECT_PICTURE = "Select Picture";
     private static final String IMAGE = "image/*";
-    private static final String SET = "Set";
-    private static final String GET_PICTURE_FROM = "Get Picture from";
     private static final String FETCHING_PICTURE = "Fetching Picture... ";
     private CropImageView cropImageView;
     private Activity activity;
@@ -92,7 +88,7 @@ public class PickPicture extends Activity {
 
     private void setUpActivity() {
         SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
-        pDialog.setTitleText(PLEASE_WAIT);
+        pDialog.setTitleText(Constants.PLEASE_WAIT);
         pDialog.show();
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
         Button acceptBtn = (Button) findViewById(R.id.acceptBtn);
@@ -185,20 +181,16 @@ public class PickPicture extends Activity {
     private void showChoosePictureDialog() {
         new MaterialDialog.Builder(this)
                 .items(new String[]{CAMERA, GALLERY})
-                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
-                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                        if (text.toString().equalsIgnoreCase(CAMERA)) {
+                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                        if (charSequence.toString().equalsIgnoreCase(CAMERA)) {
                             getImageFromCamera();
                         } else {
                             getImageFromGallery();
                         }
                     }
                 })
-                .title(GET_PICTURE_FROM)
-                .titleColor(getResources().getColor(R.color.teal_400))
-                .positiveText(SET)
-                .positiveColor(getResources().getColor(R.color.teal_400))
                 .show();
     }
 
@@ -266,7 +258,7 @@ public class PickPicture extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog.setTitleText(SAVING_DATA);
+            pDialog.setTitleText(Constants.SAVING);
             pDialog.show();
         }
 

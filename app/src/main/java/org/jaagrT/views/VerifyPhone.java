@@ -30,12 +30,9 @@ public class VerifyPhone extends Activity {
 
     private static final String MESSAGE = "JaagrT Verification Code";
     private static final String WRONG_CODE = "Wrong Code!!";
-    private static final String OKAY = "Okay";
     private static final String SENDING_SMS = "Sending SMS";
     private static final String SMS_SENT = "SMS Sent!!";
     private static final String SUCCESS = "Success";
-    private static final String PLEASE_WAIT = "Please wait...";
-    private static final String UPDATING = "Updating...";
 
     public static VerifyPhone verifyPhoneActivity;
     private Activity activity;
@@ -130,7 +127,7 @@ public class VerifyPhone extends Activity {
             phoneBox.setText(phoneNumber);
             new UpdateUserData().execute();
         } else {
-            Utilities.snackIt(activity, WRONG_CODE, OKAY);
+            Utilities.snackIt(activity, WRONG_CODE, Constants.OKAY);
         }
     }
 
@@ -203,7 +200,7 @@ public class VerifyPhone extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText(PLEASE_WAIT);
+            pDialog.setTitleText(Constants.PLEASE_WAIT);
             pDialog.show();
         }
 
@@ -235,7 +232,7 @@ public class VerifyPhone extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText(UPDATING);
+            pDialog.setTitleText(Constants.UPDATING);
             pDialog.show();
         }
 

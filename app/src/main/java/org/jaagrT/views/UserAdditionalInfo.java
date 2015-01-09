@@ -25,8 +25,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class UserAdditionalInfo extends Activity {
 
     private static final String VERIFICATION_SUCCESS = "Verification Successful";
-    private static final String PLEASE_WAIT = "Please wait...";
-    private static final String UPDATING = "Updating...";
+
     private MaterialEditText firstNameBox, lastNameBox, phoneBox;
     private User localUser;
     private ParseObject userDetailsObject;
@@ -138,7 +137,7 @@ public class UserAdditionalInfo extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText(PLEASE_WAIT);
+            pDialog.setTitleText(Constants.PLEASE_WAIT);
             pDialog.show();
         }
 
@@ -166,7 +165,7 @@ public class UserAdditionalInfo extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText(UPDATING);
+            pDialog.setTitleText(Constants.UPDATING);
             pDialog.show();
         }
 

@@ -21,17 +21,16 @@ import java.io.ByteArrayOutputStream;
  */
 
 public class Utilities {
-    private static final String JAAGRT = "JaagrT";
 
 
     public static void logData(String data, int logType) {
         if (data != null) {
             if (logType == Log.INFO) {
-                Log.i(JAAGRT, data);
+                Log.i(Constants.JAAGRT, data);
             } else if (logType == Log.DEBUG) {
-                Log.d(JAAGRT, data);
+                Log.d(Constants.JAAGRT, data);
             } else {
-                Log.e(JAAGRT, data);
+                Log.e(Constants.JAAGRT, data);
             }
         }
     }

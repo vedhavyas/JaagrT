@@ -27,11 +27,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class LoginController {
 
     private static final String FETCHING_DATA = "Fetching data...";
-    private static final String ERROR = "Error";
-    private static final String OKAY = "Okay";
     private static final String FETCHING_SETTINGS = "Fetching settings...";
-    private static final String ERROR_UNKNOWN = "Unknown Error!!";
-    private static final String SAVING_DATA = "Saving  Data...";
     private Activity activity;
     private BasicListener listener;
     private User localUser;
@@ -77,13 +73,13 @@ public class LoginController {
                                     fetchUserPreferences();
                                 }
                             } else {
-                                clearUser();
+                                clearUser(e);
                             }
                         }
                     });
         } else {
             pDialog.cancel();
-            AlertDialogs.showErrorDialog(activity, ERROR, ERROR_UNKNOWN, OKAY);
+            AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
         }
     }
 
@@ -109,19 +105,29 @@ public class LoginController {
                             prefs.edit().putString(Constants.ALERT_MESSAGE, userPreferenceObject.getString(Constants.ALERT_MESSAGE)).apply();
                             new SaveLocalUser().execute();
                         } else {
-                            clearUser();
+                            clearUser(e);
                         }
 
                     }
                 });
     }
 
-    private void clearUser() {
+    private void clearUser(ParseException e) {
         ParseUser.logOut();
         userDetailsObject = null;
         userPreferenceObject = null;
         pDialog.cancel();
-        AlertDialogs.showErrorDialog(activity, ERROR, ERROR_UNKNOWN, OKAY);
+        if (e != null) {
+            if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
+            } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
+            } else {
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+            }
+        } else {
+            AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+        }
     }
 
     private void startObjectService() {
@@ -135,7 +141,7 @@ public class LoginController {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog.setTitleText(SAVING_DATA);
+            pDialog.setTitleText(Constants.SAVING);
         }
 
         @Override
@@ -157,7 +163,7 @@ public class LoginController {
                 pDialog.cancel();
                 listener.onComplete();
             } else {
-                clearUser();
+                clearUser(null);
             }
         }
     }

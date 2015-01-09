@@ -3,9 +3,9 @@ package org.jaagrT.views;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +33,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class Circles extends Fragment {
 
+    private static final String UPDATING_CIRCLES = "Updating Circles...";
     private Activity activity;
     private BasicController basicController;
     private ParseObject userDetailsObject;
@@ -84,45 +85,72 @@ public class Circles extends Fragment {
     private void tryAndAddTheContact(final UserContact contact) {
         final SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
         pDialog.setTitleText(Constants.PLEASE_WAIT).show();
-
         ParseQuery<ParseObject> userSearchQuery = ParseQuery.getQuery(Constants.USER_DETAILS_CLASS);
-        for (String email : contact.getEmailList()) {
-            Utilities.logData(email, Log.INFO);
-        }
         userSearchQuery.whereContainedIn(Constants.USER_PRIMARY_EMAIL, Arrays.asList(contact.getEmailList()));
         userSearchQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(final List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
                     if (parseObjects.size() > 0) {
                         if (userDetailsObject != null) {
+                            ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
                             for (ParseObject parseObject : parseObjects) {
-                                Utilities.logData(parseObject.getString(Constants.USER_PRIMARY_EMAIL), Log.DEBUG);
-                                ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
                                 relation.add(parseObject);
                             }
                             userDetailsObject.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {
-                                    pDialog.cancel();
                                     if (e == null) {
-                                        Utilities.logData("User saved", Log.DEBUG);
+                                        new SaveCircle(pDialog, parseObjects).execute();
                                     } else {
-                                        Utilities.logData("Failed to save", Log.DEBUG);
+                                        pDialog.cancel();
+                                        AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
                                     }
                                 }
                             });
                         }
                     } else {
+                        //TODO take user to invite page
                         pDialog.cancel();
-                        Utilities.logData("No users found", Log.DEBUG);
                     }
                 } else {
                     pDialog.cancel();
                     AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
                 }
+
             }
         });
+    }
+
+
+    private class SaveCircle extends AsyncTask<Void, Void, Void> {
+
+        private SweetAlertDialog pDialog;
+        private List<ParseObject> circles;
+
+        private SaveCircle(SweetAlertDialog pDialog, List<ParseObject> circles) {
+            this.pDialog = pDialog;
+            this.circles = circles;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog.setTitleText(UPDATING_CIRCLES);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            basicController.saveCircles(circles);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            pDialog.cancel();
+            Utilities.snackIt(activity, "Circle added", "Okay");
+        }
     }
 
 }

@@ -22,9 +22,11 @@ public class Database extends SQLiteOpenHelper {
 
     public static final String USER_TABLE = "user_details";
     public static final String CONTACTS_TABLE = "contacts_list";
-    private static final String[] TABLES = {USER_TABLE, CONTACTS_TABLE};
+    public static final String CIRCLES_TABLE = "user_circles_list";
+    private static final String[] TABLES = {USER_TABLE, CONTACTS_TABLE, CIRCLES_TABLE};
     private static final String DB_NAME = "JaagrT.db";
     private static final String COLUMN_ID = "ID";
+    private static final String COLUMN_OBJECT_ID = "objectID";
     private static final String COLUMN_FIRST_NAME = "firstName";
     private static final String COLUMN_LAST_NAME = "lastName";
     private static final String COLUMN_EMAIL = "email";
@@ -43,6 +45,16 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_PHONE_VERIFIED + " INTEGER, "
             + COLUMN_PICTURE + " BLOB ,"
             + COLUMN_THUMBNAIL_PICTURE + " BLOB)";
+    private static final String SQL_CIRCLES_TABLE_CREATE_QUERY = "CREATE TABLE " + CIRCLES_TABLE
+            + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_OBJECT_ID + " TEXT,"
+            + COLUMN_FIRST_NAME + " TEXT,"
+            + COLUMN_LAST_NAME + " TEXT,"
+            + COLUMN_EMAIL + " TEXT UNIQUE,"
+            + COLUMN_PHONE_NUMBER + " TEXT UNIQUE, "
+            + COLUMN_MEMBER_OF_MASTER_CIRCLE + " INTEGER, "
+            + COLUMN_PHONE_VERIFIED + " INTEGER, "
+            + COLUMN_THUMBNAIL_PICTURE + " BLOB)";
     private static final String COLUMN_CONTACT_ID = "contactID";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_EMAIL_LIST = "emailList";
@@ -52,7 +64,6 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_NAME + " TEXT,"
             + COLUMN_EMAIL_LIST + " TEXT,"
             + COLUMN_PICTURE + " BLOB)";
-
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS  ";
     private static final String SQL_SELECT_ALL_QUERY = "SELECT * FROM ";
     private static Database dbFactory;
@@ -74,6 +85,7 @@ public class Database extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_USER_TABLE_CREATE_QUERY);
         db.execSQL(SQL_CONTACT_TABLE_CREATE_QUERY);
+        db.execSQL(SQL_CIRCLES_TABLE_CREATE_QUERY);
     }
 
     @Override
@@ -103,6 +115,8 @@ public class Database extends SQLiteOpenHelper {
             db.execSQL(SQL_USER_TABLE_CREATE_QUERY);
         } else if (tableName.equalsIgnoreCase(CONTACTS_TABLE)) {
             db.execSQL(SQL_CONTACT_TABLE_CREATE_QUERY);
+        } else if (tableName.equalsIgnoreCase(CIRCLES_TABLE)) {
+            db.execSQL(SQL_CIRCLES_TABLE_CREATE_QUERY);
         }
     }
 
@@ -117,12 +131,12 @@ public class Database extends SQLiteOpenHelper {
         return result;
     }
 
-    public User getUser(int id) {
-        if (id > 0) {
+    public User getUser(int userID) {
+        if (userID > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
             String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
-                    + " = " + String.valueOf(id);
+                    + " = " + String.valueOf(userID);
             Cursor cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
@@ -186,6 +200,10 @@ public class Database extends SQLiteOpenHelper {
 
         if (user.getThumbnailPictureRaw() != null) {
             contentValues.put(COLUMN_THUMBNAIL_PICTURE, user.getThumbnailPictureRaw());
+        }
+
+        if (user.getObjectID() != null) {
+            contentValues.put(COLUMN_OBJECT_ID, user.getObjectID());
         }
 
         contentValues.put(COLUMN_MEMBER_OF_MASTER_CIRCLE, user.isMemberOfMasterCircleRaw());
@@ -309,4 +327,80 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
+    public void saveCircles(List<User> circles) {
+        if (circles != null) {
+            for (User circle : circles) {
+                saveCircle(circle);
+            }
+        }
+    }
+
+    public long saveCircle(User circle) {
+        long result = -1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = getContentValuesFromUserObject(circle);
+        if (contentValues != null) {
+            result = db.insert(CIRCLES_TABLE, null, contentValues);
+        }
+        return result;
+    }
+
+    public List<User> getCircles() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<User> circles = new ArrayList<>();
+
+        String sqlQuery = SQL_SELECT_ALL_QUERY + CIRCLES_TABLE;
+        Cursor cursor = db.rawQuery(sqlQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                User circle = new User();
+                circle.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                circle.setObjectID(cursor.getString(cursor.getColumnIndex(COLUMN_OBJECT_ID)));
+                circle.setFirstName(cursor.getString(cursor.getColumnIndex(COLUMN_FIRST_NAME)));
+                circle.setLastName(cursor.getString(cursor.getColumnIndex(COLUMN_LAST_NAME)));
+                circle.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
+                circle.setPhoneNumber(cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER)));
+                circle.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
+                circle.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
+                circle.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
+                circles.add(circle);
+            } while (cursor.moveToNext());
+
+            return circles;
+        }
+
+        return null;
+    }
+
+    public User getCircle(int circleID) {
+        if (circleID > 0) {
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            String sqlQuery = "SELECT * FROM " + CIRCLES_TABLE + " WHERE " + COLUMN_ID
+                    + " = " + String.valueOf(circleID);
+            Cursor cursor = db.rawQuery(sqlQuery, null);
+
+            if (cursor.moveToFirst()) {
+                User circle = new User();
+                do {
+                    circle.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                    circle.setObjectID(cursor.getString(cursor.getColumnIndex(COLUMN_OBJECT_ID)));
+                    circle.setFirstName(cursor.getString(cursor.getColumnIndex(COLUMN_FIRST_NAME)));
+                    circle.setLastName(cursor.getString(cursor.getColumnIndex(COLUMN_LAST_NAME)));
+                    circle.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
+                    circle.setPhoneNumber(cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER)));
+                    circle.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
+                    circle.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
+                    circle.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
+                } while (cursor.moveToNext());
+
+                return circle;
+            }
+            return null;
+
+        } else {
+            return null;
+        }
+    }
 }

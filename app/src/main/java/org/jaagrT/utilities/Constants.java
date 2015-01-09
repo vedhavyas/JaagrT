@@ -7,6 +7,8 @@ package org.jaagrT.utilities;
 
 public class Constants {
 
+    public static final String JAAGRT = "JaagrT";
+
     //Parse related Constants
     public static final String APPLICATION_ID = "XRlRRJWTJL3czveTq3WLf5BCqyvo0gSwee4SKLFO";
     public static final String CLIENT_ID = "gF7bTRj305xcbT1PdwQeZZ1rOFnCaZASWA4VkEkn";
@@ -62,4 +64,10 @@ public class Constants {
     public static final String CHECK_INTERNET = "Connection timed-out. Please check your Internet connection.";
     public static final String OKAY = "Okay";
     public static final String PLEASE_WAIT = "Please wait...";
+    public static final String INTER_SERVER_ERROR = "Server Error!!";
+    public static final String SAVING = "Saving...";
+    public static final String CONNECTING_TO_FB = "Connecting to Facebook...";
+    public static final String CONNECTION_ESTABLISHED = "Connection SuccessFul!!";
+    public static final String CONNECTION_FAILED = "Connection failed!!";
+    public static final String UPDATING = "Updating...";
 }

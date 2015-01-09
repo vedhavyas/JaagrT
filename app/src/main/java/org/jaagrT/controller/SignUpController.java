@@ -32,12 +32,8 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class SignUpController {
 
     private static final String SIGN_UP_SUCCESS = "Signup Successful!!";
-    private static final String ERROR = "Error";
-    private static final String OKAY = "Okay";
-    private static final String ERROR_UNKNOWN = "Unknown Error!!";
     private static final String FINALIZING_SIGNUP = "Finalizing Signup...";
     private static final String EMAIL = "email";
-    private static final String SAVING_DATA = "Saving  Data...";
     private Activity activity;
     private SweetAlertDialog pDialog;
     private User localUser;
@@ -72,7 +68,7 @@ public class SignUpController {
                     }
                 } else {
                     pDialog.cancel();
-                    AlertDialogs.showErrorDialog(activity, ERROR, e.getMessage(), OKAY);
+                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, e.getMessage(), Constants.OKAY);
                 }
             }
         });
@@ -91,7 +87,7 @@ public class SignUpController {
                     parseUser.saveInBackground();
                     saveDefaultPreferences(parseUser);
                 } else {
-                    clearUser();
+                    clearUser(e);
                 }
             }
         });
@@ -114,11 +110,11 @@ public class SignUpController {
                         localUser.setLastName(fbUser.getLastName());
                         saveFbUserDetails(parseUser, fbUser);
                     } catch (Exception e) {
-                        clearUser();
+                        clearUser(null);
                     }
 
                 } else {
-                    clearUser();
+                    clearUser(null);
                 }
             }
         }).executeAsync();
@@ -139,7 +135,7 @@ public class SignUpController {
                     parseUser.saveInBackground();
                     saveDefaultPreferences(parseUser);
                 } else {
-                    clearUser();
+                    clearUser(e);
                 }
             }
         });
@@ -170,18 +166,28 @@ public class SignUpController {
                     userDetailsObject.saveInBackground();
                     new SaveUserLocally().execute();
                 } else {
-                    clearUser();
+                    clearUser(e);
                 }
             }
         });
     }
 
-    private void clearUser() {
+    private void clearUser(ParseException e) {
         ParseUser.logOut();
         userDetailsObject = null;
         userPreferenceObject = null;
         pDialog.cancel();
-        AlertDialogs.showErrorDialog(activity, ERROR, ERROR_UNKNOWN, OKAY);
+        if (e != null) {
+            if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
+            } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
+            } else {
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+            }
+        } else {
+            AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+        }
     }
 
     private void startObjectService() {
@@ -197,7 +203,7 @@ public class SignUpController {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog.setTitleText(SAVING_DATA);
+            pDialog.setTitleText(Constants.SAVING);
         }
 
         @Override
@@ -231,7 +237,7 @@ public class SignUpController {
                 startObjectService();
                 listener.onComplete();
             } else {
-                clearUser();
+                clearUser(null);
             }
         }
     }

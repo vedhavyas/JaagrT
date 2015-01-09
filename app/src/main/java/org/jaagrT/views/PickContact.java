@@ -37,11 +37,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class PickContact extends ActionBarActivity {
 
     private static final String TITLE = "Pick a contact";
-    private static final String PLEASE_WAIT = "Please wait...";
     private static final String FETCHING_CONTACTS = "Fetching contacts...";
-    private static final String ERROR = "Error";
-    private static final String ERROR_UNKNOWN = "Unknown error!!";
-    private static final String OKAY = "Okay";
     private RecyclerView recList;
     private List<UserContact> fullContactList;
     private BasicController basicController;
@@ -215,7 +211,7 @@ public class PickContact extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText(PLEASE_WAIT);
+            pDialog.setTitleText(Constants.PLEASE_WAIT);
             pDialog.show();
         }
 
@@ -241,7 +237,7 @@ public class PickContact extends ActionBarActivity {
             if (fullContactList != null) {
                 showContacts(fullContactList);
             } else {
-                AlertDialogs.showErrorDialog(activity, ERROR, ERROR_UNKNOWN, OKAY);
+                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
             }
         }
     }
@@ -273,7 +269,7 @@ public class PickContact extends ActionBarActivity {
                 if (fullContactList != null) {
                     showContacts(fullContactList);
                 } else {
-                    AlertDialogs.showErrorDialog(activity, ERROR, ERROR_UNKNOWN, OKAY);
+                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
                 }
             }
         }
