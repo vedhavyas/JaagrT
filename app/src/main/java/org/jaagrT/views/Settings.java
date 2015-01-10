@@ -19,10 +19,11 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.FormValidators;
+import org.jaagrT.helpers.Utilities;
+import org.jaagrT.model.Database;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.FormValidators;
-import org.jaagrT.utilities.Utilities;
 import org.jaagrT.widgets.rangebar.RangeBar;
 
 import java.util.ArrayList;
@@ -144,7 +145,8 @@ public class Settings extends Fragment {
     }
 
     private void clearUserData() {
-        basicController.dropAllTables();
+        basicController.dropTable(Database.CIRCLES_TABLE);
+        basicController.dropTable(Database.USER_TABLE);
         prefs.edit().clear().apply();
         stopService();
     }

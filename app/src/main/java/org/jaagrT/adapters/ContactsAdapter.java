@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.jaagrT.R;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.model.UserContact;
 
@@ -18,29 +19,33 @@ import java.util.List;
  * Project JaagrT
  */
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ContactViewHolder> {
+public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactViewHolder> {
 
     private List<UserContact> contacts;
     private OnItemClickListener onItemClickListener;
 
-    public RecyclerViewAdapter(List<UserContact> contacts) {
+    public ContactsAdapter(List<UserContact> contacts) {
         this.contacts = contacts;
     }
 
     @Override
-    public RecyclerViewAdapter.ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ContactsAdapter.ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
-                inflate(R.layout.contact_card_view, viewGroup, false);
+                inflate(R.layout.circle_card_view, viewGroup, false);
 
         return new ContactViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapter.ContactViewHolder holder, int position) {
+    public void onBindViewHolder(ContactsAdapter.ContactViewHolder holder, int position) {
         UserContact contact = contacts.get(position);
         holder.title.setText(contact.getName());
-        holder.profilePic.setImageBitmap(contact.getImage());
+        if (contact.getThumbnailPicture() != null) {
+            holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
+        } else {
+            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(contact.getName()));
+        }
     }
 
     @Override

@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.util.Log;
 
-import org.jaagrT.utilities.Utilities;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,7 +170,7 @@ public class Database extends SQLiteOpenHelper {
         try {
             result = db.update(USER_TABLE, contentValues, COLUMN_ID + " = " + user.getID(), null);
         } catch (SQLiteConstraintException e) {
-            Utilities.logData(e.getMessage(), Log.ERROR);
+            ErrorHandler.handleError(e);
         }
         return result;
     }
@@ -245,7 +245,7 @@ public class Database extends SQLiteOpenHelper {
                 contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
                 contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
                 contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
-                contact.setImage(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+                contact.setProfilePic(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
                 contacts.add(contact);
             } while (cursor.moveToNext());
 
@@ -288,8 +288,8 @@ public class Database extends SQLiteOpenHelper {
             contentValues.put(COLUMN_EMAIL_LIST, contact.getEmails());
         }
 
-        if (contact.getImageBlob() != null) {
-            contentValues.put(COLUMN_PICTURE, contact.getImageBlob());
+        if (contact.getThumbnailPictureRaw() != null) {
+            contentValues.put(COLUMN_PICTURE, contact.getThumbnailPictureRaw());
         }
 
         if (contentValues.size() > 0) {
@@ -314,7 +314,7 @@ public class Database extends SQLiteOpenHelper {
                     contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
                     contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
                     contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
-                    contact.setImage(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+                    contact.setProfilePic(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
                 } while (cursor.moveToNext());
 
                 return contact;

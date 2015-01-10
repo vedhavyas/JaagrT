@@ -1,10 +1,8 @@
 package org.jaagrT.model;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 
-import org.jaagrT.utilities.Utilities;
+import org.jaagrT.helpers.Utilities;
 
 /**
  * Authored by vedhavyas.singareddi on 23-12-2014.
@@ -15,18 +13,15 @@ public class UserContact {
     private String contactID;
     private String name;
     private String emails;
-    private Bitmap image;
-    private byte[] imageBlob;
+    private byte[] thumbnailPicture;
 
     public UserContact() {
         //empty constructor
     }
 
-    public UserContact(String contactID, String title, Drawable drawable) {
+    public UserContact(String contactID, String title) {
         this.contactID = contactID;
         this.name = title;
-        this.image = ((BitmapDrawable) drawable).getBitmap();
-        this.imageBlob = Utilities.getBlob(this.image);
     }
 
     public String getName() {
@@ -37,13 +32,12 @@ public class UserContact {
         this.name = name;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public Bitmap getThumbnailPicture() {
+        return Utilities.getBitmapFromBlob(thumbnailPicture);
     }
 
-    public void setImage(byte[] data) {
-        this.image = Utilities.getBitmapFromBlob(data);
-        this.imageBlob = data;
+    public void setProfilePic(byte[] data) {
+        this.thumbnailPicture = data;
     }
 
     public int getID() {
@@ -66,8 +60,8 @@ public class UserContact {
         this.emails = emails;
     }
 
-    public byte[] getImageBlob() {
-        return imageBlob;
+    public byte[] getThumbnailPictureRaw() {
+        return thumbnailPicture;
     }
 
     public String getContactID() {

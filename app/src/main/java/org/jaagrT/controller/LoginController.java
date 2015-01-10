@@ -11,12 +11,13 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.Utilities;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -79,7 +80,7 @@ public class LoginController {
                     });
         } else {
             pDialog.cancel();
-            AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+            AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.ERROR_UNKNOWN, ErrorHandler.OKAY);
         }
     }
 
@@ -117,17 +118,7 @@ public class LoginController {
         userDetailsObject = null;
         userPreferenceObject = null;
         pDialog.cancel();
-        if (e != null) {
-            if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
-            } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
-            } else {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
-            }
-        } else {
-            AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
-        }
+        ErrorHandler.handleError(activity, e);
     }
 
     private void startObjectService() {

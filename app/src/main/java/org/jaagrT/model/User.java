@@ -3,7 +3,7 @@ package org.jaagrT.model;
 
 import android.graphics.Bitmap;
 
-import org.jaagrT.utilities.Utilities;
+import org.jaagrT.helpers.Utilities;
 
 /**
  * Authored by vedhavyas on 6/12/14.

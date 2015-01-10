@@ -1,9 +1,10 @@
-package org.jaagrT.utilities;
+package org.jaagrT.helpers;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,6 +12,8 @@ import com.nispok.snackbar.Snackbar;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
+import org.jaagrT.widgets.roundDrawable.ColorGenerator;
+import org.jaagrT.widgets.roundDrawable.RoundDrawable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -92,6 +95,7 @@ public class Utilities {
         return compressed;
     }
 
+
     public static Bitmap getReSizedBitmap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -109,10 +113,17 @@ public class Utilities {
             }
             reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
         } catch (Exception e) {
-            Utilities.logData(e.getMessage(), Log.ERROR);
+            ErrorHandler.handleError(null, e);
         }
 
         return reSizedBitmap;
+    }
+
+    public static Drawable getRoundedDrawable(String data) {
+        ColorGenerator colorGenerator = ColorGenerator.DEFAULT;
+
+        return RoundDrawable.builder()
+                .buildRound(data.substring(0, 1), colorGenerator.getColor(data));
     }
 
 

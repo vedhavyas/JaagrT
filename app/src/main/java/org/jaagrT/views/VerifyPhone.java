@@ -14,12 +14,13 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.FormValidators;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.FormValidators;
-import org.jaagrT.utilities.Utilities;
 
 import java.util.Random;
 
@@ -127,7 +128,7 @@ public class VerifyPhone extends Activity {
             phoneBox.setText(phoneNumber);
             new UpdateUserData().execute();
         } else {
-            Utilities.snackIt(activity, WRONG_CODE, Constants.OKAY);
+            Utilities.snackIt(activity, WRONG_CODE, ErrorHandler.OKAY);
         }
     }
 

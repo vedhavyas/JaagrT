@@ -17,11 +17,11 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -68,7 +68,7 @@ public class SignUpController {
                     }
                 } else {
                     pDialog.cancel();
-                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, e.getMessage(), Constants.OKAY);
+                    ErrorHandler.handleError(activity, e);
                 }
             }
         });
@@ -98,17 +98,27 @@ public class SignUpController {
         Session session = ParseFacebookUtils.getSession();
         Request.newMeRequest(session, new Request.GraphUserCallback() {
             @Override
-            public void onCompleted(GraphUser fbUser, Response response) {
+            public void onCompleted(final GraphUser fbUser, Response response) {
                 if (response != null) {
                     try {
-                        String email = (String) fbUser.getProperty(EMAIL);
-                        ParseUser parseUser = ParseUser.getCurrentUser();
+                        final String email = (String) fbUser.getProperty(EMAIL);
+                        final ParseUser parseUser = ParseUser.getCurrentUser();
                         parseUser.setEmail(email);
-                        parseUser.saveInBackground();
-                        localUser.setEmail(email);
-                        localUser.setFirstName(fbUser.getFirstName());
-                        localUser.setLastName(fbUser.getLastName());
-                        saveFbUserDetails(parseUser, fbUser);
+                        parseUser.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    localUser.setEmail(email);
+                                    localUser.setFirstName(fbUser.getFirstName());
+                                    localUser.setLastName(fbUser.getLastName());
+                                    saveFbUserDetails(parseUser, fbUser);
+                                } else {
+                                    parseUser.deleteInBackground();
+                                    clearUser(e);
+                                }
+                            }
+                        });
+
                     } catch (Exception e) {
                         clearUser(null);
                     }
@@ -177,17 +187,7 @@ public class SignUpController {
         userDetailsObject = null;
         userPreferenceObject = null;
         pDialog.cancel();
-        if (e != null) {
-            if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
-            } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
-            } else {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
-            }
-        } else {
-            AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
-        }
+        ErrorHandler.handleError(activity, e);
     }
 
     private void startObjectService() {

@@ -15,12 +15,13 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import org.jaagrT.R;
 import org.jaagrT.controller.LoginController;
 import org.jaagrT.controller.SignUpController;
+import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.FormValidators;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.FormValidators;
-import org.jaagrT.utilities.Utilities;
 
 import java.util.Arrays;
 
@@ -104,7 +105,7 @@ public class SignUp extends Activity {
                         if (e == null) {
                             if (parseUser == null) {
                                 pDialog.cancel();
-                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CONNECTION_FAILED, Constants.OKAY);
+                                AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.CONNECTION_FAILED, ErrorHandler.OKAY);
                             } else if (parseUser.isNew()) {
                                 pDialog.setTitleText(Constants.CONNECTION_ESTABLISHED);
                                 SignUpController signUpController = new SignUpController(activity, new BasicListener() {
@@ -127,13 +128,7 @@ public class SignUp extends Activity {
                             }
                         } else {
                             pDialog.cancel();
-                            if (e.getCode() == ParseException.CONNECTION_FAILED) {
-                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
-                            } else if (e.getCode() == ParseException.INTERNAL_SERVER_ERROR) {
-                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.INTER_SERVER_ERROR, Constants.OKAY);
-                            } else {
-                                AlertDialogs.showErrorDialog(activity, Constants.ERROR, e.getMessage(), Constants.OKAY);
-                            }
+                            ErrorHandler.handleError(activity, e);
                         }
                     }
                 });

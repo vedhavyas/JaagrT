@@ -24,11 +24,12 @@ import com.parse.ParseObject;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.Utilities;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,7 +77,7 @@ public class PickPicture extends Activity {
                 originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                 cropImageView.setImageBitmap(originalImage);
             } catch (IOException e) {
-                e.printStackTrace();
+                ErrorHandler.handleError(activity, e);
             }
         }
     }
@@ -167,7 +168,7 @@ public class PickPicture extends Activity {
                                 JSONObject data = mainObject.getJSONObject("data");
                                 new DownloadImage(pDialog).execute(data.getString("url"));
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                ErrorHandler.handleError(activity, e);
                                 pDialog.cancel();
                             }
                         }

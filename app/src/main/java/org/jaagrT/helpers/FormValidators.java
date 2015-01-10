@@ -1,4 +1,4 @@
-package org.jaagrT.utilities;
+package org.jaagrT.helpers;
 
 import android.support.annotation.NonNull;
 

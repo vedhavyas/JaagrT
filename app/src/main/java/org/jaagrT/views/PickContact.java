@@ -19,13 +19,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.jaagrT.R;
-import org.jaagrT.adapters.RecyclerViewAdapter;
+import org.jaagrT.adapters.ContactsAdapter;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.UserContact;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class PickContact extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         basicController = BasicController.getInstance(activity);
-        recList = (RecyclerView) findViewById(R.id.cardList);
+        recList = (RecyclerView) findViewById(R.id.recyclerView);
         final SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         swipeRefresh.setColorSchemeResources(R.color.teal_300,
                 R.color.teal_400,
@@ -145,7 +146,7 @@ public class PickContact extends ActionBarActivity {
                     return contactInfo1.getName().compareTo(contactInfo2.getName());
                 }
             });
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(contacts);
+            ContactsAdapter adapter = new ContactsAdapter(contacts);
             adapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position) {
@@ -180,7 +181,7 @@ public class PickContact extends ActionBarActivity {
                 Cursor emailCursor = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                         ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id, null, null);
                 if (emailCursor.getCount() > 0) {
-                    UserContact contact = new UserContact(id, name, getResources().getDrawable(R.drawable.ic_contact_default_pic));
+                    UserContact contact = new UserContact(id, name);
                     while (emailCursor.moveToNext()) {
                         contact.addEmail(emailCursor.getString(emailCursor
                                 .getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA)));
@@ -190,7 +191,7 @@ public class PickContact extends ActionBarActivity {
                     Cursor picCursor = getContentResolver().query(photoUri,
                             new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
                     if (picCursor.moveToFirst()) {
-                        contact.setImage(picCursor.getBlob(0));
+                        contact.setProfilePic(picCursor.getBlob(0));
                     }
                     picCursor.close();
 
@@ -237,7 +238,7 @@ public class PickContact extends ActionBarActivity {
             if (fullContactList != null) {
                 showContacts(fullContactList);
             } else {
-                AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+                AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.ERROR_UNKNOWN, ErrorHandler.OKAY);
             }
         }
     }
@@ -269,7 +270,7 @@ public class PickContact extends ActionBarActivity {
                 if (fullContactList != null) {
                     showContacts(fullContactList);
                 } else {
-                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.ERROR_UNKNOWN, Constants.OKAY);
+                    AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.ERROR_UNKNOWN, ErrorHandler.OKAY);
                 }
             }
         }

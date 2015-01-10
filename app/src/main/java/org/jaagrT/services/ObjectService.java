@@ -10,7 +10,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import org.jaagrT.utilities.Constants;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,7 +25,6 @@ public class ObjectService extends Service {
     private static final String HEADERS = "TIME  ------------------  STATUS";
     private static final String UPDATE_STARTED = "Update started...";
     private static final String UPDATING_OBJECTS = "Updating objects...";
-    private static final String THREAD_INTERRUPTED = "Thread interrupted...";
     private static final int MILLIS = 60000;
     private static final int UPDATE_INTERVAL = 30;
 
@@ -141,7 +141,7 @@ public class ObjectService extends Service {
                 bw.flush();
                 bw.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                ErrorHandler.handleError(null, e);
             }
         }
         try {
@@ -151,7 +151,7 @@ public class ObjectService extends Service {
             bw.flush();
             bw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorHandler.handleError(null, e);
         }
     }
 
@@ -195,8 +195,8 @@ public class ObjectService extends Service {
                         Thread.sleep(updateInterval);
                         writeToLog(UPDATING_OBJECTS);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        writeToLog(THREAD_INTERRUPTED);
+                        ErrorHandler.handleError(null, e);
+                        writeToLog("Thread interrupted...");
                     }
                 }
             }

@@ -5,15 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 
+import org.jaagrT.helpers.Constants;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.model.UserContact;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.Utilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,29 +79,22 @@ public class BasicController {
         return db.getContact(contactID);
     }
 
-    public void saveCircles(List<ParseObject> parseObjects) {
+    public void saveCircles(List<ParseObject> parseObjects, UserContact contact) {
         if (parseObjects.size() > 0) {
             List<User> circles = new ArrayList<>();
             for (ParseObject parseObject : parseObjects) {
                 final User circle = new User();
                 circle.setObjectID(parseObject.getObjectId());
-                circle.setFirstName(parseObject.getString(Constants.USER_FIRST_NAME));
+                if (parseObject.getString(Constants.USER_FIRST_NAME) == null) {
+                    circle.setFirstName(contact.getName());
+                } else {
+                    circle.setFirstName(parseObject.getString(Constants.USER_FIRST_NAME));
+                }
                 circle.setLastName(parseObject.getString(Constants.USER_LAST_NAME));
                 circle.setPhoneNumber(parseObject.getString(Constants.USER_PRIMARY_PHONE));
                 circle.setPhoneVerified(parseObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
                 circle.setMemberOfMasterCircle(parseObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                 circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
-                if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
-                    parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE)
-                            .getDataInBackground(new GetDataCallback() {
-                                @Override
-                                public void done(byte[] thumbnailBytes, ParseException e) {
-                                    if (e == null) {
-                                        circle.setThumbnailPicture(Utilities.getBitmapFromBlob(thumbnailBytes));
-                                    }
-                                }
-                            });
-                }
                 circles.add(circle);
             }
 

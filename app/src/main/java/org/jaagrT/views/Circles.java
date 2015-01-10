@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +22,21 @@ import com.parse.ParseRelation;
 import com.parse.SaveCallback;
 
 import org.jaagrT.R;
+import org.jaagrT.adapters.CirclesAdapter;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
+import org.jaagrT.listeners.OnItemClickListener;
+import org.jaagrT.listeners.SwipeDismissListener;
+import org.jaagrT.model.User;
 import org.jaagrT.model.UserContact;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.AlertDialogs;
-import org.jaagrT.utilities.Constants;
-import org.jaagrT.utilities.Utilities;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -34,9 +44,16 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class Circles extends Fragment {
 
     private static final String UPDATING_CIRCLES = "Updating Circles...";
+    private static final String ARE_YOU_SURE = "Are you sure?";
+    private static final String DELETE = "Yes,delete Circle!";
+    private static final String NO = "No";
+
     private Activity activity;
     private BasicController basicController;
     private ParseObject userDetailsObject;
+
+    private RecyclerView recList;
+
 
     public Circles() {
         // Required empty public constructor
@@ -67,6 +84,23 @@ public class Circles extends Fragment {
         activity = getActivity();
         basicController = BasicController.getInstance(activity);
         userDetailsObject = ObjectService.getUserDetailsObject();
+        recList = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        final SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
+        swipeRefresh.setColorSchemeResources(R.color.teal_300,
+                R.color.teal_400,
+                R.color.teal_500,
+                R.color.teal_700,
+                R.color.teal_900);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+            }
+        });
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(activity);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+
         FloatingActionButton addBtn = (FloatingActionButton) rootView.findViewById(R.id.addBtn);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +108,7 @@ public class Circles extends Fragment {
                 startPickContactActivity();
             }
         });
+        new GetCircles().execute();
     }
 
     private void startPickContactActivity() {
@@ -101,10 +136,10 @@ public class Circles extends Fragment {
                                 @Override
                                 public void done(ParseException e) {
                                     if (e == null) {
-                                        new SaveCircle(pDialog, parseObjects).execute();
+                                        new SaveCircle(pDialog, parseObjects, contact).execute();
                                     } else {
                                         pDialog.cancel();
-                                        AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
+                                        ErrorHandler.handleError(activity, e);
                                     }
                                 }
                             });
@@ -115,22 +150,70 @@ public class Circles extends Fragment {
                     }
                 } else {
                     pDialog.cancel();
-                    AlertDialogs.showErrorDialog(activity, Constants.ERROR, Constants.CHECK_INTERNET, Constants.OKAY);
+                    ErrorHandler.handleError(activity, e);
                 }
 
             }
         });
     }
 
+    private void showCircles(final List<User> circles) {
+        if (circles != null) {
+            Collections.sort(circles, new Comparator<User>() {
+                @Override
+                public int compare(User circle1, User circle2) {
+                    return circle1.getFirstName().compareTo(circle2.getFirstName());
+                }
+            });
+            final CirclesAdapter adapter = new CirclesAdapter(circles);
+            adapter.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(View v, int position) {
+                    Utilities.snackIt(activity, circles.get(position).getFirstName(), "Okay");
+                }
+            });
+            recList.setAdapter(adapter);
 
-    private class SaveCircle extends AsyncTask<Void, Void, Void> {
+            SwipeDismissListener dismissListener = new SwipeDismissListener(recList, new SwipeDismissListener.SwipeListener() {
+                @Override
+                public boolean canSwipe(int position) {
+                    return true;
+                }
+
+                @Override
+                public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                    for (int position : reverseSortedPositions) {
+                        circles.remove(position);
+                        adapter.notifyItemRemoved(position);
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                    for (int position : reverseSortedPositions) {
+                        circles.remove(position);
+                        adapter.notifyItemRemoved(position);
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            });
+
+            recList.addOnItemTouchListener(dismissListener);
+        }
+    }
+
+
+    private class SaveCircle extends AsyncTask<Void, Void, List<User>> {
 
         private SweetAlertDialog pDialog;
         private List<ParseObject> circles;
+        private UserContact contact;
 
-        private SaveCircle(SweetAlertDialog pDialog, List<ParseObject> circles) {
+        private SaveCircle(SweetAlertDialog pDialog, List<ParseObject> circles, UserContact contact) {
             this.pDialog = pDialog;
             this.circles = circles;
+            this.contact = contact;
         }
 
         @Override
@@ -140,16 +223,30 @@ public class Circles extends Fragment {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            basicController.saveCircles(circles);
-            return null;
+        protected List<User> doInBackground(Void... voids) {
+            basicController.saveCircles(circles, contact);
+            return basicController.getCircles();
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(List<User> circles) {
+            super.onPostExecute(circles);
             pDialog.cancel();
-            Utilities.snackIt(activity, "Circle added", "Okay");
+            showCircles(circles);
+        }
+    }
+
+    private class GetCircles extends AsyncTask<Void, Void, List<User>> {
+
+        @Override
+        protected List<User> doInBackground(Void... params) {
+            return basicController.getCircles();
+        }
+
+        @Override
+        protected void onPostExecute(List<User> circles) {
+            super.onPostExecute(circles);
+            showCircles(circles);
         }
     }
 

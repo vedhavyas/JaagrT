@@ -8,8 +8,8 @@ import com.parse.ParseACL;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
+import org.jaagrT.helpers.Constants;
 import org.jaagrT.services.ObjectService;
-import org.jaagrT.utilities.Constants;
 
 /**
  * Authored by vedhavyas on 1/12/14.
