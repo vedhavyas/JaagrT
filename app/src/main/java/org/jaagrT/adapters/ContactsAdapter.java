@@ -1,5 +1,6 @@
 package org.jaagrT.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +24,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
 
     private List<UserContact> contacts;
     private OnItemClickListener onItemClickListener;
+    private Context context;
 
-    public ContactsAdapter(List<UserContact> contacts) {
+    public ContactsAdapter(Context context, List<UserContact> contacts) {
+        this.context = context;
         this.contacts = contacts;
     }
 
@@ -44,7 +47,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         if (contact.getThumbnailPicture() != null) {
             holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
         } else {
-            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(contact.getName()));
+            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, contact.getName()));
         }
     }
 

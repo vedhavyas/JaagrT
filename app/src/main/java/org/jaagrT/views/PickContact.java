@@ -146,7 +146,7 @@ public class PickContact extends ActionBarActivity {
                     return contactInfo1.getName().compareTo(contactInfo2.getName());
                 }
             });
-            ContactsAdapter adapter = new ContactsAdapter(contacts);
+            ContactsAdapter adapter = new ContactsAdapter(activity, contacts);
             adapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position) {

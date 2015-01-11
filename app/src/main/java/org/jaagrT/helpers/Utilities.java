@@ -119,11 +119,26 @@ public class Utilities {
         return reSizedBitmap;
     }
 
-    public static Drawable getRoundedDrawable(String data) {
-        ColorGenerator colorGenerator = ColorGenerator.DEFAULT;
+    public static Drawable getRoundedDrawable(Context context, String data) {
+        ColorGenerator colorGenerator = ColorGenerator.create(context.getResources().getIntArray(R.array.colorsList));
+        int fontSize = 50;
+
+        String finalData = "";
+        String[] dataSet = data.split(" ");
+        if (dataSet.length > 1) {
+            for (String set : dataSet) {
+                finalData += set.substring(0, 1);
+            }
+        } else {
+            finalData = data.substring(0, 1);
+        }
 
         return RoundDrawable.builder()
-                .buildRound(data.substring(0, 1), colorGenerator.getColor(data));
+                .beginConfig()
+                .fontSize(fontSize)
+                .toUpperCase()
+                .endConfig()
+                .buildRound(finalData, colorGenerator.getRandomColor());
     }
 
 

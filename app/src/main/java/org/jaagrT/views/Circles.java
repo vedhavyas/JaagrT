@@ -165,7 +165,7 @@ public class Circles extends Fragment {
                     return circle1.getFirstName().compareTo(circle2.getFirstName());
                 }
             });
-            final CirclesAdapter adapter = new CirclesAdapter(circles);
+            final CirclesAdapter adapter = new CirclesAdapter(activity, circles);
             adapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position) {

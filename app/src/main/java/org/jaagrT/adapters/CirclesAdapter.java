@@ -1,5 +1,6 @@
 package org.jaagrT.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +24,10 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
 
     private List<User> circles;
     private OnItemClickListener onItemClickListener;
+    private Context context;
 
-    public CirclesAdapter(List<User> circles) {
+    public CirclesAdapter(Context context, List<User> circles) {
+        this.context = context;
         this.circles = circles;
     }
 
@@ -44,7 +47,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
         if (contact.getThumbnailPicture() != null) {
             holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
         } else {
-            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(contact.getFirstName()));
+            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, contact.getFirstName()));
         }
     }
 

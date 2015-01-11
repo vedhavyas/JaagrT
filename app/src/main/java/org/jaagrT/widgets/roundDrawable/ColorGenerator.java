@@ -1,5 +1,6 @@
 package org.jaagrT.widgets.roundDrawable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -25,6 +26,7 @@ public class ColorGenerator {
         ));
     }
 
+
     private final List<Integer> mColors;
     private final Random mRandom;
 
@@ -35,6 +37,20 @@ public class ColorGenerator {
 
     public static ColorGenerator create(List<Integer> colorList) {
         return new ColorGenerator(colorList);
+    }
+
+    public static ColorGenerator create(int[] colorList) {
+        return new ColorGenerator(getListFromInt(colorList));
+    }
+
+    private static List<Integer> getListFromInt(int[] colorsList) {
+
+        List<Integer> newColorsList = new ArrayList<>();
+        for (int color : colorsList) {
+            newColorsList.add(color);
+        }
+
+        return newColorsList;
     }
 
     public int getRandomColor() {

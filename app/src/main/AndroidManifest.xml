@@ -83,6 +83,14 @@
             android:name=".views.PickContact"
             android:label="@string/title_activity_pick_contact"
             android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".broadcast.receivers.GeneralReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
