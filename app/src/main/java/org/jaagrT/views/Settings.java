@@ -141,7 +141,7 @@ public class Settings extends Fragment {
         startScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(startScreenIntent);
-        activity.overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
+        activity.overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
     private void clearUserData() {
