@@ -43,7 +43,11 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
     @Override
     public void onBindViewHolder(CirclesAdapter.ContactViewHolder holder, int position) {
         User contact = circles.get(position);
-        holder.title.setText(contact.getFirstName());
+        String name = contact.getFirstName();
+        if (contact.getLastName() != null) {
+            name += " " + contact.getLastName();
+        }
+        holder.title.setText(name);
         if (contact.getThumbnailPicture() != null) {
             holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
         } else {

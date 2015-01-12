@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 
 import it.neokree.materialnavigationdrawer.MaterialAccount;
@@ -26,18 +27,21 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private MaterialAccount account;
     private Activity activity;
     private MaterialSection panicSection;
+    private BasicController basicController;
 
     @Override
     public void init(Bundle bundle) {
         activity = this;
+        basicController = BasicController.getInstance(activity);
         account = new MaterialAccount("", "", new ColorDrawable(Color.parseColor(TRANSPARENT_COLOR)), getResources().getDrawable(R.drawable.ic_nav_background));
         this.addAccount(account);
-        panicSection = newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
+        panicSection = this.newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
-        MaterialSection circleSection = newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
-                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
+        MaterialSection circleSection = this.newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
+                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700))
+                .setNotifications(basicController.getEntryCount(Database.CIRCLES_TABLE));
 
-        MaterialSection settingsSection = newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
+        MaterialSection settingsSection = this.newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
 

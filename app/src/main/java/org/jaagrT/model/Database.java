@@ -66,6 +66,8 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_PICTURE + " BLOB)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS  ";
     private static final String SQL_SELECT_ALL_QUERY = "SELECT * FROM ";
+
+
     private static Database dbFactory;
 
     private Database(Context context) {
@@ -402,5 +404,11 @@ public class Database extends SQLiteOpenHelper {
         } else {
             return null;
         }
+    }
+
+    public int getEntryCount(String tableName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = SQL_SELECT_ALL_QUERY + tableName;
+        return db.rawQuery(countQuery, null).getCount();
     }
 }

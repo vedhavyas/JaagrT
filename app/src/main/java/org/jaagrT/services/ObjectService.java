@@ -2,34 +2,31 @@ package org.jaagrT.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.IBinder;
 
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Calendar;
+import java.util.List;
 
 public class ObjectService extends Service {
 
-    private static final String OBJECT_LOG_FILE = "Object_log.txt";
-    private static final String HEADERS = "TIME  ------------------  STATUS";
     private static final String UPDATE_STARTED = "Update started...";
     private static final String UPDATING_OBJECTS = "Updating objects...";
     private static final int MILLIS = 60000;
     private static final int UPDATE_INTERVAL = 30;
-
-
     private static ParseObject userDetailsObject, userPreferenceObject;
+    private static List<ParseObject> userCircles;
+    private static BasicController basicController;
+
+
     private boolean objectLogThreadStatus;
 
     public ObjectService() {
@@ -51,58 +48,48 @@ public class ObjectService extends Service {
         ObjectService.userPreferenceObject = userPreferenceObject;
     }
 
+    public static List<ParseObject> getUserCircles() {
+        return userCircles;
+    }
+
     private static void fetchObjectsSequentially() {
-        if (userDetailsObject == null) {
-            ParseUser parseUser = ParseUser.getCurrentUser();
-            if (parseUser != null) {
-                parseUser.getParseObject(Constants.USER_DETAILS_ROW)
-                        .fetchInBackground(new GetCallback<ParseObject>() {
-                            @Override
-                            public void done(ParseObject userDetailsObject, ParseException e) {
-                                if (e == null) {
-                                    setUserDetailsObject(userDetailsObject);
-                                    fetchUserPreferenceObject();
-                                }
-                            }
-                        });
+        ParseUser parseUser = ParseUser.getCurrentUser();
+        if (parseUser != null) {
+            try {
+                userDetailsObject = parseUser.getParseObject(Constants.USER_DETAILS_ROW).fetch();
+                fetchUserCircles();
+                fetchUserPreferenceObject();
+            } catch (ParseException e) {
+                ErrorHandler.handleError(null, e);
             }
-        } else {
-            userDetailsObject.fetchInBackground(new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject userDetailsObject, ParseException e) {
-                    if (e == null) {
-                        setUserDetailsObject(userDetailsObject);
-                        fetchUserPreferenceObject();
-                    }
-                }
-            });
         }
     }
 
     private static void fetchUserPreferenceObject() {
-        if (userPreferenceObject == null) {
-            if (userDetailsObject != null) {
-                userDetailsObject.getParseObject(Constants.USER_COMMUNICATION_PREFERENCE_ROW)
-                        .fetchInBackground(new GetCallback<ParseObject>() {
-                            @Override
-                            public void done(ParseObject userPreferenceObject, ParseException e) {
-                                if (e == null) {
-                                    setUserPreferenceObject(userPreferenceObject);
-                                }
-                            }
-                        });
-            } else {
-                fetchObjectsSequentially();
+        if (userDetailsObject != null) {
+            try {
+                userPreferenceObject = userDetailsObject.getParseObject(Constants.USER_COMMUNICATION_PREFERENCE_ROW).fetch();
+            } catch (ParseException e) {
+                ErrorHandler.handleError(null, e);
             }
         } else {
-            userPreferenceObject.fetchInBackground(new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject userPreferenceObject, ParseException e) {
-                    if (e == null) {
-                        setUserPreferenceObject(userPreferenceObject);
-                    }
+            fetchObjectsSequentially();
+        }
+    }
+
+    private static void fetchUserCircles() {
+        if (userDetailsObject != null) {
+            ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
+            try {
+                userCircles = circleRelation.getQuery().find();
+                if (basicController != null) {
+                    basicController.updateCircles(userCircles);
                 }
-            });
+            } catch (ParseException e) {
+                ErrorHandler.handleError(null, e);
+            }
+        } else {
+            fetchObjectsSequentially();
         }
     }
 
@@ -114,58 +101,18 @@ public class ObjectService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        basicController = BasicController.getInstance(this);
+        startThreadIfPossible();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        userDetailsObject = null;
-        userPreferenceObject = null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startThreadIfPossible();
         return START_STICKY;
-    }
-
-    private void writeToLog(String message) {
-        File dir = Environment.getExternalStorageDirectory();
-        File file = new File(dir, OBJECT_LOG_FILE);
-        String data = getLogData(message);
-        if (!file.exists()) {
-            try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-                bw.write(HEADERS);
-                bw.newLine();
-                bw.flush();
-                bw.close();
-            } catch (IOException e) {
-                ErrorHandler.handleError(null, e);
-            }
-        }
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            bw.write(data);
-            bw.newLine();
-            bw.flush();
-            bw.close();
-        } catch (IOException e) {
-            ErrorHandler.handleError(null, e);
-        }
-    }
-
-    private String getLogData(String message) {
-        String data;
-        Calendar calendar = Calendar.getInstance();
-        String date = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-        String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
-        String minutes = String.valueOf(calendar.get(Calendar.MINUTE));
-        String seconds = String.valueOf(calendar.get(Calendar.SECOND));
-        data = date + "/" + month + "/" + year + "-" + hour + ":" + minutes + ":" + seconds + " ------ " + message;
-        return data;
     }
 
     private void startThreadIfPossible() {
@@ -189,14 +136,14 @@ public class ObjectService extends Service {
             //TODO need to create a prefs to control the update
             while (true) {
                 synchronized (this) {
-                    writeToLog(UPDATE_STARTED);
+                    Utilities.writeToLog(UPDATE_STARTED);
                     fetchObjectsSequentially();
                     try {
                         Thread.sleep(updateInterval);
-                        writeToLog(UPDATING_OBJECTS);
+                        Utilities.writeToLog(UPDATING_OBJECTS);
                     } catch (InterruptedException e) {
                         ErrorHandler.handleError(null, e);
-                        writeToLog("Thread interrupted...");
+                        Utilities.writeToLog("Thread interrupted...");
                     }
                 }
             }

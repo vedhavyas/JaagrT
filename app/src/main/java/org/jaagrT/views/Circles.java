@@ -132,6 +132,11 @@ public class Circles extends Fragment {
                             for (ParseObject parseObject : parseObjects) {
                                 relation.add(parseObject);
                             }
+                            List<ParseObject> userCircles = ObjectService.getUserCircles();
+                            if (userCircles != null) {
+                                userCircles.addAll(parseObjects);
+                            }
+
                             userDetailsObject.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {

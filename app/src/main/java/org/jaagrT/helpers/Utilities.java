@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,8 +16,13 @@ import org.jaagrT.R;
 import org.jaagrT.widgets.roundDrawable.ColorGenerator;
 import org.jaagrT.widgets.roundDrawable.RoundDrawable;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * Authored by vedhavyas on 3/12/14.
@@ -25,6 +31,8 @@ import java.io.ByteArrayOutputStream;
 
 public class Utilities {
 
+    private static final String OBJECT_LOG_FILE = "Object_log.txt";
+    private static final String HEADERS = "TIME  ------------------  STATUS";
 
     public static void logData(String data, int logType) {
         if (data != null) {
@@ -126,8 +134,8 @@ public class Utilities {
         String finalData = "";
         String[] dataSet = data.split(" ");
         if (dataSet.length > 1) {
-            for (String set : dataSet) {
-                finalData += set.substring(0, 1);
+            for (int i = 0; i < 2; i++) {
+                finalData += dataSet[i].substring(0, 1);
             }
         } else {
             finalData = data.substring(0, 1);
@@ -139,6 +147,45 @@ public class Utilities {
                 .toUpperCase()
                 .endConfig()
                 .buildRound(finalData, colorGenerator.getRandomColor());
+    }
+
+    public static void writeToLog(String message) {
+        File dir = Environment.getExternalStorageDirectory();
+        File file = new File(dir, OBJECT_LOG_FILE);
+        String data = getLogData(message);
+        if (!file.exists()) {
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+                bw.write(HEADERS);
+                bw.newLine();
+                bw.flush();
+                bw.close();
+            } catch (IOException e) {
+                ErrorHandler.handleError(null, e);
+            }
+        }
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+            bw.write(data);
+            bw.newLine();
+            bw.flush();
+            bw.close();
+        } catch (IOException e) {
+            ErrorHandler.handleError(null, e);
+        }
+    }
+
+    private static String getLogData(String message) {
+        String data;
+        Calendar calendar = Calendar.getInstance();
+        String date = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String minutes = String.valueOf(calendar.get(Calendar.MINUTE));
+        String seconds = String.valueOf(calendar.get(Calendar.SECOND));
+        data = date + "/" + month + "/" + year + "-" + hour + ":" + minutes + ":" + seconds + " ------ " + message;
+        return data;
     }
 
 

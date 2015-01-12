@@ -172,7 +172,7 @@
                         style="@style/SettingsButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/ic_logout"
+                        android:drawableEnd="@drawable/ic_right_arrow"
                         android:text="@string/logout" />
 
 

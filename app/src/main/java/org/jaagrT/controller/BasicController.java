@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
 
 import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.model.UserContact;
@@ -86,7 +89,12 @@ public class BasicController {
                 final User circle = new User();
                 circle.setObjectID(parseObject.getObjectId());
                 if (parseObject.getString(Constants.USER_FIRST_NAME) == null) {
-                    circle.setFirstName(contact.getName());
+                    if (contact != null) {
+                        circle.setFirstName(contact.getName());
+                    } else {
+                        String[] emailSet = parseObject.getString(Constants.USER_PRIMARY_EMAIL).split("@");
+                        circle.setFirstName(emailSet[0]);
+                    }
                 } else {
                     circle.setFirstName(parseObject.getString(Constants.USER_FIRST_NAME));
                 }
@@ -95,11 +103,23 @@ public class BasicController {
                 circle.setPhoneVerified(parseObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
                 circle.setMemberOfMasterCircle(parseObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                 circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
+                if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
+                    try {
+                        circle.setThumbnailPicture(Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
+                    } catch (ParseException e) {
+                        ErrorHandler.handleError(null, e);
+                    }
+                }
                 circles.add(circle);
             }
 
             db.saveCircles(circles);
         }
+    }
+
+    public void updateCircles(List<ParseObject> circles) {
+        db.dropTable(Database.CIRCLES_TABLE);
+        saveCircles(circles, null);
     }
 
     public List<User> getCircles() {
@@ -110,4 +130,7 @@ public class BasicController {
         return db.getCircle(circleID);
     }
 
+    public int getEntryCount(String tableName) {
+        return db.getEntryCount(tableName);
+    }
 }
