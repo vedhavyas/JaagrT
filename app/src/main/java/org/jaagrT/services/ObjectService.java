@@ -2,6 +2,7 @@ package org.jaagrT.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 
 import com.parse.ParseException;
@@ -18,16 +19,13 @@ import java.util.List;
 
 public class ObjectService extends Service {
 
-    private static final String UPDATE_STARTED = "Update started...";
-    private static final String UPDATING_OBJECTS = "Updating objects...";
     private static final int MILLIS = 60000;
-    private static final int UPDATE_INTERVAL = 30;
+    private static final int UPDATE_INTERVAL = 60;
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
-
-
-    private boolean objectLogThreadStatus;
+    private static Handler handler;
+    private static ObjectUpdateRunnable runnable;
 
     public ObjectService() {
     }
@@ -93,6 +91,18 @@ public class ObjectService extends Service {
         }
     }
 
+    private static void stopHandlerJob() {
+        handler.removeCallbacks(runnable);
+    }
+
+    private static void clearAllObjects() {
+        userCircles = null;
+        userDetailsObject = null;
+        userPreferenceObject = null;
+        runnable = null;
+        handler = null;
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -102,12 +112,16 @@ public class ObjectService extends Service {
     public void onCreate() {
         super.onCreate();
         basicController = BasicController.getInstance(this);
-        startThreadIfPossible();
+        handler = new Handler();
+        runnable = new ObjectUpdateRunnable();
+        runnable.run();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopHandlerJob();
+        clearAllObjects();
     }
 
     @Override
@@ -115,38 +129,14 @@ public class ObjectService extends Service {
         return START_STICKY;
     }
 
-    private void startThreadIfPossible() {
-        if (!objectLogThreadStatus) {
-            objectLogThreadStatus = true;
-            Thread objectThread = new Thread(new ObjectUpdateRunnable(UPDATE_INTERVAL));
-            objectThread.start();
-        }
-    }
-
     private class ObjectUpdateRunnable implements Runnable {
-
-        private long updateInterval;
-
-        private ObjectUpdateRunnable(int updateInterval) {
-            this.updateInterval = updateInterval * MILLIS;
-        }
-
         @Override
         public void run() {
-            //TODO need to create a prefs to control the update
-            while (true) {
-                synchronized (this) {
-                    Utilities.writeToLog(UPDATE_STARTED);
-                    fetchObjectsSequentially();
-                    try {
-                        Thread.sleep(updateInterval);
-                        Utilities.writeToLog(UPDATING_OBJECTS);
-                    } catch (InterruptedException e) {
-                        ErrorHandler.handleError(null, e);
-                        Utilities.writeToLog("Thread interrupted...");
-                    }
-                }
-            }
+            Utilities.writeToLog("Updating objects");
+            fetchObjectsSequentially();
+            handler.postDelayed(runnable, UPDATE_INTERVAL * MILLIS);
         }
     }
+
+
 }

@@ -127,6 +127,8 @@ public class Utilities {
         return reSizedBitmap;
     }
 
+
+    //TODO remove all the logging methods
     public static Drawable getRoundedDrawable(Context context, String data) {
         ColorGenerator colorGenerator = ColorGenerator.create(context.getResources().getIntArray(R.array.colorsList));
         int fontSize = 50;

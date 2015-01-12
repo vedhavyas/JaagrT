@@ -25,7 +25,7 @@ public class ErrorHandler {
 
     public static void handleError(Activity activity, ParseException e) {
 
-        if (e != null) {
+        if (activity != null && e != null) {
             if (e.getCode() == ParseException.ACCOUNT_ALREADY_LINKED) {
                 AlertDialogs.showErrorDialog(activity, ERROR, ACCOUNT_ALREADY_LINKED, OKAY);
             } else if (e.getCode() == ParseException.CONNECTION_FAILED) {
@@ -47,9 +47,10 @@ public class ErrorHandler {
             } else {
                 AlertDialogs.showErrorDialog(activity, ERROR, e.getMessage(), OKAY);
             }
-        } else {
-            AlertDialogs.showErrorDialog(activity, ERROR, ERROR_UNKNOWN, OKAY);
+        } else if (activity == null && e != null) {
+            Utilities.logData(e.getMessage(), Log.ERROR);
         }
+
     }
 
     public static void handleError(Activity activity, Exception e) {
