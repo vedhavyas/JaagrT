@@ -2,8 +2,6 @@ package org.jaagrT.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.IBinder;
 
 import com.parse.ParseException;
@@ -20,13 +18,14 @@ import java.util.List;
 
 public class ObjectService extends Service {
 
-    private static final int MILLIS = 60000;
-    private static final int UPDATE_INTERVAL = 60;
+    private static final int MIN_IN_MILLIS = 60000;
+    private static final int INTERVAL_IN_MINS = 60;
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
-    private static Handler handler;
-    private static AsyncTaskRunnable asyncTaskRunnable;
+    private static Thread objectThread;
+    private static UpdateRunnable updateRunnable;
+    private static boolean shouldLoop;
 
     public ObjectService() {
     }
@@ -49,6 +48,14 @@ public class ObjectService extends Service {
 
     public static List<ParseObject> getUserCircles() {
         return userCircles;
+    }
+
+    public static boolean getShouldLoop() {
+        return shouldLoop;
+    }
+
+    public static void setShouldLoop(boolean decision) {
+        shouldLoop = decision;
     }
 
     private static void fetchObjectsSequentially() {
@@ -88,28 +95,25 @@ public class ObjectService extends Service {
         }
     }
 
-    public static void startHandlerJob() {
-        if (handler != null) {
-            handler.removeCallbacks(asyncTaskRunnable);
-        } else {
-            handler = new Handler();
+    public static void startObjectUpdateThread() {
+        if (updateRunnable == null) {
+            updateRunnable = new UpdateRunnable();
         }
-        asyncTaskRunnable = new AsyncTaskRunnable();
-        asyncTaskRunnable.run();
-    }
 
-    private static void stopHandlerJob() {
-        if (handler != null) {
-            handler.removeCallbacks(asyncTaskRunnable);
+        //TODO check this later
+        if (objectThread != null) {
+            objectThread.interrupt();
         }
+
+        setShouldLoop(true);
+        objectThread = new Thread(updateRunnable);
+        objectThread.start();
     }
 
     private static void clearAllObjects() {
         userCircles = null;
         userDetailsObject = null;
         userPreferenceObject = null;
-        asyncTaskRunnable = null;
-        handler = null;
     }
 
     @Override
@@ -121,13 +125,13 @@ public class ObjectService extends Service {
     public void onCreate() {
         super.onCreate();
         basicController = BasicController.getInstance(this);
-        startHandlerJob();
+        startObjectUpdateThread();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopHandlerJob();
+        setShouldLoop(false);
         clearAllObjects();
     }
 
@@ -136,21 +140,24 @@ public class ObjectService extends Service {
         return START_STICKY;
     }
 
-    private static class AsyncTaskRunnable implements Runnable {
+    private static class UpdateRunnable implements Runnable {
+
         @Override
         public void run() {
-            new UpdateObjects().execute();
-            handler.postDelayed(asyncTaskRunnable, UPDATE_INTERVAL * MILLIS);
+            Utilities.writeToLog("Started Thread...");
+            while (getShouldLoop()) {
+                Utilities.writeToLog("Updating objects...");
+                fetchObjectsSequentially();
+                try {
+                    Utilities.writeToLog("trying to sleep...");
+                    Thread.sleep(MIN_IN_MILLIS * INTERVAL_IN_MINS);
+                } catch (InterruptedException e) {
+                    setShouldLoop(false);
+                    ErrorHandler.handleError(null, e);
+                    Utilities.writeToLog("thread interrupted...");
+                    startObjectUpdateThread();
+                }
+            }
         }
     }
-
-    private static class UpdateObjects extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            Utilities.writeToLog("Updating objects...");
-            fetchObjectsSequentially();
-            return null;
-        }
-    }
-
 }

@@ -152,7 +152,7 @@ public class Circles extends Fragment {
                                 }
                             });
                         } else {
-                            ObjectService.startHandlerJob();
+                            ObjectService.startObjectUpdateThread();
                         }
                     } else {
                         //TODO take user to invite page
