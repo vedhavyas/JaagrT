@@ -2,6 +2,7 @@ package org.jaagrT.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 
@@ -25,7 +26,7 @@ public class ObjectService extends Service {
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
     private static Handler handler;
-    private static ObjectUpdateRunnable runnable;
+    private static AsyncTaskRunnable asyncTaskRunnable;
 
     public ObjectService() {
     }
@@ -70,8 +71,6 @@ public class ObjectService extends Service {
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
-        } else {
-            fetchObjectsSequentially();
         }
     }
 
@@ -86,20 +85,30 @@ public class ObjectService extends Service {
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
-        } else {
-            fetchObjectsSequentially();
         }
     }
 
+    public static void startHandlerJob() {
+        if (handler != null) {
+            handler.removeCallbacks(asyncTaskRunnable);
+        } else {
+            handler = new Handler();
+        }
+        asyncTaskRunnable = new AsyncTaskRunnable();
+        asyncTaskRunnable.run();
+    }
+
     private static void stopHandlerJob() {
-        handler.removeCallbacks(runnable);
+        if (handler != null) {
+            handler.removeCallbacks(asyncTaskRunnable);
+        }
     }
 
     private static void clearAllObjects() {
         userCircles = null;
         userDetailsObject = null;
         userPreferenceObject = null;
-        runnable = null;
+        asyncTaskRunnable = null;
         handler = null;
     }
 
@@ -112,9 +121,7 @@ public class ObjectService extends Service {
     public void onCreate() {
         super.onCreate();
         basicController = BasicController.getInstance(this);
-        handler = new Handler();
-        runnable = new ObjectUpdateRunnable();
-        runnable.run();
+        startHandlerJob();
     }
 
     @Override
@@ -129,14 +136,21 @@ public class ObjectService extends Service {
         return START_STICKY;
     }
 
-    private class ObjectUpdateRunnable implements Runnable {
+    private static class AsyncTaskRunnable implements Runnable {
         @Override
         public void run() {
-            Utilities.writeToLog("Updating objects");
-            fetchObjectsSequentially();
-            handler.postDelayed(runnable, UPDATE_INTERVAL * MILLIS);
+            new UpdateObjects().execute();
+            handler.postDelayed(asyncTaskRunnable, UPDATE_INTERVAL * MILLIS);
         }
     }
 
+    private static class UpdateObjects extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Utilities.writeToLog("Updating objects...");
+            fetchObjectsSequentially();
+            return null;
+        }
+    }
 
 }

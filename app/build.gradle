@@ -23,7 +23,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/Parse-1.7.1.jar')
     compile 'com.facebook.android:facebook-android-sdk:3.21.+'
-    compile 'com.nispok:snackbar:2.7.+'
+    compile 'com.nispok:snackbar:2.7.4'
     compile 'com.android.support:recyclerview-v7:21.+'
     compile 'com.android.support:cardview-v7:21.+'
     compile 'com.android.support:support-annotations:21.+'

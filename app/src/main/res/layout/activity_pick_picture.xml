@@ -26,31 +26,31 @@
             android:background="@drawable/accept_btn" />
 
         <Button
-            android:id="@+id/rotateBtn"
+            android:id="@+id/cancelBtn"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="start|bottom"
             android:layout_marginBottom="20dp"
             android:layout_marginStart="20dp"
-            android:background="@drawable/rotate_btn" />
+            android:background="@drawable/cancel_btn" />
 
         <Button
-            android:id="@+id/pickPicBtn"
+            android:id="@+id/moreBtn"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="start|top"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/pick_pic_btn" />
+            android:background="@drawable/more_btn" />
 
         <Button
-            android:id="@+id/skipBtn"
+            android:id="@+id/rotateBtn"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/forward_btn" />
+            android:background="@drawable/rotate_btn" />
 
     </FrameLayout>
 

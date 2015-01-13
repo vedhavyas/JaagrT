@@ -5,7 +5,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_pick" />
+            android:src="@drawable/ic_more" />
     </item>
 
 </layer-list>

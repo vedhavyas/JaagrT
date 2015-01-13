@@ -94,8 +94,8 @@ public class PickPicture extends Activity {
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
         Button acceptBtn = (Button) findViewById(R.id.acceptBtn);
         Button rotateBtn = (Button) findViewById(R.id.rotateBtn);
-        Button skipBtn = (Button) findViewById(R.id.skipBtn);
-        final Button pickPicBtn = (Button) findViewById(R.id.pickPicBtn);
+        Button cancelBtn = (Button) findViewById(R.id.cancelBtn);
+        final Button moreBtn = (Button) findViewById(R.id.moreBtn);
 
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,14 +114,14 @@ public class PickPicture extends Activity {
             }
         });
 
-        skipBtn.setOnClickListener(new View.OnClickListener() {
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 returnResult(Activity.RESULT_CANCELED);
             }
         });
 
-        pickPicBtn.setOnClickListener(new View.OnClickListener() {
+        moreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showChoosePictureDialog();

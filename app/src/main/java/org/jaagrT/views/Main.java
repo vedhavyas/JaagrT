@@ -3,8 +3,8 @@ package org.jaagrT.views;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
@@ -27,14 +27,18 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private Activity activity;
     private MaterialSection panicSection, circleSection;
     private BasicController basicController;
+    private Handler handler;
 
     @Override
     public void init(Bundle bundle) {
         activity = this;
+        handler = new Handler();
         basicController = BasicController.getInstance(activity);
         account = new MaterialAccount("", "", new ColorDrawable(Color.parseColor(TRANSPARENT_COLOR)), getResources().getDrawable(R.drawable.ic_nav_background));
         this.addAccount(account);
-        panicSection = this.newSection(PANIC, this.getResources().getDrawable(R.drawable.panic_btn_small), new Panic())
+        new Thread(new GetUserAsync()).start();
+
+        panicSection = this.newSection(PANIC, this.getResources().getDrawable(R.drawable.ic_panic_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
         circleSection = this.newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
@@ -48,32 +52,25 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         this.addBottomSection(settingsSection);
         allowArrowAnimation();
         addMultiPaneSupport();
-
-        new GetUserAsync().execute();
     }
 
-    @Override
-    protected MaterialSection backToSection(MaterialSection currentSection) {
-        return super.backToSection(panicSection);
-    }
 
-    private class GetUserAsync extends AsyncTask<Void, Void, Void> {
+    private class GetUserAsync implements Runnable {
+
         @Override
-        protected Void doInBackground(Void... params) {
-            BasicController basicController = BasicController.getInstance(activity);
+        public void run() {
             User localUser = basicController.getLocalUser();
             account.setTitle(localUser.getFirstName());
             account.setSubTitle(localUser.getEmail());
             if (localUser.getThumbnailPicture() != null) {
                 account.setPhoto(localUser.getThumbnailPicture());
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            notifyAccountDataChanged();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyAccountDataChanged();
+                }
+            });
         }
     }
 }

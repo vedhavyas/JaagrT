@@ -72,7 +72,7 @@ public class VerifyPhone extends Activity {
 
     private void setUpActivity() {
         ImageButton editPhoneBtn = (ImageButton) findViewById(R.id.editPhoneBtn);
-        Button skipBtn = (Button) findViewById(R.id.skipBtn);
+        Button skipBtn = (Button) findViewById(R.id.cancelBtn);
         Button verifyAndUpdateBtn = (Button) findViewById(R.id.nextBtn);
         Button sendSMSBtn = (Button) findViewById(R.id.sendSMSBtn);
         verifyCodeBox = (MaterialEditText) findViewById(R.id.verificationCodeBox);

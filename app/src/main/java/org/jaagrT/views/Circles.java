@@ -94,6 +94,7 @@ public class Circles extends Fragment {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                new UpdateCircles(swipeRefresh).execute();
             }
         });
         recList.setHasFixedSize(true);
@@ -108,6 +109,8 @@ public class Circles extends Fragment {
                 startPickContactActivity();
             }
         });
+        //TODO check if the fab is reacting as expected
+        addBtn.attachToRecyclerView(recList);
         new GetCircles().execute();
     }
 
@@ -148,6 +151,8 @@ public class Circles extends Fragment {
                                     }
                                 }
                             });
+                        } else {
+                            ObjectService.startHandlerJob();
                         }
                     } else {
                         //TODO take user to invite page
@@ -251,6 +256,39 @@ public class Circles extends Fragment {
         @Override
         protected void onPostExecute(List<User> circles) {
             super.onPostExecute(circles);
+            showCircles(circles);
+        }
+    }
+
+    private class UpdateCircles extends AsyncTask<Void, Void, List<User>> {
+        private SwipeRefreshLayout swipeRefresh;
+
+        private UpdateCircles(SwipeRefreshLayout swipeRefresh) {
+            this.swipeRefresh = swipeRefresh;
+        }
+
+        @Override
+        protected List<User> doInBackground(Void... voids) {
+            userDetailsObject = ObjectService.getUserDetailsObject();
+            if (userDetailsObject != null) {
+                ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
+                try {
+                    List<ParseObject> circles = circleRelation.getQuery().find();
+                    basicController.updateCircles(circles);
+                    return basicController.getCircles();
+                } catch (ParseException e) {
+                    ErrorHandler.handleError(null, e);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<User> circles) {
+            super.onPostExecute(circles);
+            if (swipeRefresh.isRefreshing()) {
+                swipeRefresh.setRefreshing(false);
+            }
             showCircles(circles);
         }
     }

@@ -145,9 +145,11 @@ public class Login extends Activity {
         forgotPassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO add forgot password logic
             }
         });
     }
+
 
     private void startGetUserDetails() {
         startAppService();

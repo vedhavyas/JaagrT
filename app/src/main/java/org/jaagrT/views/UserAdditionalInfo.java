@@ -61,7 +61,7 @@ public class UserAdditionalInfo extends Activity {
     private void setUpActivity() {
 
         Button nextBtn = (Button) findViewById(R.id.nextBtn);
-        Button skipBtn = (Button) findViewById(R.id.skipBtn);
+        Button skipBtn = (Button) findViewById(R.id.cancelBtn);
 
         firstNameBox = (MaterialEditText) findViewById(R.id.firstNameBox);
         lastNameBox = (MaterialEditText) findViewById(R.id.lastNameBox);

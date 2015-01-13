@@ -51,7 +51,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
         if (contact.getThumbnailPicture() != null) {
             holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
         } else {
-            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, contact.getFirstName()));
+            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, name));
         }
     }
 

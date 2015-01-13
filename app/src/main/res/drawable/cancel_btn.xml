@@ -5,7 +5,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_forward" />
+            android:src="@drawable/ic_cancel" />
     </item>
 
 </layer-list>

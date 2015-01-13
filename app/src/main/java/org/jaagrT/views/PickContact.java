@@ -23,7 +23,6 @@ import org.jaagrT.adapters.ContactsAdapter;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.AlertDialogs;
 import org.jaagrT.helpers.Constants;
-import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.UserContact;
@@ -235,11 +234,7 @@ public class PickContact extends ActionBarActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             pDialog.cancel();
-            if (fullContactList != null) {
-                showContacts(fullContactList);
-            } else {
-                AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.ERROR_UNKNOWN, ErrorHandler.OKAY);
-            }
+            showContacts(fullContactList);
         }
     }
 
@@ -267,12 +262,8 @@ public class PickContact extends ActionBarActivity {
             super.onPostExecute(aVoid);
             if (swipeRefresh.isRefreshing()) {
                 swipeRefresh.setRefreshing(false);
-                if (fullContactList != null) {
-                    showContacts(fullContactList);
-                } else {
-                    AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.ERROR_UNKNOWN, ErrorHandler.OKAY);
-                }
             }
+            showContacts(fullContactList);
         }
     }
 

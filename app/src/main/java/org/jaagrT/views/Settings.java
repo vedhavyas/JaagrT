@@ -4,6 +4,7 @@ package org.jaagrT.views;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -128,7 +129,7 @@ public class Settings extends Fragment {
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null) {
                     ParseUser.logOut();
-                    clearUserData();
+                    new ClearUserDetails().execute();
                 }
 
                 startStartScreenActivity();
@@ -142,13 +143,6 @@ public class Settings extends Fragment {
         startScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(startScreenIntent);
         activity.overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
-    }
-
-    private void clearUserData() {
-        basicController.dropTable(Database.CIRCLES_TABLE);
-        basicController.dropTable(Database.USER_TABLE);
-        prefs.edit().clear().apply();
-        stopService();
     }
 
     private void stopService() {
@@ -375,5 +369,16 @@ public class Settings extends Fragment {
         }
 
         dialog.build().show();
+    }
+
+    private class ClearUserDetails extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            basicController.dropTable(Database.CIRCLES_TABLE);
+            basicController.dropTable(Database.USER_TABLE);
+            prefs.edit().clear().apply();
+            stopService();
+            return null;
+        }
     }
 }
