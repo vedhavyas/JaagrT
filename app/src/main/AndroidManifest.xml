@@ -86,10 +86,11 @@
             android:screenOrientation="portrait" />
 
         <receiver
-            android:name=".broadcast.receivers.GeneralReceiver"
+            android:name=".broadcast.receivers.UpdateReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="org.jaagrT.action.ACTION_UPDATE_OBJECTS" />
             </intent-filter>
         </receiver>
     </application>

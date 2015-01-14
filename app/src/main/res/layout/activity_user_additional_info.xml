@@ -33,6 +33,8 @@
             android:textCursorDrawable="@drawable/edit_text_cursor"
             app:baseColor="@color/black"
             app:floatingLabel="highlight"
+            app:iconLeft="@drawable/ic_account"
+            app:iconPadding="0dp"
             app:minCharacters="3"
             app:primaryColor="@color/teal_400" />
 
@@ -45,6 +47,8 @@
             android:textCursorDrawable="@drawable/edit_text_cursor"
             app:baseColor="@color/black"
             app:floatingLabel="highlight"
+            app:iconLeft="@drawable/ic_account"
+            app:iconPadding="0dp"
             app:minCharacters="1"
             app:primaryColor="@color/teal_400" />
 
@@ -57,6 +61,8 @@
             android:textCursorDrawable="@drawable/edit_text_cursor"
             app:baseColor="@color/black"
             app:floatingLabel="highlight"
+            app:iconLeft="@drawable/ic_phone"
+            app:iconPadding="0dp"
             app:minCharacters="10"
             app:primaryColor="@color/teal_400" />
 

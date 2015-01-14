@@ -152,7 +152,7 @@ public class Circles extends Fragment {
                                 }
                             });
                         } else {
-                            ObjectService.startObjectUpdateThread();
+                            ObjectService.updateObjects();
                         }
                     } else {
                         //TODO take user to invite page
@@ -195,6 +195,7 @@ public class Circles extends Fragment {
                     for (int position : reverseSortedPositions) {
                         circles.remove(position);
                         adapter.notifyItemRemoved(position);
+                        //TODO remove circle
                     }
                     adapter.notifyDataSetChanged();
                 }

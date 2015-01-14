@@ -53,6 +53,7 @@ public class Constants {
     public static final int VERIFY_PHONE = 2;
     public static final int PICK_PICTURE = 3;
     public static final int PICK_CONTACT = 4;
+    public static final int ACTION_UPDATE_OBJECTS_CODE = 5;
 
     //General Strings
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
@@ -64,4 +65,7 @@ public class Constants {
     public static final String CONNECTING_TO_FB = "Connecting to Facebook...";
     public static final String CONNECTION_ESTABLISHED = "Connection SuccessFul...";
     public static final String UPDATING = "Updating...";
+
+    //Action strings
+    public static final String ACTION_UPDATE_OBJECTS = "org.jaagrT.action.ACTION_UPDATE_OBJECTS";
 }

@@ -6,10 +6,12 @@ import android.content.Intent;
 
 import com.parse.ParseUser;
 
+import org.jaagrT.helpers.Constants;
+import org.jaagrT.helpers.Utilities;
 import org.jaagrT.services.ObjectService;
 
-public class GeneralReceiver extends BroadcastReceiver {
-    public GeneralReceiver() {
+public class UpdateReceiver extends BroadcastReceiver {
+    public UpdateReceiver() {
     }
 
     @Override
@@ -20,6 +22,9 @@ public class GeneralReceiver extends BroadcastReceiver {
                 Intent serviceIntent = new Intent(context, ObjectService.class);
                 context.startService(serviceIntent);
             }
+        } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION_UPDATE_OBJECTS)) {
+            Utilities.writeToLog("Update broadcast received...");
+            ObjectService.updateObjects();
         }
     }
 }

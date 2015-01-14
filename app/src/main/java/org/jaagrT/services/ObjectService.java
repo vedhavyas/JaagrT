@@ -1,5 +1,7 @@
 package org.jaagrT.services;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -9,23 +11,22 @@ import com.parse.ParseObject;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import org.jaagrT.broadcast.receivers.UpdateReceiver;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.Utilities;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class ObjectService extends Service {
 
-    private static final int MIN_IN_MILLIS = 60000;
-    private static final int INTERVAL_IN_MINS = 60;
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
-    private static Thread objectThread;
-    private static UpdateRunnable updateRunnable;
-    private static boolean shouldLoop;
+    private AlarmManager alarmManager;
+    private PendingIntent alarmPendingIntent;
 
     public ObjectService() {
     }
@@ -50,12 +51,8 @@ public class ObjectService extends Service {
         return userCircles;
     }
 
-    public static boolean getShouldLoop() {
-        return shouldLoop;
-    }
-
-    public static void setShouldLoop(boolean decision) {
-        shouldLoop = decision;
+    public static void updateObjects() {
+        new Thread(new UpdateObjects()).start();
     }
 
     private static void fetchObjectsSequentially() {
@@ -95,25 +92,32 @@ public class ObjectService extends Service {
         }
     }
 
-    public static void startObjectUpdateThread() {
-        if (updateRunnable == null) {
-            updateRunnable = new UpdateRunnable();
-        }
-
-        //TODO check this later
-        if (objectThread != null) {
-            objectThread.interrupt();
-        }
-
-        setShouldLoop(true);
-        objectThread = new Thread(updateRunnable);
-        objectThread.start();
-    }
-
-    private static void clearAllObjects() {
+    private void cleanUp() {
+        Utilities.writeToLog("Cleaning up...");
+        alarmManager.cancel(alarmPendingIntent);
+        alarmManager = null;
+        alarmPendingIntent = null;
         userCircles = null;
         userDetailsObject = null;
         userPreferenceObject = null;
+        basicController = null;
+    }
+
+    private void initiateTheServiceObjects() {
+        //initiate objects
+        basicController = BasicController.getInstance(this);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent receiverIntent = new Intent(this, UpdateReceiver.class);
+
+        receiverIntent.setAction(Constants.ACTION_UPDATE_OBJECTS);
+        alarmPendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_OBJECTS_CODE, receiverIntent, 0);
+
+        //get current time;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, alarmPendingIntent);
+        Utilities.writeToLog("Started Alarm..");
     }
 
     @Override
@@ -124,15 +128,13 @@ public class ObjectService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        basicController = BasicController.getInstance(this);
-        startObjectUpdateThread();
+        initiateTheServiceObjects();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        setShouldLoop(false);
-        clearAllObjects();
+        cleanUp();
     }
 
     @Override
@@ -140,24 +142,13 @@ public class ObjectService extends Service {
         return START_STICKY;
     }
 
-    private static class UpdateRunnable implements Runnable {
+    private static class UpdateObjects implements Runnable {
 
         @Override
         public void run() {
-            Utilities.writeToLog("Started Thread...");
-            while (getShouldLoop()) {
-                Utilities.writeToLog("Updating objects...");
-                fetchObjectsSequentially();
-                try {
-                    Utilities.writeToLog("trying to sleep...");
-                    Thread.sleep(MIN_IN_MILLIS * INTERVAL_IN_MINS);
-                } catch (InterruptedException e) {
-                    setShouldLoop(false);
-                    ErrorHandler.handleError(null, e);
-                    Utilities.writeToLog("thread interrupted...");
-                    startObjectUpdateThread();
-                }
-            }
+            Utilities.writeToLog("Thread started...");
+            fetchObjectsSequentially();
+            Utilities.writeToLog("Objects updated...");
         }
     }
 }
