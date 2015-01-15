@@ -91,6 +91,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="org.jaagrT.action.ACTION_UPDATE_OBJECTS" />
+                <action android:name="org.jaagrT.action.ACTION_UPDATE_CIRCLES" />
             </intent-filter>
         </receiver>
     </application>

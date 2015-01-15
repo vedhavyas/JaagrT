@@ -411,4 +411,9 @@ public class Database extends SQLiteOpenHelper {
         String countQuery = SQL_SELECT_ALL_QUERY + tableName;
         return db.rawQuery(countQuery, null).getCount();
     }
+
+    public int deleteCircle(int circleID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(CIRCLES_TABLE, COLUMN_ID + " = " + circleID, null);
+    }
 }

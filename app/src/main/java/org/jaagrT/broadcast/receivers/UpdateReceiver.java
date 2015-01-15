@@ -7,7 +7,6 @@ import android.content.Intent;
 import com.parse.ParseUser;
 
 import org.jaagrT.helpers.Constants;
-import org.jaagrT.helpers.Utilities;
 import org.jaagrT.services.ObjectService;
 
 public class UpdateReceiver extends BroadcastReceiver {
@@ -23,8 +22,9 @@ public class UpdateReceiver extends BroadcastReceiver {
                 context.startService(serviceIntent);
             }
         } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION_UPDATE_OBJECTS)) {
-            Utilities.writeToLog("Update broadcast received...");
             ObjectService.updateObjects();
+        } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION_UPDATE_CIRCLES)) {
+            ObjectService.updateCircles();
         }
     }
 }

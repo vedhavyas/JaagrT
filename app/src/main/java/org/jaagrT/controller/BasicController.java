@@ -133,4 +133,8 @@ public class BasicController {
     public int getEntryCount(String tableName) {
         return db.getEntryCount(tableName);
     }
+
+    public int deleteCircle(int circleID) {
+        return db.deleteCircle(circleID);
+    }
 }

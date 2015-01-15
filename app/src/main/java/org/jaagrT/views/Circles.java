@@ -19,7 +19,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
-import com.parse.SaveCallback;
 
 import org.jaagrT.R;
 import org.jaagrT.adapters.CirclesAdapter;
@@ -27,13 +26,13 @@ import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.AlertDialogs;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.listeners.SwipeDismissListener;
 import org.jaagrT.model.User;
 import org.jaagrT.model.UserContact;
 import org.jaagrT.services.ObjectService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,16 +42,12 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class Circles extends Fragment {
 
-    private static final String UPDATING_CIRCLES = "Updating Circles...";
-    private static final String ARE_YOU_SURE = "Are you sure?";
-    private static final String DELETE = "Yes,delete Circle!";
-    private static final String NO = "No";
-
     private Activity activity;
     private BasicController basicController;
     private ParseObject userDetailsObject;
 
     private RecyclerView recList;
+    private List<User> circles;
 
 
     public Circles() {
@@ -94,7 +89,7 @@ public class Circles extends Fragment {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new UpdateCircles(swipeRefresh).execute();
+                new GetCircles(swipeRefresh).execute();
             }
         });
         recList.setHasFixedSize(true);
@@ -111,7 +106,7 @@ public class Circles extends Fragment {
         });
         //TODO check if the fab is reacting as expected
         addBtn.attachToRecyclerView(recList);
-        new GetCircles().execute();
+        new GetCircles(swipeRefresh).execute();
     }
 
     private void startPickContactActivity() {
@@ -128,38 +123,23 @@ public class Circles extends Fragment {
         userSearchQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(final List<ParseObject> parseObjects, ParseException e) {
+                pDialog.cancel();
                 if (e == null) {
                     if (parseObjects.size() > 0) {
+                        new SaveCircle(parseObjects, contact).execute();
+                        //TODO display snack after adding
                         if (userDetailsObject != null) {
                             ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
                             for (ParseObject parseObject : parseObjects) {
                                 relation.add(parseObject);
                             }
-                            List<ParseObject> userCircles = ObjectService.getUserCircles();
-                            if (userCircles != null) {
-                                userCircles.addAll(parseObjects);
-                            }
-
-                            userDetailsObject.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        new SaveCircle(pDialog, parseObjects, contact).execute();
-                                    } else {
-                                        pDialog.cancel();
-                                        ErrorHandler.handleError(activity, e);
-                                    }
-                                }
-                            });
-                        } else {
-                            ObjectService.updateObjects();
+                            userDetailsObject.saveInBackground();
+                            ObjectService.updateCircles();
                         }
                     } else {
                         //TODO take user to invite page
-                        pDialog.cancel();
                     }
                 } else {
-                    pDialog.cancel();
                     ErrorHandler.handleError(activity, e);
                 }
 
@@ -167,7 +147,7 @@ public class Circles extends Fragment {
         });
     }
 
-    private void showCircles(final List<User> circles) {
+    private void showCircles() {
         if (circles != null) {
             Collections.sort(circles, new Comparator<User>() {
                 @Override
@@ -179,7 +159,7 @@ public class Circles extends Fragment {
             adapter.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position) {
-                    Utilities.snackIt(activity, circles.get(position).getFirstName(), "Okay");
+                    //TODO show circle details
                 }
             });
             recList.setAdapter(adapter);
@@ -192,21 +172,12 @@ public class Circles extends Fragment {
 
                 @Override
                 public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                    for (int position : reverseSortedPositions) {
-                        circles.remove(position);
-                        adapter.notifyItemRemoved(position);
-                        //TODO remove circle
-                    }
-                    adapter.notifyDataSetChanged();
+                    deleteCircle(adapter, reverseSortedPositions);
                 }
 
                 @Override
                 public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                    for (int position : reverseSortedPositions) {
-                        circles.remove(position);
-                        adapter.notifyItemRemoved(position);
-                    }
-                    adapter.notifyDataSetChanged();
+                    deleteCircle(adapter, reverseSortedPositions);
                 }
             });
 
@@ -214,83 +185,76 @@ public class Circles extends Fragment {
         }
     }
 
+    private void deleteCircle(CirclesAdapter adapter, int[] reverseSortedPositions) {
 
-    private class SaveCircle extends AsyncTask<Void, Void, List<User>> {
+        List<String> objectIDs = new ArrayList<>();
+        User circle;
 
-        private SweetAlertDialog pDialog;
-        private List<ParseObject> circles;
+        for (int position : reverseSortedPositions) {
+            circle = circles.get(position);
+            int result = basicController.deleteCircle(circle.getID());
+            if (result > 0) {
+                circles.remove(position);
+                adapter.notifyItemRemoved(position);
+                objectIDs.add(circle.getObjectID());
+            }
+        }
+        adapter.notifyDataSetChanged();
+        ObjectService.removeCircles(objectIDs);
+        //TODO display snack after removal
+    }
+
+
+    private class SaveCircle extends AsyncTask<Void, Void, Void> {
+
+        private List<ParseObject> circleObjects;
         private UserContact contact;
 
-        private SaveCircle(SweetAlertDialog pDialog, List<ParseObject> circles, UserContact contact) {
-            this.pDialog = pDialog;
-            this.circles = circles;
+        private SaveCircle(List<ParseObject> circleObjects, UserContact contact) {
+            this.circleObjects = circleObjects;
             this.contact = contact;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog.setTitleText(UPDATING_CIRCLES);
         }
 
         @Override
-        protected List<User> doInBackground(Void... voids) {
-            basicController.saveCircles(circles, contact);
-            return basicController.getCircles();
-        }
-
-        @Override
-        protected void onPostExecute(List<User> circles) {
-            super.onPostExecute(circles);
-            pDialog.cancel();
-            showCircles(circles);
-        }
-    }
-
-    private class GetCircles extends AsyncTask<Void, Void, List<User>> {
-
-        @Override
-        protected List<User> doInBackground(Void... params) {
-            return basicController.getCircles();
-        }
-
-        @Override
-        protected void onPostExecute(List<User> circles) {
-            super.onPostExecute(circles);
-            showCircles(circles);
-        }
-    }
-
-    private class UpdateCircles extends AsyncTask<Void, Void, List<User>> {
-        private SwipeRefreshLayout swipeRefresh;
-
-        private UpdateCircles(SwipeRefreshLayout swipeRefresh) {
-            this.swipeRefresh = swipeRefresh;
-        }
-
-        @Override
-        protected List<User> doInBackground(Void... voids) {
-            userDetailsObject = ObjectService.getUserDetailsObject();
-            if (userDetailsObject != null) {
-                ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
-                try {
-                    List<ParseObject> circles = circleRelation.getQuery().find();
-                    basicController.updateCircles(circles);
-                    return basicController.getCircles();
-                } catch (ParseException e) {
-                    ErrorHandler.handleError(null, e);
-                }
-            }
+        protected Void doInBackground(Void... voids) {
+            basicController.saveCircles(circleObjects, contact);
+            circles = basicController.getCircles();
             return null;
         }
 
         @Override
-        protected void onPostExecute(List<User> circles) {
-            super.onPostExecute(circles);
-            if (swipeRefresh.isRefreshing()) {
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            showCircles();
+        }
+    }
+
+    private class GetCircles extends AsyncTask<Void, Void, Void> {
+
+        SwipeRefreshLayout swipeRefresh;
+
+        private GetCircles(SwipeRefreshLayout swipeRefresh) {
+            this.swipeRefresh = swipeRefresh;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            circles = basicController.getCircles();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (swipeRefresh != null && swipeRefresh.isRefreshing()) {
                 swipeRefresh.setRefreshing(false);
             }
-            showCircles(circles);
+            showCircles();
         }
     }
 

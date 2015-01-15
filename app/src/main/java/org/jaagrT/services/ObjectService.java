@@ -15,18 +15,18 @@ import org.jaagrT.broadcast.receivers.UpdateReceiver;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.helpers.Utilities;
 
 import java.util.Calendar;
 import java.util.List;
 
 public class ObjectService extends Service {
 
+    private static int UPDATE_INTERVAL_HRS = 2;
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
-    private AlarmManager alarmManager;
-    private PendingIntent alarmPendingIntent;
+    private AlarmManager objectAlarm, circleAlarm;
+    private PendingIntent objectPendingIntent, circlePendingIntent;
 
     public ObjectService() {
     }
@@ -47,20 +47,20 @@ public class ObjectService extends Service {
         ObjectService.userPreferenceObject = userPreferenceObject;
     }
 
-    public static List<ParseObject> getUserCircles() {
-        return userCircles;
-    }
-
     public static void updateObjects() {
         new Thread(new UpdateObjects()).start();
     }
 
-    private static void fetchObjectsSequentially() {
+    public static void updateCircles() {
+        new Thread(new UpdateCircles()).start();
+    }
+
+    private static void fetchUserDetailsObject() {
         ParseUser parseUser = ParseUser.getCurrentUser();
         if (parseUser != null) {
             try {
                 userDetailsObject = parseUser.getParseObject(Constants.USER_DETAILS_ROW).fetch();
-                fetchUserCircles();
+                //TODO check and update locally
                 fetchUserPreferenceObject();
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
@@ -72,6 +72,7 @@ public class ObjectService extends Service {
         if (userDetailsObject != null) {
             try {
                 userPreferenceObject = userDetailsObject.getParseObject(Constants.USER_COMMUNICATION_PREFERENCE_ROW).fetch();
+                //TODO check and update locally
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
@@ -84,6 +85,7 @@ public class ObjectService extends Service {
             try {
                 userCircles = circleRelation.getQuery().find();
                 if (basicController != null) {
+                    //TODO check if the user removed circles during offline
                     basicController.updateCircles(userCircles);
                 }
             } catch (ParseException e) {
@@ -92,11 +94,17 @@ public class ObjectService extends Service {
         }
     }
 
+    public static void removeCircles(List<String> objectIDs) {
+        new Thread(new RemoveUserCircles(objectIDs)).start();
+    }
+
     private void cleanUp() {
-        Utilities.writeToLog("Cleaning up...");
-        alarmManager.cancel(alarmPendingIntent);
-        alarmManager = null;
-        alarmPendingIntent = null;
+        objectAlarm.cancel(objectPendingIntent);
+        circleAlarm.cancel(circlePendingIntent);
+        circleAlarm = null;
+        circlePendingIntent = null;
+        objectAlarm = null;
+        objectPendingIntent = null;
         userCircles = null;
         userDetailsObject = null;
         userPreferenceObject = null;
@@ -106,18 +114,23 @@ public class ObjectService extends Service {
     private void initiateTheServiceObjects() {
         //initiate objects
         basicController = BasicController.getInstance(this);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        objectAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+        circleAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent receiverIntent = new Intent(this, UpdateReceiver.class);
 
         receiverIntent.setAction(Constants.ACTION_UPDATE_OBJECTS);
-        alarmPendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_OBJECTS_CODE, receiverIntent, 0);
+        objectPendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_OBJECTS_CODE, receiverIntent, 0);
+
+        receiverIntent.setAction(Constants.ACTION_UPDATE_CIRCLES);
+        circlePendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_CIRCLES_CODE, receiverIntent, 0);
 
         //get current time;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, alarmPendingIntent);
-        Utilities.writeToLog("Started Alarm..");
+        objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * UPDATE_INTERVAL_HRS, objectPendingIntent);
+        circleAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HALF_DAY, circlePendingIntent);
     }
 
     @Override
@@ -146,9 +159,43 @@ public class ObjectService extends Service {
 
         @Override
         public void run() {
-            Utilities.writeToLog("Thread started...");
-            fetchObjectsSequentially();
-            Utilities.writeToLog("Objects updated...");
+            fetchUserDetailsObject();
+            fetchUserPreferenceObject();
+        }
+    }
+
+    private static class UpdateCircles implements Runnable {
+
+        @Override
+        public void run() {
+            if (userDetailsObject != null) {
+                fetchUserCircles();
+            } else {
+                fetchUserDetailsObject();
+                fetchUserCircles();
+            }
+        }
+    }
+
+    private static class RemoveUserCircles implements Runnable {
+
+        List<String> objectsIDs;
+
+        private RemoveUserCircles(List<String> objectsIDs) {
+            this.objectsIDs = objectsIDs;
+        }
+
+        @Override
+        public void run() {
+            if (objectsIDs.size() > 0 && userCircles != null && userDetailsObject != null) {
+                ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
+                for (ParseObject circle : userCircles) {
+                    if (objectsIDs.contains(circle.getObjectId())) {
+                        relation.remove(circle);
+                    }
+                }
+                userDetailsObject.saveEventually();
+            }
         }
     }
 }

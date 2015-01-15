@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 
 import it.neokree.materialnavigationdrawer.MaterialAccount;
@@ -41,7 +42,8 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         panicSection = this.newSection(PANIC, this.getResources().getDrawable(R.drawable.ic_panic_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
         circleSection = this.newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
-                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
+                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700))
+                .setNotifications(basicController.getEntryCount(Database.CIRCLES_TABLE));
 
         MaterialSection settingsSection = this.newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));

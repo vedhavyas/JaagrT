@@ -19,63 +19,26 @@
 
 
     <array name="colorsList">
-        <item>@color/BlueViolet</item>
-        <item>@color/Brown</item>
         <item>@color/CadetBlue</item>
         <item>@color/Chocolate</item>
         <item>@color/Coral</item>
         <item>@color/CornflowerBlue</item>
-        <item>@color/DarkBlue</item>
         <item>@color/DarkCyan</item>
         <item>@color/DarkGoldenrod</item>
-        <item>@color/DarkMagenta</item>
         <item>@color/DarkOliveGreen</item>
         <item>@color/DarkOrange</item>
-        <item>@color/DarkOrchid</item>
-        <item>@color/DarkRed</item>
-        <item>@color/DarkSlateBlue</item>
-        <item>@color/DarkSlateGray</item>
         <item>@color/DodgerBlue</item>
-        <item>@color/FireBrick</item>
-        <item>@color/ForestGreen</item>
-        <item>@color/Goldenrod</item>
-        <item>@color/Green</item>
         <item>@color/IndianRed</item>
-        <item>@color/Indigo</item>
-        <item>@color/LightCoral</item>
-        <item>@color/LightSalmon</item>
-        <item>@color/LightSeaGreen</item>
-        <item>@color/Maroon</item>
-        <item>@color/MediumAquamarine</item>
-        <item>@color/MediumBlue</item>
         <item>@color/MediumSeaGreen</item>
-        <item>@color/MediumSlateBlue</item>
-        <item>@color/MediumVioletRed</item>
-        <item>@color/MidnightBlue</item>
-        <item>@color/Navy</item>
-        <item>@color/OldGold</item>
         <item>@color/Olive</item>
         <item>@color/OliveDrab</item>
         <item>@color/Orange</item>
         <item>@color/OrangeRed</item>
-        <item>@color/Orchid</item>
-        <item>@color/PaleVioletRed</item>
-        <item>@color/Purple</item>
-        <item>@color/Red</item>
         <item>@color/RoyalBlue</item>
-        <item>@color/SaddleBrown</item>
-        <item>@color/Salmon</item>
-        <item>@color/SandyBrown</item>
         <item>@color/SeaGreen</item>
         <item>@color/Sienna</item>
-        <item>@color/SlateBlue</item>
-        <item>@color/SlateGray</item>
-        <item>@color/SteelBlue</item>
-        <item>@color/Tan</item>
         <item>@color/Teal</item>
         <item>@color/Tomato</item>
-        <item>@color/Turquoise</item>
-        <item>@color/Violet</item>
     </array>
 
 </resources>

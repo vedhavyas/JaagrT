@@ -15,6 +15,7 @@ public class Constants {
 
     public static final String USER_DETAILS_ROW = "userDetails";
     public static final String USER_DETAILS_CLASS = "UserDetails";
+    //TODO add location logic
     public static final String USER_CURRENT_LOCATION = "currentLocation";
     public static final String USER_FIRST_NAME = "firstName";
     public static final String USER_LAST_NAME = "lastName";
@@ -54,6 +55,7 @@ public class Constants {
     public static final int PICK_PICTURE = 3;
     public static final int PICK_CONTACT = 4;
     public static final int ACTION_UPDATE_OBJECTS_CODE = 5;
+    public static final int ACTION_UPDATE_CIRCLES_CODE = 6;
 
     //General Strings
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
@@ -68,4 +70,5 @@ public class Constants {
 
     //Action strings
     public static final String ACTION_UPDATE_OBJECTS = "org.jaagrT.action.ACTION_UPDATE_OBJECTS";
+    public static final String ACTION_UPDATE_CIRCLES = "org.jaagrT.action.ACTION_UPDATE_CIRCLES";
 }
