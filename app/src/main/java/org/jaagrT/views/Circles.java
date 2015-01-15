@@ -192,14 +192,12 @@ public class Circles extends Fragment {
 
         for (int position : reverseSortedPositions) {
             circle = circles.get(position);
-            int result = basicController.deleteCircle(circle.getID());
-            if (result > 0) {
-                circles.remove(position);
-                adapter.notifyItemRemoved(position);
-                objectIDs.add(circle.getObjectID());
-            }
+            circles.remove(position);
+            adapter.notifyItemRemoved(position);
+            adapter.notifyDataSetChanged();
+            objectIDs.add(circle.getObjectID());
+            basicController.deleteCircle(circle.getID());
         }
-        adapter.notifyDataSetChanged();
         ObjectService.removeCircles(objectIDs);
         //TODO display snack after removal
     }

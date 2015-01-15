@@ -126,6 +126,7 @@ public class LoginController {
         activity.startService(serviceIntent);
         ObjectService.setUserDetailsObject(userDetailsObject);
         ObjectService.setUserPreferenceObject(userPreferenceObject);
+        ObjectService.getCirclesFirstTime();
     }
 
     private class SaveLocalUser extends AsyncTask<Void, Void, Integer> {

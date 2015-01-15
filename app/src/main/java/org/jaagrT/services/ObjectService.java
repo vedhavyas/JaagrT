@@ -15,13 +15,13 @@ import org.jaagrT.broadcast.receivers.UpdateReceiver;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.Utilities;
 
 import java.util.Calendar;
 import java.util.List;
 
 public class ObjectService extends Service {
 
-    private static int UPDATE_INTERVAL_HRS = 2;
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
@@ -98,6 +98,27 @@ public class ObjectService extends Service {
         new Thread(new RemoveUserCircles(objectIDs)).start();
     }
 
+    public static void getCirclesFirstTime() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (userDetailsObject != null) {
+                    ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
+                    try {
+                        userCircles = circleRelation.getQuery().find();
+                        if (basicController != null) {
+                            basicController.updateCircles(userCircles);
+                        }
+                    } catch (ParseException e) {
+                        ErrorHandler.handleError(null, e);
+                    }
+                }
+            }
+        }).start();
+
+    }
+
     private void cleanUp() {
         objectAlarm.cancel(objectPendingIntent);
         circleAlarm.cancel(circlePendingIntent);
@@ -112,7 +133,7 @@ public class ObjectService extends Service {
     }
 
     private void initiateTheServiceObjects() {
-        //initiate objects
+
         basicController = BasicController.getInstance(this);
         objectAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         circleAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -124,11 +145,19 @@ public class ObjectService extends Service {
         receiverIntent.setAction(Constants.ACTION_UPDATE_CIRCLES);
         circlePendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_CIRCLES_CODE, receiverIntent, 0);
 
-        //get current time;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+
         objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * UPDATE_INTERVAL_HRS, objectPendingIntent);
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, objectPendingIntent);
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY) + 4;
+        if (hour > 24) {
+            hour -= 24;
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+
         circleAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_HALF_DAY, circlePendingIntent);
     }
@@ -159,6 +188,7 @@ public class ObjectService extends Service {
 
         @Override
         public void run() {
+            Utilities.writeToLog("Updating Objects...");
             fetchUserDetailsObject();
             fetchUserPreferenceObject();
         }
@@ -168,6 +198,7 @@ public class ObjectService extends Service {
 
         @Override
         public void run() {
+            Utilities.writeToLog("Updating circles...");
             if (userDetailsObject != null) {
                 fetchUserCircles();
             } else {
