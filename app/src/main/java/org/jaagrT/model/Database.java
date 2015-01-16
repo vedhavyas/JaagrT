@@ -37,6 +37,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String COLUMN_THUMBNAIL_PICTURE = "thumbnailPicture";
     private static final String SQL_USER_TABLE_CREATE_QUERY = "CREATE TABLE " + USER_TABLE
             + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_OBJECT_ID + " TEXT,"
             + COLUMN_FIRST_NAME + " TEXT,"
             + COLUMN_LAST_NAME + " TEXT,"
             + COLUMN_EMAIL + " TEXT UNIQUE,"
@@ -92,14 +93,6 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for (String table : TABLES) {
-            db.execSQL(DROP_TABLE + table);
-        }
-        onCreate(db);
-    }
-
-    public void dropAllTables() {
-        SQLiteDatabase db = this.getWritableDatabase();
         for (String table : TABLES) {
             db.execSQL(DROP_TABLE + table);
         }
@@ -247,7 +240,6 @@ public class Database extends SQLiteOpenHelper {
                 contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
                 contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
                 contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
-                contact.setProfilePic(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
                 contacts.add(contact);
             } while (cursor.moveToNext());
 
@@ -290,10 +282,6 @@ public class Database extends SQLiteOpenHelper {
             contentValues.put(COLUMN_EMAIL_LIST, contact.getEmails());
         }
 
-        if (contact.getThumbnailPictureRaw() != null) {
-            contentValues.put(COLUMN_PICTURE, contact.getThumbnailPictureRaw());
-        }
-
         if (contentValues.size() > 0) {
             return contentValues;
         } else {
@@ -316,7 +304,6 @@ public class Database extends SQLiteOpenHelper {
                     contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
                     contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
                     contact.setEmails(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL_LIST)));
-                    contact.setProfilePic(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
                 } while (cursor.moveToNext());
 
                 return contact;

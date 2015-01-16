@@ -83,6 +83,7 @@ public class SignUpController {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    localUser.setObjectID(userDetailsObject.getObjectId());
                     parseUser.put(Constants.USER_DETAILS_ROW, userDetailsObject);
                     parseUser.saveInBackground();
                     saveDefaultPreferences(parseUser);
@@ -141,6 +142,7 @@ public class SignUpController {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    localUser.setObjectID(userDetailsObject.getObjectId());
                     parseUser.put(Constants.USER_DETAILS_ROW, userDetailsObject);
                     parseUser.saveInBackground();
                     saveDefaultPreferences(parseUser);

@@ -53,6 +53,7 @@ public class LoginController {
                         public void done(ParseObject parseObject, ParseException e) {
                             if (e == null) {
                                 userDetailsObject = parseObject;
+                                localUser.setObjectID(userDetailsObject.getObjectId());
                                 localUser.setFirstName(userDetailsObject.getString(Constants.USER_FIRST_NAME));
                                 localUser.setLastName(userDetailsObject.getString(Constants.USER_LAST_NAME));
                                 localUser.setPhoneNumber(userDetailsObject.getString(Constants.USER_PRIMARY_PHONE));

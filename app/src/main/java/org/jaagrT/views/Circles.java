@@ -52,7 +52,7 @@ public class Circles extends Fragment {
     private static final String CIRCLE_ADD_PLURAL = " circles added";
     private static final String CIRCLE_REMOVE_SINGULAR = " circle removed";
     private static final String CIRCLE_REMOVED_PLURAL = " circles removed";
-    private static final String UPDATED = "Updated";
+    private static final String UPDATED = " Circles Updated";
     private static final String OKAY = "Okay";
     private static final String UNDO = "Undo";
     private Activity activity;

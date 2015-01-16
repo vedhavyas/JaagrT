@@ -1,9 +1,5 @@
 package org.jaagrT.model;
 
-import android.graphics.Bitmap;
-
-import org.jaagrT.helpers.Utilities;
-
 /**
  * Authored by vedhavyas.singareddi on 23-12-2014.
  */
@@ -13,7 +9,6 @@ public class UserContact {
     private String contactID;
     private String name;
     private String emails;
-    private byte[] thumbnailPicture;
 
     public UserContact() {
         //empty constructor
@@ -30,14 +25,6 @@ public class UserContact {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Bitmap getThumbnailPicture() {
-        return Utilities.getBitmapFromBlob(thumbnailPicture);
-    }
-
-    public void setProfilePic(byte[] data) {
-        this.thumbnailPicture = data;
     }
 
     public int getID() {
@@ -58,10 +45,6 @@ public class UserContact {
 
     public void setEmails(String emails) {
         this.emails = emails;
-    }
-
-    public byte[] getThumbnailPictureRaw() {
-        return thumbnailPicture;
     }
 
     public String getContactID() {
