@@ -375,6 +375,24 @@ public class Database extends SQLiteOpenHelper {
         return null;
     }
 
+    public List<String> getCircleObjectIDs() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<String> objectIDs = new ArrayList<>();
+
+        String sqlQuery = SQL_SELECT_ALL_QUERY + CIRCLES_TABLE;
+        Cursor cursor = db.rawQuery(sqlQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                objectIDs.add(cursor.getString(cursor.getColumnIndex(COLUMN_OBJECT_ID)));
+            } while (cursor.moveToNext());
+
+            return objectIDs;
+        }
+
+        return null;
+    }
+
     public User getCircle(int circleID) {
         if (circleID > 0) {
             SQLiteDatabase db = this.getReadableDatabase();

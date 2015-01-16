@@ -117,13 +117,26 @@ public class BasicController {
         }
     }
 
-    public void updateCircles(List<ParseObject> circles) {
+    public void saveCircle(User circle) {
+        db.saveCircle(circle);
+    }
+
+    public void updateCirclesThroughObjects(List<ParseObject> circles) {
         db.dropTable(Database.CIRCLES_TABLE);
         saveCircles(circles, null);
     }
 
+    public void updateCircles(List<User> circles) {
+        db.dropTable(Database.CIRCLES_TABLE);
+        db.saveCircles(circles);
+    }
+
     public List<User> getCircles() {
         return db.getCircles();
+    }
+
+    public List<String> getCircleObjectIDs() {
+        return db.getCircleObjectIDs();
     }
 
     public User getCircle(int circleID) {

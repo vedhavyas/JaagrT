@@ -146,7 +146,7 @@ public class Utilities {
                 .fontSize(fontSize)
                 .toUpperCase()
                 .endConfig()
-                .buildRound(finalData, colorGenerator.getRandomColor());
+                .buildRound(finalData, colorGenerator.getColor(finalData));
     }
 
     //TODO remove all the logging methods

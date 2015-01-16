@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
@@ -16,7 +18,9 @@ import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.Utilities;
+import org.jaagrT.model.User;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -55,39 +59,117 @@ public class ObjectService extends Service {
         new Thread(new UpdateCircles()).start();
     }
 
-    private static void fetchUserDetailsObject() {
+    private static void fetchAndUpdateUserDetailsObject() {
         ParseUser parseUser = ParseUser.getCurrentUser();
         if (parseUser != null) {
             try {
                 userDetailsObject = parseUser.getParseObject(Constants.USER_DETAILS_ROW).fetch();
-                //TODO check and update locally
-                fetchUserPreferenceObject();
+                User localUser = basicController.getLocalUser();
+                if (localUser.getFirstName() != null) {
+                    userDetailsObject.put(Constants.USER_FIRST_NAME, localUser.getFirstName());
+                }
+                if (localUser.getLastName() != null) {
+                    userDetailsObject.put(Constants.USER_LAST_NAME, localUser.getLastName());
+                }
+                if (localUser.getPhoneNumber() != null) {
+                    userDetailsObject.put(Constants.USER_PRIMARY_PHONE, localUser.getPhoneNumber());
+                }
+                if (localUser.getPictureRaw() != null) {
+                    ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, localUser.getPictureRaw());
+                    pictureFile.save();
+                    userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
+                }
+                if (localUser.getThumbnailPictureRaw() != null) {
+                    ParseFile thumbFile = new ParseFile(Constants.USER_THUMBNAIL_PICTURE_FILE_NAME, localUser.getThumbnailPictureRaw());
+                    thumbFile.save();
+                    userDetailsObject.put(Constants.USER_THUMBNAIL_PICTURE, thumbFile);
+                }
+                localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
+                userDetailsObject.put(Constants.USER_PRIMARY_PHONE_VERIFIED, localUser.isPhoneVerified());
+                userDetailsObject.saveEventually();
+                basicController.updateUser(localUser);
+                Utilities.writeToLog("Updated user details...");
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
         }
     }
 
-    private static void fetchUserPreferenceObject() {
+    private static void fetchAndUpdateUserPreferenceObject() {
         if (userDetailsObject != null) {
             try {
                 userPreferenceObject = userDetailsObject.getParseObject(Constants.USER_COMMUNICATION_PREFERENCE_ROW).fetch();
-                //TODO check and update locally
+                SharedPreferences prefs = basicController.getPrefs();
+                userPreferenceObject.put(Constants.SEND_SMS, prefs.getBoolean(Constants.SEND_SMS, true));
+                userPreferenceObject.put(Constants.SEND_EMAIL, prefs.getBoolean(Constants.SEND_EMAIL, true));
+                userPreferenceObject.put(Constants.SEND_PUSH, prefs.getBoolean(Constants.SEND_PUSH, true));
+                userPreferenceObject.put(Constants.SHOW_POP_UPS, prefs.getBoolean(Constants.SHOW_POP_UPS, true));
+                userPreferenceObject.put(Constants.RECEIVE_SMS, prefs.getBoolean(Constants.RECEIVE_SMS, true));
+                userPreferenceObject.put(Constants.RECEIVE_PUSH, prefs.getBoolean(Constants.RECEIVE_PUSH, true));
+                userPreferenceObject.put(Constants.RECEIVE_EMAIL, prefs.getBoolean(Constants.RECEIVE_EMAIL, true));
+                userPreferenceObject.put(Constants.NOTIFY_WITH_IN, prefs.getInt(Constants.NOTIFY_WITH_IN, Constants.DEFAULT_DISTANCE));
+                userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, prefs.getInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE));
+                userPreferenceObject.put(Constants.ALERT_MESSAGE, prefs.getString(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE));
+                userPreferenceObject.saveEventually();
+                Utilities.writeToLog("Updated preferences...");
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
         }
     }
 
-    private static void fetchUserCircles() {
+    private static void fetchAndUpdateUserCircles() {
         if (userDetailsObject != null) {
             ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
             try {
                 userCircles = circleRelation.getQuery().find();
-                if (basicController != null) {
-                    //TODO check if the user removed circles during offline
-                    basicController.updateCircles(userCircles);
+                List<String> objectIDs = basicController.getCircleObjectIDs();
+                List<User> updatedCircles = new ArrayList<>();
+                if (objectIDs != null) {
+                    for (ParseObject parseObject : userCircles) {
+                        if (objectIDs.contains(parseObject.getObjectId())) {
+                            User circle = new User();
+                            circle.setObjectID(parseObject.getObjectId());
+                            if (parseObject.getString(Constants.USER_FIRST_NAME) == null) {
+                                String[] emailSet = parseObject.getString(Constants.USER_PRIMARY_EMAIL).split("@");
+                                circle.setFirstName(emailSet[0]);
+                            } else {
+                                circle.setFirstName(parseObject.getString(Constants.USER_FIRST_NAME));
+                            }
+                            circle.setLastName(parseObject.getString(Constants.USER_LAST_NAME));
+                            circle.setPhoneNumber(parseObject.getString(Constants.USER_PRIMARY_PHONE));
+                            circle.setPhoneVerified(parseObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
+                            circle.setMemberOfMasterCircle(parseObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
+                            circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
+                            if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
+                                try {
+                                    circle.setThumbnailPicture(Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
+                                } catch (ParseException e) {
+                                    ErrorHandler.handleError(null, e);
+                                }
+                            }
+                            if (parseObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
+                                try {
+                                    circle.setPicture(Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData()));
+                                } catch (ParseException e) {
+                                    ErrorHandler.handleError(null, e);
+                                }
+                            }
+                            updatedCircles.add(circle);
+                        } else {
+                            circleRelation.remove(parseObject);
+                        }
+                    }
+
+                    basicController.updateCircles(updatedCircles);
+                } else {
+                    for (ParseObject object : userCircles) {
+                        circleRelation.remove(object);
+                    }
                 }
+                userDetailsObject.saveEventually();
+                Utilities.writeToLog("Updated circles...");
+
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
@@ -107,9 +189,7 @@ public class ObjectService extends Service {
                     ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
                     try {
                         userCircles = circleRelation.getQuery().find();
-                        if (basicController != null) {
-                            basicController.updateCircles(userCircles);
-                        }
+                        basicController.updateCirclesThroughObjects(userCircles);
                     } catch (ParseException e) {
                         ErrorHandler.handleError(null, e);
                     }
@@ -149,7 +229,7 @@ public class ObjectService extends Service {
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, objectPendingIntent);
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * 2, objectPendingIntent);
 
         int hour = calendar.get(Calendar.HOUR_OF_DAY) + 4;
         if (hour > 24) {
@@ -157,6 +237,7 @@ public class ObjectService extends Service {
         }
 
         calendar.set(Calendar.HOUR_OF_DAY, hour);
+        Utilities.writeToLog("setting alarm - " + hour);
 
         circleAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_HALF_DAY, circlePendingIntent);
@@ -189,8 +270,8 @@ public class ObjectService extends Service {
         @Override
         public void run() {
             Utilities.writeToLog("Updating Objects...");
-            fetchUserDetailsObject();
-            fetchUserPreferenceObject();
+            fetchAndUpdateUserDetailsObject();
+            fetchAndUpdateUserPreferenceObject();
         }
     }
 
@@ -200,10 +281,10 @@ public class ObjectService extends Service {
         public void run() {
             Utilities.writeToLog("Updating circles...");
             if (userDetailsObject != null) {
-                fetchUserCircles();
+                fetchAndUpdateUserCircles();
             } else {
-                fetchUserDetailsObject();
-                fetchUserCircles();
+                fetchAndUpdateUserDetailsObject();
+                fetchAndUpdateUserCircles();
             }
         }
     }

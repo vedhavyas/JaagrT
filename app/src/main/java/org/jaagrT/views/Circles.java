@@ -14,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.ActionClickListener;
+import com.nispok.snackbar.listeners.EventListener;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -42,13 +46,21 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class Circles extends Fragment {
 
+    private static final int CIRCLE_ADDED = 1;
+    private static final int CIRCLE_REMOVED = 2;
+    private static final int CIRCLE_UPDATED = 3;
+    private static final String CIRCLE_ADD_SINGULAR = " circle added";
+    private static final String CIRCLE_ADD_PLURAL = " circles added";
+    private static final String CIRCLE_REMOVE_SINGULAR = " circle removed";
+    private static final String CIRCLE_REMOVED_PLURAL = " circles removed";
+    private static final String UPDATED = "Updated";
+    private static final String OKAY = "Okay";
     private Activity activity;
     private BasicController basicController;
     private ParseObject userDetailsObject;
-
     private RecyclerView recList;
     private List<User> circles;
-
+    private FloatingActionButton addBtn;
 
     public Circles() {
         // Required empty public constructor
@@ -89,7 +101,7 @@ public class Circles extends Fragment {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new GetCircles(swipeRefresh).execute();
+                new GetCircles(swipeRefresh, true).execute();
             }
         });
         recList.setHasFixedSize(true);
@@ -97,7 +109,7 @@ public class Circles extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
 
-        FloatingActionButton addBtn = (FloatingActionButton) rootView.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) rootView.findViewById(R.id.addBtn);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,7 +118,7 @@ public class Circles extends Fragment {
         });
         //TODO check if the fab is reacting as expected
         addBtn.attachToRecyclerView(recList);
-        new GetCircles(swipeRefresh).execute();
+        new GetCircles(swipeRefresh, false).execute();
     }
 
     private void startPickContactActivity() {
@@ -127,7 +139,6 @@ public class Circles extends Fragment {
                 if (e == null) {
                     if (parseObjects.size() > 0) {
                         new SaveCircle(parseObjects, contact).execute();
-                        //TODO display snack after adding
                         if (userDetailsObject != null) {
                             ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
                             for (ParseObject parseObject : parseObjects) {
@@ -172,12 +183,12 @@ public class Circles extends Fragment {
 
                 @Override
                 public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                    deleteCircle(adapter, reverseSortedPositions);
+                    deleteCircle(reverseSortedPositions);
                 }
 
                 @Override
                 public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                    deleteCircle(adapter, reverseSortedPositions);
+                    deleteCircle(reverseSortedPositions);
                 }
             });
 
@@ -185,21 +196,109 @@ public class Circles extends Fragment {
         }
     }
 
-    private void deleteCircle(CirclesAdapter adapter, int[] reverseSortedPositions) {
+    private void deleteCircle(int[] reverseSortedPositions) {
 
         List<String> objectIDs = new ArrayList<>();
-        User circle;
+        User circle = null;
 
         for (int position : reverseSortedPositions) {
             circle = circles.get(position);
-            circles.remove(position);
-            adapter.notifyItemRemoved(position);
-            adapter.notifyDataSetChanged();
             objectIDs.add(circle.getObjectID());
             basicController.deleteCircle(circle.getID());
         }
-        ObjectService.removeCircles(objectIDs);
-        //TODO display snack after removal
+        new GetCircles(null, true).execute();
+        showUndoSnack(circle, objectIDs);
+    }
+
+    private void showUndoSnack(final User circle, final List<String> objectIDs) {
+
+        SnackbarManager.show(
+                Snackbar.with(activity)
+                        .text("Removed")
+                        .textColor(getResources().getColor(R.color.white))
+                        .actionLabel("Undo")
+                        .actionColor(getResources().getColor(R.color.teal_400))
+                        .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
+                        .eventListener(new EventListener() {
+                            @Override
+                            public void onShow(Snackbar snackbar) {
+                                //TODO try and move the button instead
+                                addBtn.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismiss(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissed(Snackbar snackbar) {
+                                addBtn.setVisibility(View.VISIBLE);
+                                ObjectService.removeCircles(objectIDs);
+                            }
+                        })
+                        .actionListener(new ActionClickListener() {
+                            @Override
+                            public void onActionClicked(Snackbar snackbar) {
+                                objectIDs.remove(circle.getObjectID());
+                                basicController.saveCircle(circle);
+                                new GetCircles(null, true).execute();
+                            }
+                        }));
+    }
+
+    private void showSnack(int which, int number) {
+        String text;
+        if (which == CIRCLE_ADDED) {
+            if (number > 1) {
+                text = number + CIRCLE_ADD_PLURAL;
+            } else {
+                text = number + CIRCLE_ADD_SINGULAR;
+            }
+        } else if (which == CIRCLE_REMOVED) {
+            if (number > 1) {
+                text = number + CIRCLE_REMOVED_PLURAL;
+            } else {
+                text = number + CIRCLE_REMOVE_SINGULAR;
+            }
+        } else {
+            text = UPDATED;
+        }
+
+
+        SnackbarManager.show(
+                Snackbar.with(activity)
+                        .text(text)
+                        .textColor(getResources().getColor(R.color.white))
+                        .actionLabel(OKAY)
+                        .actionColor(getResources().getColor(R.color.teal_400))
+                        .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
+                        .eventListener(new EventListener() {
+                            @Override
+                            public void onShow(Snackbar snackbar) {
+                                //TODO try and move the button instead
+                                addBtn.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onDismiss(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onDismissed(Snackbar snackbar) {
+                                addBtn.setVisibility(View.VISIBLE);
+                            }
+                        })
+                        .attachToRecyclerView(recList));
     }
 
 
@@ -229,15 +328,18 @@ public class Circles extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             showCircles();
+            showSnack(CIRCLE_ADDED, circleObjects.size());
         }
     }
 
     private class GetCircles extends AsyncTask<Void, Void, Void> {
 
         SwipeRefreshLayout swipeRefresh;
+        boolean updateMode;
 
-        private GetCircles(SwipeRefreshLayout swipeRefresh) {
+        private GetCircles(SwipeRefreshLayout swipeRefresh, boolean updateMode) {
             this.swipeRefresh = swipeRefresh;
+            this.updateMode = updateMode;
         }
 
         @Override
@@ -253,6 +355,9 @@ public class Circles extends Fragment {
                 swipeRefresh.setRefreshing(false);
             }
             showCircles();
+            if (updateMode) {
+                showSnack(CIRCLE_UPDATED, 0);
+            }
         }
     }
 
