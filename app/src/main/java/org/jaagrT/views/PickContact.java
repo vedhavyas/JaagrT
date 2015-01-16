@@ -38,10 +38,10 @@ public class PickContact extends ActionBarActivity {
 
     private static final String TITLE = "Pick a contact";
     private static final String FETCHING_CONTACTS = "Fetching contacts...";
-    private RecyclerView recList;
     private List<UserContact> fullContactList;
     private BasicController basicController;
     private Activity activity;
+    private ContactsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,20 @@ public class PickContact extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         basicController = BasicController.getInstance(activity);
-        recList = (RecyclerView) findViewById(R.id.recyclerView);
+        adapter = new ContactsAdapter(activity, new ArrayList<UserContact>());
+        adapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int contactID) {
+                returnResult(Activity.RESULT_OK, contactID);
+            }
+        });
+        RecyclerView recList = (RecyclerView) findViewById(R.id.recyclerView);
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+        recList.setAdapter(adapter);
+
         final SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         swipeRefresh.setColorSchemeResources(R.color.teal_300,
                 R.color.teal_400,
@@ -67,17 +80,13 @@ public class PickContact extends ActionBarActivity {
                 new UpdateContactList(swipeRefresh).execute();
             }
         });
-        recList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
 
         SearchView searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 toolbar.setTitle(TITLE);
-                showContacts(fullContactList);
+                updateList(fullContactList);
                 return false;
             }
         });
@@ -100,13 +109,13 @@ public class PickContact extends ActionBarActivity {
                 if (!data.isEmpty()) {
                     showMatchingContacts(data);
                 } else {
-                    showContacts(fullContactList);
+                    updateList(fullContactList);
                 }
                 return false;
             }
         });
 
-        new GetContacts().execute();
+        new GetContactsAndUpdateList().execute();
     }
 
     @Override
@@ -137,7 +146,7 @@ public class PickContact extends ActionBarActivity {
         finish();
     }
 
-    private void showContacts(final List<UserContact> contacts) {
+    private void updateList(final List<UserContact> contacts) {
         if (contacts != null) {
             Collections.sort(contacts, new Comparator<UserContact>() {
                 @Override
@@ -145,14 +154,7 @@ public class PickContact extends ActionBarActivity {
                     return contactInfo1.getName().compareTo(contactInfo2.getName());
                 }
             });
-            ContactsAdapter adapter = new ContactsAdapter(activity, contacts);
-            adapter.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(View v, int position) {
-                    returnResult(Activity.RESULT_OK, contacts.get(position).getID());
-                }
-            });
-            recList.setAdapter(adapter);
+            adapter.setContacts(contacts);
         }
     }
 
@@ -164,7 +166,7 @@ public class PickContact extends ActionBarActivity {
                     matchList.add(contactInfo);
                 }
             }
-            showContacts(matchList);
+            updateList(matchList);
         }
     }
 
@@ -204,7 +206,7 @@ public class PickContact extends ActionBarActivity {
         return contacts;
     }
 
-    private class GetContacts extends AsyncTask<Void, Void, Void> {
+    private class GetContactsAndUpdateList extends AsyncTask<Void, Void, List<UserContact>> {
         SweetAlertDialog pDialog;
 
         @Override
@@ -216,7 +218,7 @@ public class PickContact extends ActionBarActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected List<UserContact> doInBackground(Void... voids) {
             fullContactList = basicController.getContacts();
             if (fullContactList == null) {
                 pDialog.setTitleText(FETCHING_CONTACTS);
@@ -227,14 +229,14 @@ public class PickContact extends ActionBarActivity {
                     fullContactList = basicController.getContacts();
                 }
             }
-            return null;
+            return fullContactList;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(List<UserContact> contacts) {
+            super.onPostExecute(contacts);
             pDialog.cancel();
-            showContacts(fullContactList);
+            updateList(fullContactList);
         }
     }
 
@@ -263,7 +265,7 @@ public class PickContact extends ActionBarActivity {
             if (swipeRefresh.isRefreshing()) {
                 swipeRefresh.setRefreshing(false);
             }
-            showContacts(fullContactList);
+            updateList(fullContactList);
         }
     }
 

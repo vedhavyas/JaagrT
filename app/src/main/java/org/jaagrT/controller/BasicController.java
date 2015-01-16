@@ -14,6 +14,7 @@ import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.model.UserContact;
+import org.jaagrT.services.ObjectService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,10 +61,6 @@ public class BasicController {
 
     public int updateUser(User user) {
         return db.updateUserData(user);
-    }
-
-    public void dropAllTables() {
-        db.dropAllTables();
     }
 
     public void dropTable(String table) {
@@ -117,10 +114,6 @@ public class BasicController {
         }
     }
 
-    public void saveCircle(User circle) {
-        db.saveCircle(circle);
-    }
-
     public void updateCirclesThroughObjects(List<ParseObject> circles) {
         db.dropTable(Database.CIRCLES_TABLE);
         saveCircles(circles, null);
@@ -139,15 +132,23 @@ public class BasicController {
         return db.getCircleObjectIDs();
     }
 
-    public User getCircle(int circleID) {
-        return db.getCircle(circleID);
-    }
-
     public int getEntryCount(String tableName) {
         return db.getEntryCount(tableName);
     }
 
     public int deleteCircle(int circleID) {
         return db.deleteCircle(circleID);
+    }
+
+    public void deleteCircles(List<User> circles) {
+        List<String> objectIDs = new ArrayList<>();
+        if (circles != null) {
+            for (User circle : circles) {
+                objectIDs.add(circle.getObjectID());
+                deleteCircle(circle.getID());
+            }
+        }
+
+        ObjectService.removeCircles(objectIDs);
     }
 }

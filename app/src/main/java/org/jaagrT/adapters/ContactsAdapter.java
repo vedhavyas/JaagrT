@@ -63,6 +63,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         this.onItemClickListener = onItemClickListener;
     }
 
+    public void setContacts(List<UserContact> contacts) {
+        this.contacts.clear();
+        this.contacts.addAll(contacts);
+        notifyDataSetChanged();
+    }
+
+
     public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected ImageView profilePic;
         protected TextView title;
@@ -77,7 +84,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         @Override
         public void onClick(View view) {
             if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(view, getPosition());
+                onItemClickListener.onItemClick(view, contacts.get(getPosition()).getID());
             }
         }
     }

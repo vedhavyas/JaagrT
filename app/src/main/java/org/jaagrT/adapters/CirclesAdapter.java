@@ -67,6 +67,29 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
         this.onItemClickListener = onItemClickListener;
     }
 
+    public void setCircles(List<User> circles) {
+        this.circles.clear();
+        this.circles.addAll(circles);
+        notifyDataSetChanged();
+    }
+
+    public User getCircle(int position) {
+        return circles.get(position);
+    }
+
+    public void removeCircle(int position) {
+        this.circles.remove(position);
+        notifyItemRemoved(position);
+        notifyDataSetChanged();
+    }
+
+    public void addCircle(User circle) {
+        int position = circles.size();
+        circles.add(position, circle);
+        notifyItemInserted(position);
+        notifyDataSetChanged();
+    }
+
     public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected ImageView profilePic;
         protected TextView title;
