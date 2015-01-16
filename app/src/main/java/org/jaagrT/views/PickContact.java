@@ -2,10 +2,8 @@ package org.jaagrT.views;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -187,15 +185,6 @@ public class PickContact extends ActionBarActivity {
                         contact.addEmail(emailCursor.getString(emailCursor
                                 .getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA)));
                     }
-                    Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(id));
-                    Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-                    Cursor picCursor = getContentResolver().query(photoUri,
-                            new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
-                    if (picCursor.moveToFirst()) {
-                        contact.setProfilePic(picCursor.getBlob(0));
-                    }
-                    picCursor.close();
-
                     contacts.add(contact);
 
                 }

@@ -44,11 +44,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     public void onBindViewHolder(ContactsAdapter.ContactViewHolder holder, int position) {
         UserContact contact = contacts.get(position);
         holder.title.setText(contact.getName());
-        if (contact.getThumbnailPicture() != null) {
-            holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
-        } else {
-            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, contact.getName()));
-        }
+        holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, contact.getName()));
     }
 
     @Override
