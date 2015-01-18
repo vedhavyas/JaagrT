@@ -3,18 +3,18 @@ package org.jaagrT.model;
 /**
  * Authored by vedhavyas.singareddi on 23-12-2014.
  */
-public class UserContact {
+public class Contact {
 
     private int ID;
     private String contactID;
     private String name;
     private String emails;
 
-    public UserContact() {
+    public Contact() {
         //empty constructor
     }
 
-    public UserContact(String contactID, String title) {
+    public Contact(String contactID, String title) {
         this.contactID = contactID;
         this.name = title;
     }

@@ -32,8 +32,8 @@ import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.listeners.SwipeDismissListener;
+import org.jaagrT.model.Contact;
 import org.jaagrT.model.User;
-import org.jaagrT.model.UserContact;
 import org.jaagrT.services.ObjectService;
 
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class Circles extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.PICK_CONTACT && resultCode == Activity.RESULT_OK) {
             int contactID = data.getIntExtra(Constants.CONTACT_ID, -1);
-            UserContact contact = basicController.getContact(contactID);
+            Contact contact = basicController.getContact(contactID);
             if (contact != null) {
                 tryAndAddTheContact(contact);
             }
@@ -143,7 +143,6 @@ public class Circles extends Fragment {
                 startPickContactActivity();
             }
         });
-        //TODO check if the fab is reacting as expected
         addBtn.attachToRecyclerView(recList);
         new GetCirclesAndList(swipeRefresh, false).execute();
     }
@@ -154,7 +153,7 @@ public class Circles extends Fragment {
         activity.overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 
-    private void tryAndAddTheContact(final UserContact contact) {
+    private void tryAndAddTheContact(final Contact contact) {
         final SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
         pDialog.setTitleText(Constants.PLEASE_WAIT).show();
         ParseQuery<ParseObject> userSearchQuery = ParseQuery.getQuery(Constants.USER_DETAILS_CLASS);
@@ -305,9 +304,9 @@ public class Circles extends Fragment {
     private class SaveCircle extends AsyncTask<Void, Void, List<User>> {
 
         private List<ParseObject> circleObjects;
-        private UserContact contact;
+        private Contact contact;
 
-        private SaveCircle(List<ParseObject> circleObjects, UserContact contact) {
+        private SaveCircle(List<ParseObject> circleObjects, Contact contact) {
             this.circleObjects = circleObjects;
             this.contact = contact;
         }

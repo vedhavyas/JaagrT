@@ -150,7 +150,7 @@ public class Utilities {
     }
 
     //TODO remove all the logging methods
-    public static void writeToLog(String message) {
+    public static void writeToFile(String message) {
         File dir = Environment.getExternalStorageDirectory();
         File file = new File(dir, OBJECT_LOG_FILE);
         String data = getLogData(message);

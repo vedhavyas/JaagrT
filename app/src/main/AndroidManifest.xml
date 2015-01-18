@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".JaagrT"
@@ -91,7 +92,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="org.jaagrT.action.ACTION_UPDATE_OBJECTS" />
-                <action android:name="org.jaagrT.action.ACTION_UPDATE_CIRCLES" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".broadcast.receivers.ConnectivityChangeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
     </application>

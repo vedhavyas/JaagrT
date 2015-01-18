@@ -29,8 +29,8 @@ public class ObjectService extends Service {
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
-    private AlarmManager objectAlarm, circleAlarm;
-    private PendingIntent objectPendingIntent, circlePendingIntent;
+    private AlarmManager objectAlarm;
+    private PendingIntent objectPendingIntent;
 
     public ObjectService() {
     }
@@ -88,7 +88,7 @@ public class ObjectService extends Service {
                 userDetailsObject.put(Constants.USER_PRIMARY_PHONE_VERIFIED, localUser.isPhoneVerified());
                 userDetailsObject.saveEventually();
                 basicController.updateUser(localUser);
-                Utilities.writeToLog("Updated user details...");
+                Utilities.writeToFile("Updated user details...");
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
@@ -111,7 +111,7 @@ public class ObjectService extends Service {
                 userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, prefs.getInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE));
                 userPreferenceObject.put(Constants.ALERT_MESSAGE, prefs.getString(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE));
                 userPreferenceObject.saveEventually();
-                Utilities.writeToLog("Updated preferences...");
+                Utilities.writeToFile("Updated preferences...");
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
             }
@@ -168,7 +168,7 @@ public class ObjectService extends Service {
                     }
                 }
                 userDetailsObject.saveEventually();
-                Utilities.writeToLog("Updated circles...");
+                Utilities.writeToFile("Updated circles...");
 
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
@@ -201,9 +201,6 @@ public class ObjectService extends Service {
 
     private void cleanUp() {
         objectAlarm.cancel(objectPendingIntent);
-        circleAlarm.cancel(circlePendingIntent);
-        circleAlarm = null;
-        circlePendingIntent = null;
         objectAlarm = null;
         objectPendingIntent = null;
         userCircles = null;
@@ -216,31 +213,16 @@ public class ObjectService extends Service {
 
         basicController = BasicController.getInstance(this);
         objectAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-        circleAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent receiverIntent = new Intent(this, UpdateReceiver.class);
 
         receiverIntent.setAction(Constants.ACTION_UPDATE_OBJECTS);
         objectPendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_OBJECTS_CODE, receiverIntent, 0);
 
-        receiverIntent.setAction(Constants.ACTION_UPDATE_CIRCLES);
-        circlePendingIntent = PendingIntent.getBroadcast(this, Constants.ACTION_UPDATE_CIRCLES_CODE, receiverIntent, 0);
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * 2, objectPendingIntent);
-
-        int hour = calendar.get(Calendar.HOUR_OF_DAY) + 4;
-        if (hour > 24) {
-            hour -= 24;
-        }
-
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        Utilities.writeToLog("setting alarm - " + hour);
-
-        circleAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HALF_DAY, circlePendingIntent);
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, objectPendingIntent);
     }
 
     @Override
@@ -269,7 +251,7 @@ public class ObjectService extends Service {
 
         @Override
         public void run() {
-            Utilities.writeToLog("Updating Objects...");
+            Utilities.writeToFile("Updating Objects...");
             fetchAndUpdateUserDetailsObject();
             fetchAndUpdateUserPreferenceObject();
         }
@@ -279,7 +261,7 @@ public class ObjectService extends Service {
 
         @Override
         public void run() {
-            Utilities.writeToLog("Updating circles...");
+            Utilities.writeToFile("Updating circles...");
             if (userDetailsObject != null) {
                 fetchAndUpdateUserCircles();
             } else {

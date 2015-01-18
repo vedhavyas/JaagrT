@@ -22,8 +22,8 @@ import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.AlertDialogs;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.listeners.OnItemClickListener;
+import org.jaagrT.model.Contact;
 import org.jaagrT.model.Database;
-import org.jaagrT.model.UserContact;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public class PickContact extends ActionBarActivity {
 
     private static final String TITLE = "Pick a contact";
     private static final String FETCHING_CONTACTS = "Fetching contacts...";
-    private List<UserContact> fullContactList;
+    private List<Contact> fullContactList;
     private BasicController basicController;
     private Activity activity;
     private ContactsAdapter adapter;
@@ -52,7 +52,7 @@ public class PickContact extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         basicController = BasicController.getInstance(activity);
-        adapter = new ContactsAdapter(activity, new ArrayList<UserContact>());
+        adapter = new ContactsAdapter(activity, new ArrayList<Contact>());
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View v, int contactID) {
@@ -144,11 +144,11 @@ public class PickContact extends ActionBarActivity {
         finish();
     }
 
-    private void updateList(final List<UserContact> contacts) {
+    private void updateList(final List<Contact> contacts) {
         if (contacts != null) {
-            Collections.sort(contacts, new Comparator<UserContact>() {
+            Collections.sort(contacts, new Comparator<Contact>() {
                 @Override
-                public int compare(UserContact contactInfo1, UserContact contactInfo2) {
+                public int compare(Contact contactInfo1, Contact contactInfo2) {
                     return contactInfo1.getName().compareTo(contactInfo2.getName());
                 }
             });
@@ -158,8 +158,8 @@ public class PickContact extends ActionBarActivity {
 
     private void showMatchingContacts(String data) {
         if (fullContactList != null) {
-            List<UserContact> matchList = new ArrayList<>();
-            for (UserContact contactInfo : fullContactList) {
+            List<Contact> matchList = new ArrayList<>();
+            for (Contact contactInfo : fullContactList) {
                 if (contactInfo.getName().toLowerCase().contains(data.toLowerCase())) {
                     matchList.add(contactInfo);
                 }
@@ -168,8 +168,8 @@ public class PickContact extends ActionBarActivity {
         }
     }
 
-    private List<UserContact> getContactsFromPhone() {
-        List<UserContact> contacts = new ArrayList<>();
+    private List<Contact> getContactsFromPhone() {
+        List<Contact> contacts = new ArrayList<>();
         ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -180,7 +180,7 @@ public class PickContact extends ActionBarActivity {
                 Cursor emailCursor = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                         ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id, null, null);
                 if (emailCursor.getCount() > 0) {
-                    UserContact contact = new UserContact(id, name);
+                    Contact contact = new Contact(id, name);
                     while (emailCursor.moveToNext()) {
                         contact.addEmail(emailCursor.getString(emailCursor
                                 .getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA)));
@@ -195,7 +195,7 @@ public class PickContact extends ActionBarActivity {
         return contacts;
     }
 
-    private class GetContactsAndUpdateList extends AsyncTask<Void, Void, List<UserContact>> {
+    private class GetContactsAndUpdateList extends AsyncTask<Void, Void, List<Contact>> {
         SweetAlertDialog pDialog;
 
         @Override
@@ -207,7 +207,7 @@ public class PickContact extends ActionBarActivity {
         }
 
         @Override
-        protected List<UserContact> doInBackground(Void... voids) {
+        protected List<Contact> doInBackground(Void... voids) {
             fullContactList = basicController.getContacts();
             if (fullContactList == null) {
                 pDialog.setTitleText(FETCHING_CONTACTS);
@@ -222,7 +222,7 @@ public class PickContact extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(List<UserContact> contacts) {
+        protected void onPostExecute(List<Contact> contacts) {
             super.onPostExecute(contacts);
             pDialog.cancel();
             updateList(fullContactList);
@@ -239,7 +239,7 @@ public class PickContact extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            List<UserContact> updatedContacts = getContactsFromPhone();
+            List<Contact> updatedContacts = getContactsFromPhone();
             if (updatedContacts != null) {
                 basicController.dropTable(Database.CONTACTS_TABLE);
                 basicController.saveContacts(updatedContacts);

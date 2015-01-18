@@ -29,14 +29,10 @@ public class AlertDialogs {
     public static SweetAlertDialog showSweetProgress(Activity activity) {
         SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(activity.getResources().getColor(R.color.teal_500));
+        pDialog.getProgressHelper().setBarWidth(15);
+        pDialog.getProgressHelper().setCircleRadius(90);
         pDialog.setCancelable(false);
         return pDialog;
     }
 
-    public static void showPositiveDialog(Activity activity, String title, String content) {
-        new SweetAlertDialog(activity, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText(title)
-                .setContentText(content)
-                .show();
-    }
 }

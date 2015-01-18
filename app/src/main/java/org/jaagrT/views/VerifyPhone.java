@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.parse.ParseObject;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -31,9 +32,6 @@ public class VerifyPhone extends Activity {
 
     private static final String MESSAGE = "JaagrT Verification Code";
     private static final String WRONG_CODE = "Wrong Code!!";
-    private static final String SENDING_SMS = "Sending SMS";
-    private static final String SMS_SENT = "SMS Sent!!";
-    private static final String SUCCESS = "Success";
 
     public static VerifyPhone verifyPhoneActivity;
     private Activity activity;
@@ -114,7 +112,7 @@ public class VerifyPhone extends Activity {
                     phoneBox.setEnabled(false);
                     generateRandomNumber();
                     phoneNumber = phoneBox.getText().toString();
-                    new SendSMS().execute();
+                    showSMSWarning();
                 }
 
             }
@@ -167,16 +165,37 @@ public class VerifyPhone extends Activity {
         finish();
     }
 
-    private class SendSMS extends AsyncTask<Void, Void, Void> {
-        SweetAlertDialog pDialog;
+    private void showSuccessDialog() {
+        new MaterialDialog.Builder(activity)
+                .title("Success")
+                .titleColor(getResources().getColor(R.color.teal_400))
+                .content("SMS Sent!")
+                .contentColor(getResources().getColor(R.color.teal_400))
+                .positiveText("Okay")
+                .positiveColor(getResources().getColor(R.color.teal_400))
+                .show();
+    }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = AlertDialogs.showSweetProgress(activity);
-            pDialog.setTitleText(SENDING_SMS);
-            pDialog.show();
-        }
+    private void showSMSWarning() {
+        new MaterialDialog.Builder(activity)
+                .title("Warning")
+                .titleColor(getResources().getColor(R.color.teal_400))
+                .content("SMS will be sent to verify Phone Number. Standard SMS charges may apply.")
+                .contentColor(getResources().getColor(R.color.teal_400))
+                .positiveText("Send anyway")
+                .positiveColor(getResources().getColor(R.color.teal_400))
+                .negativeText("Don't send")
+                .negativeColor(getResources().getColor(R.color.teal_400))
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        new SendSMS().execute();
+                    }
+                }).show();
+    }
+
+    private class SendSMS extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -188,8 +207,7 @@ public class VerifyPhone extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            pDialog.cancel();
-            AlertDialogs.showPositiveDialog(activity, SUCCESS, SMS_SENT);
+            showSuccessDialog();
         }
     }
 

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import org.jaagrT.R;
 import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.OnItemClickListener;
-import org.jaagrT.model.UserContact;
+import org.jaagrT.model.Contact;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ import java.util.List;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactViewHolder> {
 
-    private List<UserContact> contacts;
+    private List<Contact> contacts;
     private OnItemClickListener onItemClickListener;
     private Context context;
 
-    public ContactsAdapter(Context context, List<UserContact> contacts) {
+    public ContactsAdapter(Context context, List<Contact> contacts) {
         this.context = context;
         this.contacts = contacts;
     }
@@ -42,7 +42,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
 
     @Override
     public void onBindViewHolder(ContactsAdapter.ContactViewHolder holder, int position) {
-        UserContact contact = contacts.get(position);
+        Contact contact = contacts.get(position);
         holder.title.setText(contact.getName());
         holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, contact.getName()));
     }
@@ -59,7 +59,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         this.onItemClickListener = onItemClickListener;
     }
 
-    public void setContacts(List<UserContact> contacts) {
+    public void setContacts(List<Contact> contacts) {
         this.contacts.clear();
         this.contacts.addAll(contacts);
         notifyDataSetChanged();

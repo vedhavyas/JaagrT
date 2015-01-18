@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 
@@ -20,7 +21,7 @@ import it.neokree.materialnavigationdrawer.MaterialSection;
 public class Main extends MaterialNavigationDrawer<Fragment> {
 
     private static final String PANIC = "Panic";
-    private static final String CIRCLES = "Circles";
+    private static final String CIRCLES = "My Circles";
     private static final String SETTINGS = "Settings";
     private static final String TRANSPARENT_COLOR = "#9e9e9e";
 
@@ -42,8 +43,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         panicSection = this.newSection(PANIC, this.getResources().getDrawable(R.drawable.ic_panic_small), new Panic())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
         circleSection = this.newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
-                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700))
-                .setNotifications(basicController.getEntryCount(Database.CIRCLES_TABLE));
+                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
         MaterialSection settingsSection = this.newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
@@ -67,6 +67,13 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
             if (localUser.getThumbnailPicture() != null) {
                 account.setPhoto(localUser.getThumbnailPicture());
             }
+
+            try {
+                circleSection.setNotifications(basicController.getEntryCount(Database.CIRCLES_TABLE));
+            } catch (NullPointerException e) {
+                ErrorHandler.handleError(null, e);
+            }
+
             handler.post(new Runnable() {
                 @Override
                 public void run() {

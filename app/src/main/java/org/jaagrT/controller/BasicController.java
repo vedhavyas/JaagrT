@@ -11,9 +11,9 @@ import com.parse.ParseObject;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.Utilities;
+import org.jaagrT.model.Contact;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
-import org.jaagrT.model.UserContact;
 import org.jaagrT.services.ObjectService;
 
 import java.util.ArrayList;
@@ -67,19 +67,19 @@ public class BasicController {
         db.dropTable(table);
     }
 
-    public void saveContacts(List<UserContact> contacts) {
+    public void saveContacts(List<Contact> contacts) {
         db.saveContacts(contacts);
     }
 
-    public List<UserContact> getContacts() {
+    public List<Contact> getContacts() {
         return db.getContacts();
     }
 
-    public UserContact getContact(int contactID) {
+    public Contact getContact(int contactID) {
         return db.getContact(contactID);
     }
 
-    public void saveCircles(List<ParseObject> parseObjects, UserContact contact) {
+    public void saveCircles(List<ParseObject> parseObjects, Contact contact) {
         if (parseObjects.size() > 0) {
             List<User> circles = new ArrayList<>();
             for (ParseObject parseObject : parseObjects) {

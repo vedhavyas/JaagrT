@@ -226,16 +226,16 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public List<UserContact> getContacts() {
+    public List<Contact> getContacts() {
         SQLiteDatabase db = this.getReadableDatabase();
-        List<UserContact> contacts = new ArrayList<>();
+        List<Contact> contacts = new ArrayList<>();
 
         String sqlQuery = SQL_SELECT_ALL_QUERY + CONTACTS_TABLE;
         Cursor cursor = db.rawQuery(sqlQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
-                UserContact contact = new UserContact();
+                Contact contact = new Contact();
                 contact.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
                 contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
                 contact.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
@@ -249,15 +249,15 @@ public class Database extends SQLiteOpenHelper {
         return null;
     }
 
-    public void saveContacts(List<UserContact> contacts) {
+    public void saveContacts(List<Contact> contacts) {
         if (contacts != null) {
-            for (UserContact contact : contacts) {
+            for (Contact contact : contacts) {
                 saveContact(contact);
             }
         }
     }
 
-    private long saveContact(UserContact contact) {
+    private long saveContact(Contact contact) {
         long result = -1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = getContentValuesFromContactObject(contact);
@@ -267,7 +267,7 @@ public class Database extends SQLiteOpenHelper {
         return result;
     }
 
-    private ContentValues getContentValuesFromContactObject(UserContact contact) {
+    private ContentValues getContentValuesFromContactObject(Contact contact) {
         ContentValues contentValues = new ContentValues();
 
         if (contact.getName() != null) {
@@ -289,7 +289,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public UserContact getContact(int contactID) {
+    public Contact getContact(int contactID) {
         if (contactID > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
@@ -298,7 +298,7 @@ public class Database extends SQLiteOpenHelper {
             Cursor cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
-                UserContact contact = new UserContact();
+                Contact contact = new Contact();
                 do {
                     contact.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
                     contact.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID)));
