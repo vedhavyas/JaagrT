@@ -222,7 +222,7 @@ public class ObjectService extends Service {
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, objectPendingIntent);
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * 3, objectPendingIntent);
     }
 
     @Override
