@@ -182,6 +182,7 @@ public class ObjectService extends Service {
 
     public static void getCirclesFirstTime() {
 
+        Utilities.writeToFile("getting circles for the first time...");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -220,7 +221,13 @@ public class ObjectService extends Service {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        hour += 3;
+        if (hour > 24) {
+            hour -= 24;
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        Utilities.writeToFile("Setting alarm at - " + hour);
         objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * 3, objectPendingIntent);
     }
