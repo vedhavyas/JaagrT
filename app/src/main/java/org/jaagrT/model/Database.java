@@ -70,6 +70,7 @@ public class Database extends SQLiteOpenHelper {
 
 
     private static Database dbFactory;
+    private static Cursor cursor;
 
     private Database(Context context) {
         super(context, DB_NAME, null, 1);
@@ -132,7 +133,7 @@ public class Database extends SQLiteOpenHelper {
 
             String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(userID);
-            Cursor cursor = db.rawQuery(sqlQuery, null);
+            cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
                 User user = new User();
@@ -213,7 +214,7 @@ public class Database extends SQLiteOpenHelper {
 
             String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(id);
-            Cursor cursor = db.rawQuery(sqlQuery, null);
+            cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
 
@@ -231,7 +232,7 @@ public class Database extends SQLiteOpenHelper {
         List<Contact> contacts = new ArrayList<>();
 
         String sqlQuery = SQL_SELECT_ALL_QUERY + CONTACTS_TABLE;
-        Cursor cursor = db.rawQuery(sqlQuery, null);
+        cursor = db.rawQuery(sqlQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -295,7 +296,7 @@ public class Database extends SQLiteOpenHelper {
 
             String sqlQuery = "SELECT * FROM " + CONTACTS_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(contactID);
-            Cursor cursor = db.rawQuery(sqlQuery, null);
+            cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
                 Contact contact = new Contact();
@@ -339,7 +340,7 @@ public class Database extends SQLiteOpenHelper {
         List<User> circles = new ArrayList<>();
 
         String sqlQuery = SQL_SELECT_ALL_QUERY + CIRCLES_TABLE;
-        Cursor cursor = db.rawQuery(sqlQuery, null);
+        cursor = db.rawQuery(sqlQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -367,7 +368,7 @@ public class Database extends SQLiteOpenHelper {
         List<String> objectIDs = new ArrayList<>();
 
         String sqlQuery = SQL_SELECT_ALL_QUERY + CIRCLES_TABLE;
-        Cursor cursor = db.rawQuery(sqlQuery, null);
+        cursor = db.rawQuery(sqlQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -386,7 +387,7 @@ public class Database extends SQLiteOpenHelper {
 
             String sqlQuery = "SELECT * FROM " + CIRCLES_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(circleID);
-            Cursor cursor = db.rawQuery(sqlQuery, null);
+            cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
                 User circle = new User();
