@@ -149,6 +149,22 @@ public class Utilities {
                 .buildRound(finalData, colorGenerator.getColor(finalData));
     }
 
+    public static boolean haveNetworkAccess() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+
+        } catch (IOException | InterruptedException e) {
+            ErrorHandler.handleError(null, e);
+        }
+
+        return false;
+    }
+
+
     //TODO remove all the logging methods
     public static void writeToFile(String message) {
         File dir = Environment.getExternalStorageDirectory();

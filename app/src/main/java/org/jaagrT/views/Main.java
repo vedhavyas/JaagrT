@@ -9,8 +9,6 @@ import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
-import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 
 import it.neokree.materialnavigationdrawer.MaterialAccount;
@@ -66,12 +64,6 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
             account.setSubTitle(localUser.getEmail());
             if (localUser.getThumbnailPicture() != null) {
                 account.setPhoto(localUser.getThumbnailPicture());
-            }
-
-            try {
-                circleSection.setNotifications(basicController.getEntryCount(Database.CIRCLES_TABLE));
-            } catch (NullPointerException e) {
-                ErrorHandler.handleError(null, e);
             }
 
             handler.post(new Runnable() {
