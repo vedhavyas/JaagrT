@@ -29,6 +29,7 @@ import org.jaagrT.widgets.rangebar.RangeBar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class Settings extends Fragment {
@@ -156,7 +157,8 @@ public class Settings extends Fragment {
         messageBox.setText(prefs.getString(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE));
         messageBox.addValidator(new FormValidators.EmptyFieldValidator());
 
-        final MaterialEditText[] editTexts = {messageBox};
+        final List<MaterialEditText> editTexts = new ArrayList<>();
+        editTexts.add(messageBox);
 
         new MaterialDialog.Builder(activity)
                 .customView(alertMessageView, false)

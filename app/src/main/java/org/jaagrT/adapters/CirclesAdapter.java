@@ -20,7 +20,7 @@ import java.util.List;
  * Project JaagrT
  */
 
-public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactViewHolder> {
+public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<User> circles;
     private OnItemClickListener onItemClickListener;
@@ -32,39 +32,58 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
     }
 
     @Override
-    public CirclesAdapter.ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View itemView = LayoutInflater.
-                from(viewGroup.getContext()).
-                inflate(R.layout.circle_card_view, viewGroup, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        if(viewType == -1){
+            View emptyView = LayoutInflater.from(viewGroup.getContext()).
+                    inflate(R.layout.empty_circles_view, viewGroup, false);
 
-        return new ContactViewHolder(itemView);
+            return new EmptyViewHolder(emptyView);
+
+        }else {
+            View itemView = LayoutInflater.
+                    from(viewGroup.getContext()).
+                    inflate(R.layout.circle_card_view, viewGroup, false);
+            return new CirclesViewHolder(itemView);
+        }
     }
 
     @Override
-    public void onBindViewHolder(CirclesAdapter.ContactViewHolder holder, int position) {
-        User contact = circles.get(position);
-        String name = contact.getFirstName();
-        if (contact.getLastName() != null) {
-            name += " " + contact.getLastName();
-        }
-        holder.title.setText(name);
-        if (contact.getThumbnailPicture() != null) {
-            holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
-        } else {
-            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, name));
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if(viewHolder instanceof CirclesViewHolder) {
+            CirclesViewHolder holder = (CirclesViewHolder) viewHolder;
+            User contact = circles.get(position);
+            String name = contact.getFirstName();
+            if (contact.getLastName() != null) {
+                name += " " + contact.getLastName();
+            }
+            holder.title.setText(name);
+            if (contact.getThumbnailPicture() != null) {
+                holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
+            } else {
+                holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, name));
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        if (circles != null) {
-            return circles.size();
+        return circles.size() > 0 ? circles.size() : 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(circles.size() == 0){
+            return -1;
         }
-        return 0;
+        return super.getItemViewType(position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public List<User> getCircles(){
+        return this.circles;
     }
 
     public void setCircles(List<User> circles) {
@@ -90,11 +109,11 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
         notifyDataSetChanged();
     }
 
-    public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class CirclesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected ImageView profilePic;
         protected TextView title;
 
-        public ContactViewHolder(View v) {
+        public CirclesViewHolder(View v) {
             super(v);
             profilePic = (ImageView) v.findViewById(R.id.profilePic);
             title = (TextView) v.findViewById(R.id.title);
@@ -106,6 +125,13 @@ public class CirclesAdapter extends RecyclerView.Adapter<CirclesAdapter.ContactV
             if (onItemClickListener != null) {
                 onItemClickListener.onItemClick(view, getPosition());
             }
+        }
+    }
+
+    public class EmptyViewHolder extends RecyclerView.ViewHolder{
+
+        public EmptyViewHolder(View itemView) {
+            super(itemView);
         }
     }
 

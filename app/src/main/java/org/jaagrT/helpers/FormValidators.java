@@ -38,11 +38,23 @@ public class FormValidators {
         }
     }
 
-    public static class PhoneNumberValidator extends RegexpValidator {
+    public static class NumberValidator extends RegexpValidator {
 
 
-        public PhoneNumberValidator() {
+        public NumberValidator() {
             super(PHONE_NUMBER_NOT_VALID, PHONE_NUMBER_REGEX);
+        }
+    }
+
+    public static class DigitValidator extends METValidator{
+
+        public DigitValidator() {
+            super(PHONE_NUMBER_NOT_VALID);
+        }
+
+        @Override
+        public boolean isValid(@NonNull CharSequence charSequence, boolean b) {
+            return charSequence.length() >= 10;
         }
     }
 }

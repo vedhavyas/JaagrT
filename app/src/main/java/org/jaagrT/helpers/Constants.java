@@ -28,6 +28,8 @@ public class Constants {
     public static final String USER_PROFILE_PICTURE = "picture";
     public static final String USER_THUMBNAIL_PICTURE = "thumbNailPicture";
     public static final String USER_PRIMARY_PHONE = "primaryPhone";
+    public static final String USER_SECONDARY_EMAILS = "secondaryEmails";
+    public static final String USER_SECONDARY_PHONES = "secondaryPhones";
 
     public static final String USER_CIRCLE_RELATION = "myCircle";
 
@@ -51,7 +53,7 @@ public class Constants {
     public static final String LAST_UPDATE = "Last updated";
 
     //Activity Request codes
-    public static final int SELECT_PICTURE = 1;
+    public static final int GET_IMAGE = 1;
     public static final int VERIFY_PHONE = 2;
     public static final int PICK_PICTURE = 3;
     public static final int PICK_CONTACT = 4;

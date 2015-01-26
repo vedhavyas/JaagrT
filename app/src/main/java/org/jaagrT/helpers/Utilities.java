@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Authored by vedhavyas on 3/12/14.
@@ -46,7 +48,7 @@ public class Utilities {
         }
     }
 
-    public static boolean isEditBoxesValid(MaterialEditText[] editTexts) {
+    public static boolean isEditBoxesValid(List<MaterialEditText> editTexts) {
         boolean allValid = true;
 
         for (MaterialEditText editText : editTexts) {
@@ -103,6 +105,13 @@ public class Utilities {
         return compressed;
     }
 
+    public static Drawable getBitmapDrawable(Context context, Bitmap bitmap){
+        if(bitmap != null){
+            return new BitmapDrawable(context.getResources(), bitmap);
+        }
+
+        return null;
+    }
 
     public static Bitmap getReSizedBitmap(Bitmap image) {
         int width = image.getWidth();

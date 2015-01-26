@@ -23,7 +23,9 @@ import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.services.ObjectService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -57,10 +59,11 @@ public class Login extends Activity {
         final MaterialEditText emailBox = (MaterialEditText) findViewById(R.id.emailBox);
         final MaterialEditText passwordBox = (MaterialEditText) findViewById(R.id.passwordBox);
 
-        emailBox.addValidator(new FormValidators.EmptyFieldValidator());
-        emailBox.addValidator(new FormValidators.EmailValidator());
+        emailBox.addValidator(new FormValidators.EmptyFieldValidator())
+                .addValidator(new FormValidators.EmailValidator());
         passwordBox.addValidator(new FormValidators.EmptyFieldValidator());
-        final MaterialEditText[] editTexts = {emailBox, passwordBox};
+        final List<MaterialEditText> editTexts = new ArrayList<>();
+        editTexts.addAll(Arrays.asList(emailBox, passwordBox));
 
 
         fbBtn.setOnClickListener(new View.OnClickListener() {

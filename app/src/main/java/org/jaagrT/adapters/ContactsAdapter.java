@@ -49,10 +49,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
 
     @Override
     public int getItemCount() {
-        if (contacts != null) {
-            return contacts.size();
-        }
-        return 0;
+        return contacts.size();
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

@@ -1,0 +1,267 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_material_dark"
+    android:fitsSystemWindows="true"
+    tools:context="org.jaagrT.views.Profile">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_material_light">
+
+        <com.melnykov.fab.ObservableScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/profileView"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/default_profile_height"
+                    android:background="@color/teal_400"/>
+
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/primary_details"
+                            android:textColor="@color/gray"
+                            android:textSize="14sp" />
+
+                        <View style="@style/HorizontalDividerThinGrayLight" />
+
+                        <com.rengwuxian.materialedittext.MaterialEditText
+                            android:id="@+id/emailBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/email"
+                            android:inputType="textEmailAddress"
+                            android:textCursorDrawable="@drawable/edit_text_cursor"
+                            app:baseColor="@color/black"
+                            app:floatingLabel="highlight"
+                            app:iconLeft="@drawable/ic_email"
+                            app:iconPadding="0dp"
+                            app:minCharacters="3"
+                            app:primaryColor="@color/teal_400" />
+
+                        <com.rengwuxian.materialedittext.MaterialEditText
+                            android:id="@+id/firstNameBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/first_name"
+                            android:inputType="textPersonName"
+                            android:textCursorDrawable="@drawable/edit_text_cursor"
+                            app:baseColor="@color/black"
+                            app:floatingLabel="highlight"
+                            app:iconLeft="@drawable/ic_account"
+                            app:iconPadding="0dp"
+                            app:minCharacters="3"
+                            app:primaryColor="@color/teal_400" />
+
+                        <com.rengwuxian.materialedittext.MaterialEditText
+                            android:id="@+id/lastNameBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/last_name"
+                            android:inputType="textPersonName"
+                            android:textCursorDrawable="@drawable/edit_text_cursor"
+                            app:baseColor="@color/black"
+                            app:floatingLabel="highlight"
+                            app:iconLeft="@drawable/ic_account"
+                            app:iconPadding="0dp"
+                            app:minCharacters="1"
+                            app:primaryColor="@color/teal_400" />
+
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.rengwuxian.materialedittext.MaterialEditText
+                                android:id="@+id/phoneBox"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="@string/phone_number"
+                                android:inputType="phone"
+                                android:textCursorDrawable="@drawable/edit_text_cursor"
+                                app:baseColor="@color/black"
+                                app:floatingLabel="highlight"
+                                app:iconLeft="@drawable/ic_phone"
+                                app:iconPadding="0dp"
+                                app:minCharacters="10"
+                                app:primaryColor="@color/teal_400" />
+
+                            <Button
+                                android:id="@+id/verifyPhoneBtn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:text="@string/verify"
+                                android:textColor="@drawable/color_selector"/>
+
+                            </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/secondaryEmailsCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:text="@string/secondary_emails"
+                                android:textColor="@color/gray"
+                                android:textSize="14sp" />
+
+                            <ImageButton
+                                android:id="@+id/addEmailFieldBtn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="5dp"
+                                android:background="@null"
+                                android:contentDescription="@string/add_sec_emails"
+                                android:src="@drawable/ic_content_add" />
+
+                        </LinearLayout>
+
+                        <View style="@style/HorizontalDividerThinGrayLight" />
+
+                        <LinearLayout
+                            android:id="@+id/secondaryEmailsLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/secondaryPhonesCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/secondaryPhonesLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:orientation="vertical">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:text="@string/secondary_phones"
+                                android:textColor="@color/gray"
+                                android:textSize="14sp" />
+
+                            <ImageButton
+                                android:id="@+id/addPhoneFieldBtn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="5dp"
+                                android:background="@null"
+                                android:contentDescription="@string/add_sec_phone"
+                                android:src="@drawable/ic_content_add" />
+
+                            </LinearLayout>
+
+                        <View style="@style/HorizontalDividerThinGrayLight" />
+
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+
+            </LinearLayout>
+
+        </com.melnykov.fab.ObservableScrollView>
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            android:fitsSystemWindows="false"/>
+
+        <com.melnykov.fab.FloatingActionButton
+            android:id="@+id/editBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_edit_profile"
+            fab:fab_colorNormal="@color/teal_400"
+            fab:fab_colorPressed="@color/teal_700" />
+
+        </FrameLayout>
+
+</RelativeLayout>

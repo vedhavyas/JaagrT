@@ -128,6 +128,7 @@ public class LoginController {
         ObjectService.setUserDetailsObject(userDetailsObject);
         ObjectService.setUserPreferenceObject(userPreferenceObject);
         ObjectService.getCirclesFirstTime();
+        ObjectService.getUserMiscDetails();
     }
 
     private class SaveLocalUser extends AsyncTask<Void, Void, Integer> {

@@ -57,5 +57,13 @@
     <string name="contact_profile_desc">Contact profile picture</string>
     <string name="contact_name">Contact Name</string>
     <string name="status_bar_replacement">Status bar Replacement</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="no_circles">No Circles Found. Click \'+\' to add a new Circle</string>
+    <string name="edit_profile_pic">Edit profile Picture</string>
+    <string name="primary_details">PRIMARY DETAILS</string>
+    <string name="secondary_emails">SECONDARY EMAILS</string>
+    <string name="secondary_phones">SECONDARY PHONES</string>
+    <string name="add_sec_phone">add secondary phone</string>
+    <string name="add_sec_emails">add Secondary emails</string>
 
 </resources>

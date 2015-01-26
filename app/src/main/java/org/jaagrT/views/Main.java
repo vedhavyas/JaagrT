@@ -1,19 +1,20 @@
 package org.jaagrT.views;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 
-import it.neokree.materialnavigationdrawer.MaterialAccount;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
-import it.neokree.materialnavigationdrawer.MaterialSection;
+import it.neokree.materialnavigationdrawer.elements.MaterialAccount;
+import it.neokree.materialnavigationdrawer.elements.MaterialSection;
+import it.neokree.materialnavigationdrawer.elements.listeners.MaterialAccountListener;
 
 
 public class Main extends MaterialNavigationDrawer<Fragment> {
@@ -21,7 +22,6 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private static final String PANIC = "Panic";
     private static final String CIRCLES = "My Circles";
     private static final String SETTINGS = "Settings";
-    private static final String TRANSPARENT_COLOR = "#9e9e9e";
 
     private MaterialAccount account;
     private Activity activity;
@@ -34,8 +34,21 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         activity = this;
         handler = new Handler();
         basicController = BasicController.getInstance(activity);
-        account = new MaterialAccount("", "", new ColorDrawable(Color.parseColor(TRANSPARENT_COLOR)), getResources().getDrawable(R.drawable.ic_nav_background));
+        account = new MaterialAccount(this.getResources(), "", "", R.drawable.ic_user_small, R.drawable.ic_nav_background);
         this.addAccount(account);
+        this.setAccountListener(new MaterialAccountListener() {
+            @Override
+            public void onAccountOpening(MaterialAccount materialAccount) {
+                Intent profileIntent = new Intent(activity, Profile.class);
+                startActivity(profileIntent);
+                overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+            }
+
+            @Override
+            public void onChangeAccount(MaterialAccount materialAccount) {
+
+            }
+        });
         new Thread(new GetUserAsync()).start();
 
         panicSection = this.newSection(PANIC, this.getResources().getDrawable(R.drawable.ic_panic_small), new Panic())
@@ -65,13 +78,16 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
             if (localUser.getThumbnailPicture() != null) {
                 account.setPhoto(localUser.getThumbnailPicture());
             }
+            final int circleNotifications = basicController.getEntryCount(Database.CIRCLES_TABLE);
 
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     notifyAccountDataChanged();
+                    circleSection.setNotifications(circleNotifications);
                 }
             });
         }
     }
+
 }

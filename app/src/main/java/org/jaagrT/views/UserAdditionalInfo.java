@@ -19,6 +19,10 @@ import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
@@ -69,10 +73,12 @@ public class UserAdditionalInfo extends Activity {
 
         firstNameBox.addValidator(new FormValidators.EmptyFieldValidator());
         lastNameBox.addValidator(new FormValidators.EmptyFieldValidator());
-        phoneBox.addValidator(new FormValidators.EmptyFieldValidator());
-        phoneBox.addValidator(new FormValidators.PhoneNumberValidator());
+        phoneBox.addValidator(new FormValidators.EmptyFieldValidator())
+                .addValidator(new FormValidators.NumberValidator())
+                .addValidator(new FormValidators.DigitValidator());
 
-        final MaterialEditText[] editTexts = {firstNameBox, lastNameBox, phoneBox};
+        final List<MaterialEditText> editTexts = new ArrayList<>();
+        editTexts.addAll(Arrays.asList(firstNameBox, lastNameBox, phoneBox));
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override

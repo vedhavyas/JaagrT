@@ -53,6 +53,7 @@ public class PickPicture extends Activity {
     private Bitmap originalImage, croppedImage;
     private BasicController basicController;
     private ParseObject userDetailsObject;
+    private Button acceptBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +72,12 @@ public class PickPicture extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.SELECT_PICTURE && resultCode == RESULT_OK) {
+        if (requestCode == Constants.GET_IMAGE && resultCode == RESULT_OK) {
             Uri selectedImageUri = data.getData();
             try {
                 originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                 cropImageView.setImageBitmap(originalImage);
+                acceptBtn.setEnabled(true);
             } catch (IOException e) {
                 ErrorHandler.handleError(activity, e);
             }
@@ -92,7 +94,7 @@ public class PickPicture extends Activity {
         pDialog.setTitleText(Constants.PLEASE_WAIT);
         pDialog.show();
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
-        Button acceptBtn = (Button) findViewById(R.id.acceptBtn);
+        acceptBtn = (Button) findViewById(R.id.acceptBtn);
         Button rotateBtn = (Button) findViewById(R.id.rotateBtn);
         Button cancelBtn = (Button) findViewById(R.id.cancelBtn);
         final Button moreBtn = (Button) findViewById(R.id.moreBtn);
@@ -104,6 +106,7 @@ public class PickPicture extends Activity {
                 new SavePicture().execute();
             }
         });
+        acceptBtn.setEnabled(false);
 
         rotateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,7 +200,7 @@ public class PickPicture extends Activity {
 
     private void getImageFromCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, Constants.SELECT_PICTURE);
+        startActivityForResult(intent, Constants.GET_IMAGE);
     }
 
 
@@ -205,7 +208,7 @@ public class PickPicture extends Activity {
         Intent intent = new Intent();
         intent.setType(IMAGE);
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, SELECT_PICTURE), Constants.SELECT_PICTURE);
+        startActivityForResult(Intent.createChooser(intent, SELECT_PICTURE), Constants.GET_IMAGE);
     }
 
     private void returnResult(int result) {

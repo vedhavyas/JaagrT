@@ -36,13 +36,11 @@ public class UpdateReceiver extends BroadcastReceiver {
                 prefs.edit().putLong(Constants.LAST_UPDATE, System.currentTimeMillis()).apply();
                 ObjectService.updateObjects();
                 ObjectService.updateCircles();
-            } else {
-                if (isObjectsNull()) {
-                    Utilities.writeToFile("Objects are Null...");
-                    prefs.edit().putLong(Constants.LAST_UPDATE, System.currentTimeMillis()).apply();
-                    ObjectService.updateObjects();
-                    ObjectService.updateCircles();
-                }
+            } else if(isObjectsNull()){
+                prefs.edit().putLong(Constants.LAST_UPDATE, System.currentTimeMillis()).apply();
+                Utilities.writeToFile("Objects are Null...");
+                ObjectService.updateObjects();
+                ObjectService.updateCircles();
             }
         }
     }

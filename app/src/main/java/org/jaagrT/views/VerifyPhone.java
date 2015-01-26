@@ -23,6 +23,8 @@ import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -78,10 +80,11 @@ public class VerifyPhone extends Activity {
 
         verifyCodeBox.addValidator(new FormValidators.EmptyFieldValidator());
         phoneBox.addValidator(new FormValidators.EmptyFieldValidator());
-        phoneBox.addValidator(new FormValidators.PhoneNumberValidator());
+        phoneBox.addValidator(new FormValidators.NumberValidator());
         phoneBox.setEnabled(false);
 
-        final MaterialEditText[] editTexts = {phoneBox};
+        final List<MaterialEditText> editTexts = new ArrayList<>();
+        editTexts.add(phoneBox);
 
         editPhoneBtn.setOnClickListener(new View.OnClickListener() {
             @Override

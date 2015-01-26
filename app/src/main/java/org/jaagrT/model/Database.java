@@ -35,12 +35,16 @@ public class Database extends SQLiteOpenHelper {
     private static final String COLUMN_PHONE_VERIFIED = "phoneVerified";
     private static final String COLUMN_PICTURE = "picture";
     private static final String COLUMN_THUMBNAIL_PICTURE = "thumbnailPicture";
+    private static final String COLUMN_SECONDARY_EMAILS = "secondaryEmails";
+    private static final String COLUMN_SECONDARY_PHONES = "secondaryPhones";
     private static final String SQL_USER_TABLE_CREATE_QUERY = "CREATE TABLE " + USER_TABLE
             + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_OBJECT_ID + " TEXT,"
             + COLUMN_FIRST_NAME + " TEXT,"
             + COLUMN_LAST_NAME + " TEXT,"
             + COLUMN_EMAIL + " TEXT UNIQUE,"
+            + COLUMN_SECONDARY_EMAILS + " TEXT,"
+            + COLUMN_SECONDARY_PHONES + " TEXT,"
             + COLUMN_PHONE_NUMBER + " TEXT UNIQUE, "
             + COLUMN_MEMBER_OF_MASTER_CIRCLE + " INTEGER, "
             + COLUMN_PHONE_VERIFIED + " INTEGER, "
@@ -52,9 +56,12 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_FIRST_NAME + " TEXT,"
             + COLUMN_LAST_NAME + " TEXT,"
             + COLUMN_EMAIL + " TEXT UNIQUE,"
+            + COLUMN_SECONDARY_EMAILS + " TEXT,"
+            + COLUMN_SECONDARY_PHONES + " TEXT,"
             + COLUMN_PHONE_NUMBER + " TEXT UNIQUE, "
             + COLUMN_MEMBER_OF_MASTER_CIRCLE + " INTEGER, "
             + COLUMN_PHONE_VERIFIED + " INTEGER, "
+            + COLUMN_PICTURE + " BLOB ,"
             + COLUMN_THUMBNAIL_PICTURE + " BLOB)";
     private static final String COLUMN_CONTACT_ID = "contactID";
     private static final String COLUMN_NAME = "name";
@@ -146,6 +153,8 @@ public class Database extends SQLiteOpenHelper {
                     user.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
                     user.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
                     user.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
+                    user.setSecondaryEmailsRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_EMAILS)));
+                    user.setSecondaryPhonesRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_PHONES)));
                 } while (cursor.moveToNext());
 
                 return user;
@@ -200,6 +209,14 @@ public class Database extends SQLiteOpenHelper {
 
         if (user.getObjectID() != null) {
             contentValues.put(COLUMN_OBJECT_ID, user.getObjectID());
+        }
+
+        if(user.getSecondaryEmailsRaw() != null){
+            contentValues.put(COLUMN_SECONDARY_EMAILS, user.getSecondaryEmailsRaw());
+        }
+
+        if(user.getSecondaryPhonesRaw() != null){
+            contentValues.put(COLUMN_SECONDARY_PHONES, user.getSecondaryPhonesRaw());
         }
 
         contentValues.put(COLUMN_MEMBER_OF_MASTER_CIRCLE, user.isMemberOfMasterCircleRaw());
@@ -354,6 +371,8 @@ public class Database extends SQLiteOpenHelper {
                 circle.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
                 circle.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
                 circle.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
+                circle.setSecondaryEmailsRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_EMAILS)));
+                circle.setSecondaryPhonesRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_PHONES)));
                 circles.add(circle);
             } while (cursor.moveToNext());
 
@@ -401,6 +420,8 @@ public class Database extends SQLiteOpenHelper {
                     circle.setMemberOfMasterCircleRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_MEMBER_OF_MASTER_CIRCLE)));
                     circle.setPhoneVerifiedRaw(cursor.getInt(cursor.getColumnIndex(COLUMN_PHONE_VERIFIED)));
                     circle.setThumbnailPicture(Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_THUMBNAIL_PICTURE))));
+                    circle.setSecondaryEmailsRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_EMAILS)));
+                    circle.setSecondaryPhonesRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_PHONES)));
                 } while (cursor.moveToNext());
 
                 return circle;

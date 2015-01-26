@@ -23,7 +23,9 @@ import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.services.ObjectService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -61,7 +63,8 @@ public class SignUp extends Activity {
         emailBox.addValidator(new FormValidators.EmailValidator());
         passwordBox.addValidator(new FormValidators.EmptyFieldValidator());
 
-        final MaterialEditText[] editTexts = {emailBox, passwordBox};
+        final List<MaterialEditText> editTexts = new ArrayList<>();
+        editTexts.addAll(Arrays.asList(emailBox, passwordBox));
 
         Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
         Button backBtn = (Button) findViewById(R.id.backBtn);

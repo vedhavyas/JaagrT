@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.jaagrT">
+    package="org.jaagrT" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,7 +19,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".views.Login"
             android:label="@string/app_name"
@@ -53,8 +53,8 @@
         <receiver
             android:name=".broadcast.receivers.SMSReceiver"
             android:exported="true"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter android:priority="2147483647">
+            android:permission="android.permission.BROADCAST_SMS" >
+            <intent-filter android:priority="2147483647" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
@@ -67,7 +67,7 @@
         <activity
             android:name=".views.StartScreen"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -87,20 +87,25 @@
 
         <receiver
             android:name=".broadcast.receivers.UpdateReceiver"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="org.jaagrT.action.ACTION_UPDATE_OBJECTS" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".broadcast.receivers.ConnectivityChangeReceiver"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".views.Profile"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
     </application>
 
 </manifest>

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
@@ -33,6 +34,7 @@ import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.listeners.SwipeDismissListener;
 import org.jaagrT.model.Contact;
+import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
 
@@ -43,6 +45,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 
 public class Circles extends Fragment {
 
@@ -103,7 +106,7 @@ public class Circles extends Fragment {
         SwipeDismissListener dismissListener = new SwipeDismissListener(recList, new SwipeDismissListener.SwipeListener() {
             @Override
             public boolean canSwipe(int position) {
-                return true;
+                return adapter.getCircles().size() != 0;
             }
 
             @Override
@@ -192,7 +195,13 @@ public class Circles extends Fragment {
                 }
             });
             adapter.setCircles(circles);
+            setCircleNumber(adapter.getCircles().size());
         }
+    }
+
+    private void setCircleNumber(int number){
+
+        ((MaterialNavigationDrawer)this.getActivity()).getCurrentSection().setNotifications(number);
     }
 
     private void deleteCircle(int[] reverseSortedPositions) {
@@ -227,8 +236,9 @@ public class Circles extends Fragment {
                         .eventListener(new EventListener() {
                             @Override
                             public void onShow(Snackbar snackbar) {
-                                //TODO try and move the button instead
-                                addBtn.setVisibility(View.GONE);
+
+                                ViewPropertyAnimator.animate(addBtn).cancel();
+                                ViewPropertyAnimator.animate(addBtn).scaleX(0).scaleY(0).setDuration(200).start();
                             }
 
                             @Override
@@ -241,8 +251,10 @@ public class Circles extends Fragment {
 
                             @Override
                             public void onDismissed(Snackbar snackbar) {
-                                addBtn.setVisibility(View.VISIBLE);
+                                ViewPropertyAnimator.animate(addBtn).cancel();
+                                ViewPropertyAnimator.animate(addBtn).scaleX(1).scaleY(1).setDuration(200).start();
                                 basicController.deleteCircles(removedCircles);
+                                setCircleNumber(basicController.getEntryCount(Database.CIRCLES_TABLE));
                             }
                         })
                         .actionListener(new ActionClickListener() {
@@ -279,8 +291,8 @@ public class Circles extends Fragment {
                         .eventListener(new EventListener() {
                             @Override
                             public void onShow(Snackbar snackbar) {
-                                //TODO try and move the button instead
-                                addBtn.setVisibility(View.GONE);
+                                ViewPropertyAnimator.animate(addBtn).cancel();
+                                ViewPropertyAnimator.animate(addBtn).scaleX(0).scaleY(0).setDuration(200).start();
                             }
 
                             @Override
@@ -295,7 +307,8 @@ public class Circles extends Fragment {
 
                             @Override
                             public void onDismissed(Snackbar snackbar) {
-                                addBtn.setVisibility(View.VISIBLE);
+                                ViewPropertyAnimator.animate(addBtn).cancel();
+                                ViewPropertyAnimator.animate(addBtn).scaleX(1).scaleY(1).setDuration(200).start();
                             }
                         })
                         .attachToRecyclerView(recList));

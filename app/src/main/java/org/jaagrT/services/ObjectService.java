@@ -29,6 +29,7 @@ public class ObjectService extends Service {
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
+    private static boolean updatingObjects, updatingCircles;
     private AlarmManager objectAlarm;
     private PendingIntent objectPendingIntent;
 
@@ -52,11 +53,17 @@ public class ObjectService extends Service {
     }
 
     public static void updateObjects() {
-        new Thread(new UpdateObjects()).start();
+        if(!updatingObjects) {
+            updatingObjects = true;
+            new Thread(new UpdateObjects()).start();
+        }
     }
 
     public static void updateCircles() {
-        new Thread(new UpdateCircles()).start();
+        if(!updatingCircles) {
+            updatingCircles = true;
+            new Thread(new UpdateCircles()).start();
+        }
     }
 
     private static void fetchAndUpdateUserDetailsObject() {
@@ -79,10 +86,32 @@ public class ObjectService extends Service {
                     pictureFile.save();
                     userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
                 }
+
+                if(localUser.getPictureRaw() != null){
+                    ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, localUser.getPictureRaw());
+                    pictureFile.saveInBackground();
+                    userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
+                }
                 if (localUser.getThumbnailPictureRaw() != null) {
                     ParseFile thumbFile = new ParseFile(Constants.USER_THUMBNAIL_PICTURE_FILE_NAME, localUser.getThumbnailPictureRaw());
                     thumbFile.save();
                     userDetailsObject.put(Constants.USER_THUMBNAIL_PICTURE, thumbFile);
+                }
+
+                if(localUser.getSecondaryEmailsRaw() != null){
+                    List<String> secondaryEmails = userDetailsObject.getList(Constants.USER_SECONDARY_EMAILS);
+                    if(secondaryEmails != null) {
+                        userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
+                    }
+                    userDetailsObject.addAll(Constants.USER_SECONDARY_EMAILS, localUser.getSecondaryEmails());
+                }
+
+                if(localUser.getSecondaryPhonesRaw() != null){
+                    List<String> secondaryPhones = userDetailsObject.getList(Constants.USER_SECONDARY_PHONES);
+                    if(secondaryPhones != null) {
+                        userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
+                    }
+                    userDetailsObject.addAll(Constants.USER_SECONDARY_PHONES, localUser.getSecondaryPhones());
                 }
                 localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                 userDetailsObject.put(Constants.USER_PRIMARY_PHONE_VERIFIED, localUser.isPhoneVerified());
@@ -200,6 +229,46 @@ public class ObjectService extends Service {
 
     }
 
+    public static void getUserMiscDetails(){
+        Utilities.writeToFile("Fetching misc details...");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(userDetailsObject != null){
+                    byte[] picture = null, thumbnail = null;
+                    List<String> secondaryEmails = userDetailsObject.getList(Constants.USER_SECONDARY_EMAILS);
+                    List<String> secondaryPhones = userDetailsObject.getList(Constants.USER_SECONDARY_PHONES);
+                    if(userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null){
+                        try {
+                            picture = userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData();
+                        } catch (ParseException e) {
+                            ErrorHandler.handleError(null, e);
+                        }
+                    }
+
+                    if(userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null){
+                        try {
+                            thumbnail = userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData();
+                        } catch (ParseException e) {
+                            ErrorHandler.handleError(null, e);
+                        }
+                    }
+                    User user = basicController.getLocalUser();
+                    if(secondaryEmails != null) {
+                        user.setSecondaryEmails(secondaryEmails);
+                    }
+                    if(secondaryPhones != null) {
+                        user.setSecondaryPhones(secondaryPhones);
+                    }
+                    user.setPictureRaw(picture);
+                    user.setThumbnailPictureRaw(thumbnail);
+                    basicController.updateUser(user);
+                    Utilities.writeToFile("Updated misc details ...");
+                }
+            }
+        }).start();
+    }
+
     private void cleanUp() {
         objectAlarm.cancel(objectPendingIntent);
         objectAlarm = null;
@@ -230,6 +299,11 @@ public class ObjectService extends Service {
         Utilities.writeToFile("Setting alarm at - " + hour);
         objectAlarm.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * 3, objectPendingIntent);
+        updatingObjects = false;
+        updatingCircles = false;
+        if(userDetailsObject == null || userPreferenceObject == null){
+            updateObjects();
+        }
     }
 
     @Override
@@ -261,6 +335,7 @@ public class ObjectService extends Service {
             Utilities.writeToFile("Updating Objects...");
             fetchAndUpdateUserDetailsObject();
             fetchAndUpdateUserPreferenceObject();
+            updatingObjects = false;
         }
     }
 
@@ -275,6 +350,8 @@ public class ObjectService extends Service {
                 fetchAndUpdateUserDetailsObject();
                 fetchAndUpdateUserCircles();
             }
+
+            updatingCircles = false;
         }
     }
 
