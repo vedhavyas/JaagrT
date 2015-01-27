@@ -73,11 +73,10 @@ public class Database extends SQLiteOpenHelper {
             + COLUMN_EMAIL_LIST + " TEXT,"
             + COLUMN_PICTURE + " BLOB)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS  ";
-    private static final String SQL_SELECT_ALL_QUERY = "SELECT * FROM ";
 
 
     private static Database dbFactory;
-    private static Cursor cursor;
+    private Cursor cursor;
 
     private Database(Context context) {
         super(context, DB_NAME, null, 1);
@@ -85,7 +84,6 @@ public class Database extends SQLiteOpenHelper {
 
     public static Database getInstance(Context context) {
         if (dbFactory == null) {
-
             dbFactory = new Database(context);
         }
 
@@ -138,14 +136,31 @@ public class Database extends SQLiteOpenHelper {
         if (userID > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
-            String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
-                    + " = " + String.valueOf(userID);
-            cursor = db.rawQuery(sqlQuery, null);
+            String selectQuery = "SELECT " + COLUMN_ID
+                    + "," + COLUMN_OBJECT_ID
+                    + "," + COLUMN_FIRST_NAME
+                    + "," + COLUMN_LAST_NAME
+                    + "," + COLUMN_EMAIL
+                    + "," + COLUMN_PHONE_NUMBER
+                    + "," + COLUMN_MEMBER_OF_MASTER_CIRCLE
+                    + "," + COLUMN_PHONE_VERIFIED
+                    + "," + COLUMN_THUMBNAIL_PICTURE
+                    + "," + COLUMN_SECONDARY_EMAILS
+                    + "," + COLUMN_SECONDARY_PHONES
+                    + " FROM "
+                    + USER_TABLE
+                    + " WHERE "
+                    + COLUMN_ID
+                    + " = "
+                    + String.valueOf(userID);
+
+            cursor = db.rawQuery(selectQuery, null);
 
             if (cursor.moveToFirst()) {
                 User user = new User();
                 do {
                     user.setID(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
+                    user.setObjectID(cursor.getString(cursor.getColumnIndex(COLUMN_OBJECT_ID)));
                     user.setFirstName(cursor.getString(cursor.getColumnIndex(COLUMN_FIRST_NAME)));
                     user.setLastName(cursor.getString(cursor.getColumnIndex(COLUMN_LAST_NAME)));
                     user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
@@ -229,13 +244,16 @@ public class Database extends SQLiteOpenHelper {
         if (id > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
-            String sqlQuery = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ID
+            String sqlQuery = "SELECT " + COLUMN_PICTURE + " FROM " + USER_TABLE + " WHERE " + COLUMN_ID
                     + " = " + String.valueOf(id);
             cursor = db.rawQuery(sqlQuery, null);
 
             if (cursor.moveToFirst()) {
-
-                return Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+                try {
+                    return Utilities.getBitmapFromBlob(cursor.getBlob(cursor.getColumnIndex(COLUMN_PICTURE)));
+                } catch (IllegalStateException e) {
+                    ErrorHandler.handleError(null, e);
+                }
             }
             return null;
 
@@ -248,7 +266,7 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Contact> contacts = new ArrayList<>();
 
-        String sqlQuery = SQL_SELECT_ALL_QUERY + CONTACTS_TABLE;
+        String sqlQuery = "SELECT * FROM " + CONTACTS_TABLE;
         cursor = db.rawQuery(sqlQuery, null);
 
         if (cursor.moveToFirst()) {
@@ -356,8 +374,21 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         List<User> circles = new ArrayList<>();
 
-        String sqlQuery = SQL_SELECT_ALL_QUERY + CIRCLES_TABLE;
-        cursor = db.rawQuery(sqlQuery, null);
+        String selectQuery = "SELECT " + COLUMN_ID
+                + "," + COLUMN_OBJECT_ID
+                + "," + COLUMN_FIRST_NAME
+                + "," + COLUMN_LAST_NAME
+                + "," + COLUMN_EMAIL
+                + "," + COLUMN_PHONE_NUMBER
+                + "," + COLUMN_MEMBER_OF_MASTER_CIRCLE
+                + "," + COLUMN_PHONE_VERIFIED
+                + "," + COLUMN_THUMBNAIL_PICTURE
+                + "," + COLUMN_SECONDARY_EMAILS
+                + "," + COLUMN_SECONDARY_PHONES
+                + " FROM "
+                + CIRCLES_TABLE;
+
+        cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -385,9 +416,11 @@ public class Database extends SQLiteOpenHelper {
     public List<String> getCircleObjectIDs() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<String> objectIDs = new ArrayList<>();
+        String selectQuery = "SELECT " + COLUMN_OBJECT_ID
+                + " FROM "
+                + CIRCLES_TABLE;
 
-        String sqlQuery = SQL_SELECT_ALL_QUERY + CIRCLES_TABLE;
-        cursor = db.rawQuery(sqlQuery, null);
+        cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -404,9 +437,24 @@ public class Database extends SQLiteOpenHelper {
         if (circleID > 0) {
             SQLiteDatabase db = this.getReadableDatabase();
 
-            String sqlQuery = "SELECT * FROM " + CIRCLES_TABLE + " WHERE " + COLUMN_ID
-                    + " = " + String.valueOf(circleID);
-            cursor = db.rawQuery(sqlQuery, null);
+            String selectQuery = "SELECT " + COLUMN_ID
+                    + "," + COLUMN_OBJECT_ID
+                    + "," + COLUMN_FIRST_NAME
+                    + "," + COLUMN_LAST_NAME
+                    + "," + COLUMN_EMAIL
+                    + "," + COLUMN_PHONE_NUMBER
+                    + "," + COLUMN_MEMBER_OF_MASTER_CIRCLE
+                    + "," + COLUMN_PHONE_VERIFIED
+                    + "," + COLUMN_THUMBNAIL_PICTURE
+                    + "," + COLUMN_SECONDARY_EMAILS
+                    + "," + COLUMN_SECONDARY_PHONES
+                    + " FROM "
+                    + CIRCLES_TABLE
+                    + " WHERE "
+                    + COLUMN_ID
+                    + " = "
+                    + String.valueOf(circleID);
+            cursor = db.rawQuery(selectQuery, null);
 
             if (cursor.moveToFirst()) {
                 User circle = new User();
@@ -435,8 +483,10 @@ public class Database extends SQLiteOpenHelper {
 
     public int getEntryCount(String tableName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String countQuery = SQL_SELECT_ALL_QUERY + tableName;
-        return db.rawQuery(countQuery, null).getCount();
+        String selectQuery = "SELECT " + COLUMN_ID
+                + " FROM "
+                + tableName;
+        return db.rawQuery(selectQuery, null).getCount();
     }
 
     public int deleteCircle(int circleID) {

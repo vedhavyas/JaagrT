@@ -98,10 +98,9 @@ public class Utilities {
         Bitmap compressed = null;
         if (original != null) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            original.compress(Bitmap.CompressFormat.JPEG, 40, out);
+            original.compress(Bitmap.CompressFormat.JPEG, 85, out);
             compressed = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
         }
-
         return compressed;
     }
 
@@ -114,26 +113,28 @@ public class Utilities {
     }
 
     public static Bitmap getReSizedBitmap(Bitmap image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int maxSize = 100;
-        Bitmap reSizedBitmap = null;
+        if (image != null) {
+            int width = image.getWidth();
+            int height = image.getHeight();
+            int maxSize = 100;
+            Bitmap reSizedBitmap = null;
 
-        float bitmapRatio = (float) width / (float) height;
-        try {
-            if (bitmapRatio > 0) {
-                width = maxSize;
-                height = (int) (width / bitmapRatio);
-            } else {
-                height = maxSize;
-                width = (int) (height * bitmapRatio);
+            float bitmapRatio = (float) width / (float) height;
+            try {
+                if (bitmapRatio > 1) {
+                    width = maxSize;
+                    height = (int) (width / bitmapRatio);
+                } else {
+                    height = maxSize;
+                    width = (int) (height * bitmapRatio);
+                }
+                reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
+            } catch (Exception e) {
+                ErrorHandler.handleError(null, e);
             }
-            reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
-        } catch (Exception e) {
-            ErrorHandler.handleError(null, e);
+            return reSizedBitmap;
         }
-
-        return reSizedBitmap;
+        return null;
     }
 
     public static Drawable getRoundedDrawable(Context context, String data) {

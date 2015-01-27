@@ -102,7 +102,7 @@ public class PickPicture extends Activity {
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                croppedImage = cropImageView.getCroppedImage();
+                croppedImage = Utilities.compressBitmap(cropImageView.getCroppedImage());
                 new SavePicture().execute();
             }
         });
@@ -269,9 +269,8 @@ public class PickPicture extends Activity {
         @Override
         protected Integer doInBackground(Void... params) {
             Bitmap reSizedBitmap = Utilities.getReSizedBitmap(croppedImage);
-
             localUser.setPicture(croppedImage);
-            localUser.setThumbnailPicture(Utilities.getReSizedBitmap(croppedImage));
+            localUser.setThumbnailPicture(reSizedBitmap);
 
             if (userDetailsObject != null) {
                 ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, Utilities.getBlob(croppedImage));

@@ -79,17 +79,16 @@ public class Profile extends ActionBarActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            startMainActivity();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
+    public void onBackPressed() {
+        startMainActivity();
     }
 
     private void setUpActivity(){
