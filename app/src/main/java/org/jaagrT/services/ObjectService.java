@@ -44,6 +44,10 @@ public class ObjectService extends Service {
         ObjectService.userDetailsObject = userDetailsObject;
     }
 
+    public static void setBasicController(BasicController basicController) {
+        ObjectService.basicController = basicController;
+    }
+
     public static ParseObject getUserPreferenceObject() {
         return userPreferenceObject;
     }
@@ -99,18 +103,12 @@ public class ObjectService extends Service {
                 }
 
                 if(localUser.getSecondaryEmailsRaw() != null){
-                    List<String> secondaryEmails = userDetailsObject.getList(Constants.USER_SECONDARY_EMAILS);
-                    if(secondaryEmails != null) {
-                        userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
-                    }
+                    userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
                     userDetailsObject.addAll(Constants.USER_SECONDARY_EMAILS, localUser.getSecondaryEmails());
                 }
 
                 if(localUser.getSecondaryPhonesRaw() != null){
-                    List<String> secondaryPhones = userDetailsObject.getList(Constants.USER_SECONDARY_PHONES);
-                    if(secondaryPhones != null) {
-                        userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
-                    }
+                    userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
                     userDetailsObject.addAll(Constants.USER_SECONDARY_PHONES, localUser.getSecondaryPhones());
                 }
                 localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
@@ -210,7 +208,6 @@ public class ObjectService extends Service {
     }
 
     public static void getCirclesFirstTime() {
-
         Utilities.writeToFile("getting circles for the first time...");
         new Thread(new Runnable() {
             @Override

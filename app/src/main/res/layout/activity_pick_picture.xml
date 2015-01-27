@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@color/background_material_light"
-            custom:imageResource="@drawable/ic_user_big" />
+            custom:imageResource="@drawable/ic_user" />
 
         <Button
             android:id="@+id/acceptBtn"

@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -58,6 +59,7 @@ public class Profile extends ActionBarActivity {
     private Bitmap userPicture;
     private Toolbar profilePicView;
     private ImageButton addSecondaryEmailField, addSecondaryPhoneField;
+    private List<ImageButton> deleteButtons = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,14 @@ public class Profile extends ActionBarActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUpActivity(){
@@ -161,7 +171,7 @@ public class Profile extends ActionBarActivity {
 
     private void addNewField(String data, final int which){
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        ImageButton deleteField;
+        final ImageButton deleteField;
         final MaterialEditText editText;
         View view;
 
@@ -191,7 +201,6 @@ public class Profile extends ActionBarActivity {
         deleteField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO hide when not in edit mode
                 if(which == EMAIL) {
                     secondaryEmailBoxes.remove(editText);
                     secondaryEmailContainer.removeView((View) v.getParent());
@@ -199,8 +208,12 @@ public class Profile extends ActionBarActivity {
                     secondaryPhoneBoxes.remove(editText);
                     secondaryPhoneContainer.removeView((View) v.getParent());
                 }
+
+                deleteButtons.add(deleteField);
             }
         });
+
+        deleteButtons.add(deleteField);
     }
 
     private void getUserAndUpdateFields(){
@@ -230,7 +243,7 @@ public class Profile extends ActionBarActivity {
                             }
                         }
 
-                        if(user.getSecondaryEmailsRaw() != null){
+                        if (user.getSecondaryEmailsRaw() != null && !user.getSecondaryEmailsRaw().isEmpty()) {
                             List<String> emails = user.getSecondaryEmails();
                             for (String email : emails){
                                 addNewField(email, EMAIL);
@@ -239,7 +252,7 @@ public class Profile extends ActionBarActivity {
                             secondaryEmailsCard.setVisibility(View.GONE);
                         }
 
-                        if(user.getSecondaryPhonesRaw() != null){
+                        if (user.getSecondaryPhonesRaw() != null && !user.getSecondaryPhonesRaw().isEmpty()) {
                             List<String> phones = user.getSecondaryPhones();
                             for(String phone : phones){
                                 addNewField(phone, PHONE);
@@ -275,17 +288,25 @@ public class Profile extends ActionBarActivity {
     }
 
     private void changeFieldMode(boolean mode){
+        int visibility;
+        if (mode) {
+            visibility = View.VISIBLE;
+        } else {
+            visibility = View.GONE;
+        }
         firstNameBox.setEnabled(mode);
         lastNameBox.setEnabled(mode);
         phoneBox.setEnabled(mode);
-        if(mode){
-            secondaryEmailsCard.setVisibility(View.VISIBLE);
-            secondaryPhonesCard.setVisibility(View.VISIBLE);
-            addSecondaryEmailField.setVisibility(View.VISIBLE);
-            addSecondaryPhoneField.setVisibility(View.VISIBLE);
-        }else{
-            addSecondaryEmailField.setVisibility(View.GONE);
-            addSecondaryPhoneField.setVisibility(View.GONE);
+
+        if (mode) {
+            secondaryEmailsCard.setVisibility(visibility);
+            secondaryPhonesCard.setVisibility(visibility);
+        }
+        addSecondaryEmailField.setVisibility(visibility);
+        addSecondaryPhoneField.setVisibility(visibility);
+
+        for (ImageButton button : deleteButtons) {
+            button.setVisibility(visibility);
         }
 
         for(MaterialEditText editText : secondaryEmailBoxes){
@@ -295,6 +316,7 @@ public class Profile extends ActionBarActivity {
         for (MaterialEditText editText : secondaryPhoneBoxes){
             editText.setEnabled(mode);
         }
+
     }
 
     private void startResultActivity(int whichActivity){
@@ -334,42 +356,31 @@ public class Profile extends ActionBarActivity {
             user.setFirstName(firstNameBox.getText().toString());
             user.setLastName(lastNameBox.getText().toString());
             user.setPhoneNumber(phoneBox.getText().toString());
+
+            List<String> secondaryEmails = new ArrayList<>();
+            if(secondaryEmailBoxes.size() > 0){
+                for(MaterialEditText editText : secondaryEmailBoxes){
+                    secondaryEmails.add(editText.getText().toString());
+                }
+            }
+            user.setSecondaryEmails(secondaryEmails);
+
+            List<String> secondaryPhones = new ArrayList<>();
+            if(secondaryPhoneBoxes.size() > 0){
+                for(MaterialEditText editText : secondaryPhoneBoxes){
+                    secondaryPhones.add(editText.getText().toString());
+                }
+            }
+            user.setSecondaryPhones(secondaryPhones);
+
             if(userDetailsObject != null){
                 userDetailsObject.put(Constants.USER_FIRST_NAME, firstNameBox.getText().toString());
                 userDetailsObject.put(Constants.USER_LAST_NAME, lastNameBox.getText().toString());
                 userDetailsObject.put(Constants.USER_PRIMARY_PHONE, phoneBox.getText().toString());
-            }
-
-            if(secondaryEmailBoxes.size() > 0){
-                //TODO check for error
-                List<String> secondaryEmails = new ArrayList<>();
-                if(userDetailsObject != null && userDetailsObject.getList(Constants.USER_SECONDARY_EMAILS) != null){
-                    userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
-                }
-                for(MaterialEditText editText : secondaryEmailBoxes){
-                    secondaryEmails.add(editText.getText().toString());
-                    if(userDetailsObject != null){
-                        userDetailsObject.add(Constants.USER_SECONDARY_EMAILS, editText.getText().toString());
-                    }
-                }
-                user.setSecondaryEmails(secondaryEmails);
-            }
-
-            if(secondaryPhoneBoxes.size() > 0){
-                List<String> secondaryPhones = new ArrayList<>();
-                if(userDetailsObject != null && userDetailsObject.getList(Constants.USER_SECONDARY_PHONES) != null){
-                    userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
-                }
-                for(MaterialEditText editText : secondaryPhoneBoxes){
-                    secondaryPhones.add(editText.getText().toString());
-                    if(userDetailsObject != null){
-                        userDetailsObject.add(Constants.USER_SECONDARY_PHONES, editText.getText().toString());
-                    }
-                }
-                user.setSecondaryPhones(secondaryPhones);
-            }
-
-            if(userDetailsObject != null){
+                userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
+                userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
+                userDetailsObject.addAll(Constants.USER_SECONDARY_EMAILS, secondaryEmails);
+                userDetailsObject.addAll(Constants.USER_SECONDARY_PHONES, secondaryPhones);
                 userDetailsObject.saveEventually();
             }
 

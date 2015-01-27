@@ -34,7 +34,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         activity = this;
         handler = new Handler();
         basicController = BasicController.getInstance(activity);
-        account = new MaterialAccount(this.getResources(), "", "", R.drawable.ic_user_small, R.drawable.ic_nav_background);
+        account = new MaterialAccount(this.getResources(), "", "", R.drawable.ic_user, R.drawable.ic_nav_background);
         this.addAccount(account);
         this.setAccountListener(new MaterialAccountListener() {
             @Override

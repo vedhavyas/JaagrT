@@ -127,6 +127,7 @@ public class LoginController {
         activity.startService(serviceIntent);
         ObjectService.setUserDetailsObject(userDetailsObject);
         ObjectService.setUserPreferenceObject(userPreferenceObject);
+        ObjectService.setBasicController(basicController);
         ObjectService.getCirclesFirstTime();
         ObjectService.getUserMiscDetails();
     }

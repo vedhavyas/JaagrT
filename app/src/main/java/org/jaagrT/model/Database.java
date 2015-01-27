@@ -211,11 +211,11 @@ public class Database extends SQLiteOpenHelper {
             contentValues.put(COLUMN_OBJECT_ID, user.getObjectID());
         }
 
-        if(user.getSecondaryEmailsRaw() != null){
+        if (user.getSecondaryEmailsRaw() != null) {
             contentValues.put(COLUMN_SECONDARY_EMAILS, user.getSecondaryEmailsRaw());
         }
 
-        if(user.getSecondaryPhonesRaw() != null){
+        if (user.getSecondaryPhonesRaw() != null) {
             contentValues.put(COLUMN_SECONDARY_PHONES, user.getSecondaryPhonesRaw());
         }
 
