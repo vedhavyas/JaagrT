@@ -104,14 +104,15 @@ public class Utilities {
         return compressed;
     }
 
-    public static Drawable getBitmapDrawable(Context context, Bitmap bitmap){
-        if(bitmap != null){
+    public static Drawable getBitmapDrawable(Context context, Bitmap bitmap) {
+        if (bitmap != null) {
             return new BitmapDrawable(context.getResources(), bitmap);
         }
 
         return null;
     }
 
+    //TODO need to remove
     public static Bitmap getReSizedBitmap(Bitmap image) {
         if (image != null) {
             int width = image.getWidth();
