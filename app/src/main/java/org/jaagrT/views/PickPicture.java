@@ -25,6 +25,7 @@ import com.parse.ParseObject;
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.Utilities;
@@ -51,9 +52,9 @@ public class PickPicture extends Activity {
     private Activity activity;
     private User localUser;
     private Bitmap originalImage, croppedImage;
-    private BasicController basicController;
     private ParseObject userDetailsObject;
     private Button acceptBtn;
+    private BitmapHolder bitmapHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +94,7 @@ public class PickPicture extends Activity {
         SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
         pDialog.setTitleText(Constants.PLEASE_WAIT);
         pDialog.show();
+        bitmapHolder = BitmapHolder.getInstance(activity);
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
         acceptBtn = (Button) findViewById(R.id.acceptBtn);
         Button rotateBtn = (Button) findViewById(R.id.rotateBtn);
@@ -103,7 +105,9 @@ public class PickPicture extends Activity {
             @Override
             public void onClick(View v) {
                 croppedImage = Utilities.compressBitmap(cropImageView.getCroppedImage());
-                new SavePicture().execute();
+                if (croppedImage != null) {
+                    new SavePicture().execute();
+                }
             }
         });
         acceptBtn.setEnabled(false);
@@ -133,13 +137,14 @@ public class PickPicture extends Activity {
 
         cropImageView.setFixedAspectRatio(true);
 
-        basicController = BasicController.getInstance(activity);
+        BasicController basicController = BasicController.getInstance(activity);
         userDetailsObject = ObjectService.getUserDetailsObject();
 
         localUser = basicController.getLocalUser();
         if (localUser != null) {
-            if (localUser.getThumbnailPicture() != null) {
-                cropImageView.setImageBitmap(basicController.getUserPicture());
+            Bitmap bitmap = bitmapHolder.getBitmapImage(localUser.getEmail());
+            if (bitmap != null) {
+                cropImageView.setImageBitmap(bitmap);
                 pDialog.cancel();
             } else {
                 getFBProfilePicture(pDialog);
@@ -251,7 +256,7 @@ public class PickPicture extends Activity {
         }
     }
 
-    private class SavePicture extends AsyncTask<Void, Void, Integer> {
+    private class SavePicture extends AsyncTask<Void, Void, Boolean> {
 
         SweetAlertDialog pDialog;
 
@@ -267,28 +272,30 @@ public class PickPicture extends Activity {
         }
 
         @Override
-        protected Integer doInBackground(Void... params) {
-            Bitmap reSizedBitmap = Utilities.getReSizedBitmap(croppedImage);
-            localUser.setPicture(croppedImage);
-            localUser.setThumbnailPicture(reSizedBitmap);
+        protected Boolean doInBackground(Void... params) {
+            Bitmap reSizedBitmap = BitmapHolder.getReSizedBitmap(croppedImage);
 
             if (userDetailsObject != null) {
-                ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, Utilities.getBlob(croppedImage));
-                pictureFile.saveInBackground();
                 ParseFile thumbFile = new ParseFile(Constants.USER_THUMBNAIL_PICTURE_FILE_NAME, Utilities.getBlob(reSizedBitmap));
                 thumbFile.saveInBackground();
-                userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
+                ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, Utilities.getBlob(croppedImage));
+                pictureFile.saveInBackground();
                 userDetailsObject.put(Constants.USER_THUMBNAIL_PICTURE, thumbFile);
+                userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
                 userDetailsObject.saveInBackground();
             }
-            return basicController.updateUser(localUser);
+            boolean result = bitmapHolder.saveBitmapImage(localUser.getEmail(), croppedImage);
+            if (result) {
+                result = bitmapHolder.saveBitmapThumb(localUser.getEmail(), croppedImage);
+            }
+            return result;
         }
 
         @Override
-        protected void onPostExecute(Integer result) {
+        protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             pDialog.cancel();
-            if (result > 0) {
+            if (result) {
                 returnResult(RESULT_OK);
             } else {
                 returnResult(RESULT_CANCELED);

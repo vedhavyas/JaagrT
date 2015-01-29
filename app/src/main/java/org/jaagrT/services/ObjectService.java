@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 
 import com.parse.ParseException;
@@ -15,6 +16,7 @@ import com.parse.ParseUser;
 
 import org.jaagrT.broadcast.receivers.UpdateReceiver;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.Utilities;
@@ -30,6 +32,7 @@ public class ObjectService extends Service {
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
     private static boolean updatingObjects, updatingCircles;
+    private static BitmapHolder bitmapHolder;
     private AlarmManager objectAlarm;
     private PendingIntent objectPendingIntent;
 
@@ -48,6 +51,10 @@ public class ObjectService extends Service {
         ObjectService.basicController = basicController;
     }
 
+    public static void setBitmapHolder(BitmapHolder bitmapHolder) {
+        ObjectService.bitmapHolder = bitmapHolder;
+    }
+
     public static ParseObject getUserPreferenceObject() {
         return userPreferenceObject;
     }
@@ -57,14 +64,14 @@ public class ObjectService extends Service {
     }
 
     public static void updateObjects() {
-        if(!updatingObjects) {
+        if (!updatingObjects) {
             updatingObjects = true;
             new Thread(new UpdateObjects()).start();
         }
     }
 
     public static void updateCircles() {
-        if(!updatingCircles) {
+        if (!updatingCircles) {
             updatingCircles = true;
             new Thread(new UpdateCircles()).start();
         }
@@ -85,29 +92,27 @@ public class ObjectService extends Service {
                 if (localUser.getPhoneNumber() != null) {
                     userDetailsObject.put(Constants.USER_PRIMARY_PHONE, localUser.getPhoneNumber());
                 }
-                if (localUser.getPictureRaw() != null) {
-                    ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, localUser.getPictureRaw());
-                    pictureFile.save();
-                    userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
-                }
 
-                if(localUser.getPictureRaw() != null){
-                    ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, localUser.getPictureRaw());
+                Bitmap image = bitmapHolder.getBitmapImage(localUser.getEmail());
+                if (image != null) {
+                    ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, Utilities.getBlob(image));
                     pictureFile.saveInBackground();
                     userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
                 }
-                if (localUser.getThumbnailPictureRaw() != null) {
-                    ParseFile thumbFile = new ParseFile(Constants.USER_THUMBNAIL_PICTURE_FILE_NAME, localUser.getThumbnailPictureRaw());
+
+                image = bitmapHolder.getBitmapThumb(localUser.getEmail());
+                if (image != null) {
+                    ParseFile thumbFile = new ParseFile(Constants.USER_THUMBNAIL_PICTURE_FILE_NAME, Utilities.getBlob(image));
                     thumbFile.save();
                     userDetailsObject.put(Constants.USER_THUMBNAIL_PICTURE, thumbFile);
                 }
 
-                if(localUser.getSecondaryEmailsRaw() != null){
+                if (localUser.getSecondaryEmailsRaw() != null) {
                     userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
                     userDetailsObject.addAll(Constants.USER_SECONDARY_EMAILS, localUser.getSecondaryEmails());
                 }
 
-                if(localUser.getSecondaryPhonesRaw() != null){
+                if (localUser.getSecondaryPhonesRaw() != null) {
                     userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
                     userDetailsObject.addAll(Constants.USER_SECONDARY_PHONES, localUser.getSecondaryPhones());
                 }
@@ -170,14 +175,14 @@ public class ObjectService extends Service {
                             circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
                             if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
                                 try {
-                                    circle.setThumbnailPicture(Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
+                                    bitmapHolder.saveBitmapThumbAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
                                 } catch (ParseException e) {
                                     ErrorHandler.handleError(null, e);
                                 }
                             }
                             if (parseObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
                                 try {
-                                    circle.setPicture(Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData()));
+                                    bitmapHolder.saveBitmapImageAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData()));
                                 } catch (ParseException e) {
                                     ErrorHandler.handleError(null, e);
                                 }
@@ -226,16 +231,35 @@ public class ObjectService extends Service {
 
     }
 
-    public static void getUserMiscDetails(){
+    public static void getUserMiscDetails() {
         Utilities.writeToFile("Fetching misc details...");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(userDetailsObject != null){
+                if (userDetailsObject != null) {
                     byte[] picture = null, thumbnail = null;
+                    User user = basicController.getLocalUser();
+                    if (userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
+                        try {
+                            thumbnail = userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData();
+                        } catch (ParseException e) {
+                            ErrorHandler.handleError(null, e);
+                        }
+                    }
+                    bitmapHolder.saveBitmapThumbAsync(user.getEmail(), Utilities.getBitmapFromBlob(thumbnail));
                     List<String> secondaryEmails = userDetailsObject.getList(Constants.USER_SECONDARY_EMAILS);
                     List<String> secondaryPhones = userDetailsObject.getList(Constants.USER_SECONDARY_PHONES);
-                    if(userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null){
+
+
+                    if (secondaryEmails != null) {
+                        user.setSecondaryEmails(secondaryEmails);
+                    }
+                    if (secondaryPhones != null) {
+                        user.setSecondaryPhones(secondaryPhones);
+                    }
+                    basicController.updateUser(user);
+
+                    if (userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
                         try {
                             picture = userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData();
                         } catch (ParseException e) {
@@ -243,23 +267,7 @@ public class ObjectService extends Service {
                         }
                     }
 
-                    if(userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null){
-                        try {
-                            thumbnail = userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData();
-                        } catch (ParseException e) {
-                            ErrorHandler.handleError(null, e);
-                        }
-                    }
-                    User user = basicController.getLocalUser();
-                    if(secondaryEmails != null) {
-                        user.setSecondaryEmails(secondaryEmails);
-                    }
-                    if(secondaryPhones != null) {
-                        user.setSecondaryPhones(secondaryPhones);
-                    }
-                    user.setPictureRaw(picture);
-                    user.setThumbnailPictureRaw(thumbnail);
-                    basicController.updateUser(user);
+                    bitmapHolder.saveBitmapImageAsync(user.getEmail(), Utilities.getBitmapFromBlob(picture));
                     Utilities.writeToFile("Updated misc details ...");
                 }
             }
@@ -279,6 +287,7 @@ public class ObjectService extends Service {
     private void initiateTheServiceObjects() {
 
         basicController = BasicController.getInstance(this);
+        bitmapHolder = BitmapHolder.getInstance(this);
         objectAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent receiverIntent = new Intent(this, UpdateReceiver.class);
 
@@ -298,7 +307,7 @@ public class ObjectService extends Service {
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR * 3, objectPendingIntent);
         updatingObjects = false;
         updatingCircles = false;
-        if(userDetailsObject == null || userPreferenceObject == null){
+        if (userDetailsObject == null || userPreferenceObject == null) {
             updateObjects();
         }
     }

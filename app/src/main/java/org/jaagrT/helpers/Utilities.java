@@ -112,31 +112,6 @@ public class Utilities {
         return null;
     }
 
-    //TODO need to remove
-    public static Bitmap getReSizedBitmap(Bitmap image) {
-        if (image != null) {
-            int width = image.getWidth();
-            int height = image.getHeight();
-            int maxSize = 100;
-            Bitmap reSizedBitmap = null;
-
-            float bitmapRatio = (float) width / (float) height;
-            try {
-                if (bitmapRatio > 1) {
-                    width = maxSize;
-                    height = (int) (width / bitmapRatio);
-                } else {
-                    height = maxSize;
-                    width = (int) (height * bitmapRatio);
-                }
-                reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
-            } catch (Exception e) {
-                ErrorHandler.handleError(null, e);
-            }
-            return reSizedBitmap;
-        }
-        return null;
-    }
 
     public static Drawable getRoundedDrawable(Context context, String data) {
         ColorGenerator colorGenerator = ColorGenerator.create(context.getResources().getIntArray(R.array.colorsList));

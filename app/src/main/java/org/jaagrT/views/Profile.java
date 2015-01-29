@@ -25,9 +25,11 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.FormValidators;
 import org.jaagrT.helpers.Utilities;
+import org.jaagrT.listeners.BitmapGetListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
 
@@ -53,10 +55,10 @@ public class Profile extends ActionBarActivity {
     private User user;
     private Handler handler;
     private BasicController basicController;
+    private BitmapHolder bitmapHolder;
     private MaterialEditText emailBox, firstNameBox, lastNameBox, phoneBox;
     private Button verifyPhoneBtn;
     private CardView secondaryEmailsCard, secondaryPhonesCard;
-    private Bitmap userPicture;
     private Toolbar profilePicView;
     private ImageButton addSecondaryEmailField, addSecondaryPhoneField;
     private List<ImageButton> deleteButtons = new ArrayList<>();
@@ -70,9 +72,9 @@ public class Profile extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Constants.PICK_PICTURE && resultCode == RESULT_OK){
+        if (requestCode == Constants.PICK_PICTURE && resultCode == RESULT_OK) {
             getUserPicture();
-        }else if(requestCode == Constants.VERIFY_PHONE && resultCode == RESULT_OK){
+        } else if (requestCode == Constants.VERIFY_PHONE && resultCode == RESULT_OK) {
             getUserAndUpdateFields();
         }
 
@@ -91,10 +93,12 @@ public class Profile extends ActionBarActivity {
         startMainActivity();
     }
 
-    private void setUpActivity(){
+    private void setUpActivity() {
         activity = this;
         handler = new Handler();
         basicController = BasicController.getInstance(activity);
+        bitmapHolder = BitmapHolder.getInstance(activity);
+        user = basicController.getLocalUser();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -165,16 +169,17 @@ public class Profile extends ActionBarActivity {
         });
 
         getUserAndUpdateFields();
+        getUserPicture();
     }
 
 
-    private void addNewField(String data, final int which){
+    private void addNewField(String data, final int which) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         final ImageButton deleteField;
         final MaterialEditText editText;
         View view;
 
-        if(which == EMAIL) {
+        if (which == EMAIL) {
             view = inflater.inflate(R.layout.secondary_email_field, null);
             deleteField = (ImageButton) view.findViewById(R.id.deleteField);
             editText = (MaterialEditText) view.findViewById(R.id.emailBox);
@@ -182,7 +187,7 @@ public class Profile extends ActionBarActivity {
                     .addValidator(new FormValidators.EmailValidator());
             secondaryEmailBoxes.add(editText);
             secondaryEmailContainer.addView(view, secondaryEmailContainer.getChildCount());
-        }else{
+        } else {
             view = inflater.inflate(R.layout.secondary_phone_field, null);
             deleteField = (ImageButton) view.findViewById(R.id.deleteField);
             editText = (MaterialEditText) view.findViewById(R.id.phoneBox);
@@ -193,17 +198,17 @@ public class Profile extends ActionBarActivity {
             secondaryPhoneContainer.addView(view, secondaryPhoneContainer.getChildCount());
         }
 
-        if(data != null){
+        if (data != null) {
             editText.setText(data);
         }
 
         deleteField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(which == EMAIL) {
+                if (which == EMAIL) {
                     secondaryEmailBoxes.remove(editText);
                     secondaryEmailContainer.removeView((View) v.getParent());
-                }else{
+                } else {
                     secondaryPhoneBoxes.remove(editText);
                     secondaryPhoneContainer.removeView((View) v.getParent());
                 }
@@ -215,7 +220,7 @@ public class Profile extends ActionBarActivity {
         deleteButtons.add(deleteField);
     }
 
-    private void getUserAndUpdateFields(){
+    private void getUserAndUpdateFields() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -225,68 +230,63 @@ public class Profile extends ActionBarActivity {
                     public void run() {
                         emailBox.setText(user.getEmail());
                         emailBox.setEnabled(false);
-                        if(user.getFirstName() != null){
+                        if (user.getFirstName() != null) {
                             firstNameBox.setText(user.getFirstName());
                         }
 
-                        if(user.getLastName() != null){
+                        if (user.getLastName() != null) {
                             lastNameBox.setText(user.getLastName());
                         }
 
-                        if(user.getPhoneNumber() != null){
+                        if (user.getPhoneNumber() != null) {
                             phoneBox.setText(user.getPhoneNumber());
-                            if(user.isPhoneVerified()){
+                            if (user.isPhoneVerified()) {
                                 verifyPhoneBtn.setVisibility(View.GONE);
-                            }else{
+                            } else {
                                 phoneBox.setError(PHONE_NOT_VERIFIED);
                             }
                         }
 
                         if (user.getSecondaryEmailsRaw() != null && !user.getSecondaryEmailsRaw().isEmpty()) {
                             List<String> emails = user.getSecondaryEmails();
-                            for (String email : emails){
+                            for (String email : emails) {
                                 addNewField(email, EMAIL);
                             }
-                        }else{
+                        } else {
                             secondaryEmailsCard.setVisibility(View.GONE);
                         }
 
                         if (user.getSecondaryPhonesRaw() != null && !user.getSecondaryPhonesRaw().isEmpty()) {
                             List<String> phones = user.getSecondaryPhones();
-                            for(String phone : phones){
+                            for (String phone : phones) {
                                 addNewField(phone, PHONE);
                             }
-                        }else{
+                        } else {
                             secondaryPhonesCard.setVisibility(View.GONE);
                         }
 
                         changeFieldMode(false);
-                        getUserPicture();
                     }
                 });
             }
         }).start();
     }
 
-    private void getUserPicture(){
-        new Thread(new Runnable() {
+    private void getUserPicture() {
+        bitmapHolder.getBitmapImageAsync(user.getEmail(), new BitmapGetListener() {
             @Override
-            public void run() {
-                userPicture = basicController.getUserPicture();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Drawable userDrawable = Utilities.getBitmapDrawable(activity, userPicture);
-                        if(userDrawable != null){
-                            profilePicView.setBackground(userDrawable);
-                        }
+            public void onGet(Bitmap bitmap) {
+                if (bitmap != null) {
+                    Drawable userDrawable = Utilities.getBitmapDrawable(activity, bitmap);
+                    if (userDrawable != null) {
+                        profilePicView.setBackground(userDrawable);
                     }
-                });
+                }
             }
-        }).start();
+        });
     }
 
-    private void changeFieldMode(boolean mode){
+    private void changeFieldMode(boolean mode) {
         int visibility;
         if (mode) {
             visibility = View.VISIBLE;
@@ -308,27 +308,27 @@ public class Profile extends ActionBarActivity {
             button.setVisibility(visibility);
         }
 
-        for(MaterialEditText editText : secondaryEmailBoxes){
+        for (MaterialEditText editText : secondaryEmailBoxes) {
             editText.setEnabled(mode);
         }
 
-        for (MaterialEditText editText : secondaryPhoneBoxes){
+        for (MaterialEditText editText : secondaryPhoneBoxes) {
             editText.setEnabled(mode);
         }
 
     }
 
-    private void startResultActivity(int whichActivity){
-        if(whichActivity == PICK_PICTURE) {
+    private void startResultActivity(int whichActivity) {
+        if (whichActivity == PICK_PICTURE) {
             Intent intent = new Intent(activity, PickPicture.class);
             startActivityForResult(intent, Constants.PICK_PICTURE);
-        }else if(whichActivity == VERIFY_PHONE){
+        } else if (whichActivity == VERIFY_PHONE) {
             Intent intent = new Intent(activity, VerifyPhone.class);
             startActivityForResult(intent, Constants.VERIFY_PHONE);
         }
     }
 
-    private void startMainActivity(){
+    private void startMainActivity() {
         Intent mainActivityIntent = new Intent(activity, Main.class);
         mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -336,7 +336,7 @@ public class Profile extends ActionBarActivity {
         overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
     }
 
-    private class UpdateUser extends AsyncTask<Void, Void, Void>{
+    private class UpdateUser extends AsyncTask<Void, Void, Void> {
 
         private SweetAlertDialog pDialog;
 
@@ -354,25 +354,28 @@ public class Profile extends ActionBarActivity {
             user = basicController.getLocalUser();
             user.setFirstName(firstNameBox.getText().toString());
             user.setLastName(lastNameBox.getText().toString());
-            user.setPhoneNumber(phoneBox.getText().toString());
+            if (!user.getPhoneNumber().contains(phoneBox.getText().toString())) {
+                user.setPhoneNumber(phoneBox.getText().toString());
+                user.setPhoneVerified(false);
+            }
 
             List<String> secondaryEmails = new ArrayList<>();
-            if(secondaryEmailBoxes.size() > 0){
-                for(MaterialEditText editText : secondaryEmailBoxes){
+            if (secondaryEmailBoxes.size() > 0) {
+                for (MaterialEditText editText : secondaryEmailBoxes) {
                     secondaryEmails.add(editText.getText().toString());
                 }
             }
             user.setSecondaryEmails(secondaryEmails);
 
             List<String> secondaryPhones = new ArrayList<>();
-            if(secondaryPhoneBoxes.size() > 0){
-                for(MaterialEditText editText : secondaryPhoneBoxes){
+            if (secondaryPhoneBoxes.size() > 0) {
+                for (MaterialEditText editText : secondaryPhoneBoxes) {
                     secondaryPhones.add(editText.getText().toString());
                 }
             }
             user.setSecondaryPhones(secondaryPhones);
 
-            if(userDetailsObject != null){
+            if (userDetailsObject != null) {
                 userDetailsObject.put(Constants.USER_FIRST_NAME, firstNameBox.getText().toString());
                 userDetailsObject.put(Constants.USER_LAST_NAME, lastNameBox.getText().toString());
                 userDetailsObject.put(Constants.USER_PRIMARY_PHONE, phoneBox.getText().toString());

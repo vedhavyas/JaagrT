@@ -2,12 +2,14 @@ package org.jaagrT.views;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
 
@@ -28,12 +30,14 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private MaterialSection panicSection, circleSection;
     private BasicController basicController;
     private Handler handler;
+    private BitmapHolder bitmapHolder;
 
     @Override
     public void init(Bundle bundle) {
         activity = this;
         handler = new Handler();
         basicController = BasicController.getInstance(activity);
+        bitmapHolder = BitmapHolder.getInstance(activity);
         account = new MaterialAccount(this.getResources(), "", "", R.drawable.ic_user, R.drawable.ic_nav_background);
         this.addAccount(account);
         this.setAccountListener(new MaterialAccountListener() {
@@ -75,8 +79,9 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
             User localUser = basicController.getLocalUser();
             account.setTitle(localUser.getFirstName());
             account.setSubTitle(localUser.getEmail());
-            if (localUser.getThumbnailPicture() != null) {
-                account.setPhoto(localUser.getThumbnailPicture());
+            Bitmap bitmap = bitmapHolder.getBitmapThumb(localUser.getEmail());
+            if (bitmap != null) {
+                account.setPhoto(bitmap);
             }
             final int circleNotifications = basicController.getEntryCount(Database.CIRCLES_TABLE);
 

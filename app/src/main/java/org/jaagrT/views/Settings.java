@@ -20,6 +20,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.FormValidators;
 import org.jaagrT.helpers.Utilities;
@@ -49,6 +50,7 @@ public class Settings extends Fragment {
     private ParseObject userPreferenceObject;
     private SharedPreferences prefs;
     private TextView inAlertRangeView, outAlertRangeView;
+    private BitmapHolder bitmapHolder;
 
     public Settings() {
         // Required empty public constructor
@@ -67,6 +69,7 @@ public class Settings extends Fragment {
     private void setUpActivity(View rootView) {
 
         basicController = BasicController.getInstance(activity);
+        bitmapHolder = BitmapHolder.getInstance(activity);
         userPreferenceObject = ObjectService.getUserPreferenceObject();
         prefs = basicController.getPrefs();
 
@@ -378,6 +381,7 @@ public class Settings extends Fragment {
         protected Void doInBackground(Void... voids) {
             basicController.dropTable(Database.CIRCLES_TABLE);
             basicController.dropTable(Database.USER_TABLE);
+            bitmapHolder.deleteAllImages();
             prefs.edit().clear().apply();
             stopService();
             return null;

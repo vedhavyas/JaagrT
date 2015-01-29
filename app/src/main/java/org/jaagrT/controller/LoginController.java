@@ -6,15 +6,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.parse.GetCallback;
-import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import org.jaagrT.helpers.AlertDialogs;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.helpers.Utilities;
 import org.jaagrT.listeners.BasicListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
@@ -35,11 +34,13 @@ public class LoginController {
     private SweetAlertDialog pDialog;
     private BasicController basicController;
     private ParseObject userDetailsObject, userPreferenceObject;
+    private BitmapHolder bitmapHolder;
 
     public LoginController(Activity activity, BasicListener listener) {
         this.activity = activity;
         this.listener = listener;
         this.basicController = BasicController.getInstance(activity);
+        this.bitmapHolder = BitmapHolder.getInstance(activity);
         this.localUser = new User();
     }
 
@@ -60,20 +61,7 @@ public class LoginController {
                                 localUser.setPhoneVerified(userDetailsObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
                                 localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                                 localUser.setEmail(userDetailsObject.getString(Constants.USER_PRIMARY_EMAIL));
-                                if (userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
-                                    userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE)
-                                            .getDataInBackground(new GetDataCallback() {
-                                                @Override
-                                                public void done(byte[] thumbnailBytes, ParseException e) {
-                                                    if (e == null) {
-                                                        localUser.setThumbnailPicture(Utilities.getBitmapFromBlob(thumbnailBytes));
-                                                    }
-                                                    fetchUserPreferences();
-                                                }
-                                            });
-                                } else {
-                                    fetchUserPreferences();
-                                }
+                                fetchUserPreferences();
                             } else {
                                 clearUser(e);
                             }
@@ -128,6 +116,7 @@ public class LoginController {
         ObjectService.setUserDetailsObject(userDetailsObject);
         ObjectService.setUserPreferenceObject(userPreferenceObject);
         ObjectService.setBasicController(basicController);
+        ObjectService.setBitmapHolder(bitmapHolder);
         ObjectService.getCirclesFirstTime();
         ObjectService.getUserMiscDetails();
     }

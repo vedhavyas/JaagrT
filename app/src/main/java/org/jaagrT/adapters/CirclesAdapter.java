@@ -1,6 +1,7 @@
 package org.jaagrT.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.jaagrT.R;
+import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Utilities;
+import org.jaagrT.listeners.BitmapGetListener;
 import org.jaagrT.listeners.OnItemClickListener;
 import org.jaagrT.model.User;
 
@@ -25,21 +28,23 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<User> circles;
     private OnItemClickListener onItemClickListener;
     private Context context;
+    private BitmapHolder bitmapHolder;
 
     public CirclesAdapter(Context context, List<User> circles) {
         this.context = context;
         this.circles = circles;
+        this.bitmapHolder = BitmapHolder.getInstance(context);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        if(viewType == -1){
+        if (viewType == -1) {
             View emptyView = LayoutInflater.from(viewGroup.getContext()).
                     inflate(R.layout.empty_circles_view, viewGroup, false);
 
             return new EmptyViewHolder(emptyView);
 
-        }else {
+        } else {
             View itemView = LayoutInflater.
                     from(viewGroup.getContext()).
                     inflate(R.layout.circle_card_view, viewGroup, false);
@@ -49,19 +54,23 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if(viewHolder instanceof CirclesViewHolder) {
-            CirclesViewHolder holder = (CirclesViewHolder) viewHolder;
-            User contact = circles.get(position);
-            String name = contact.getFirstName();
-            if (contact.getLastName() != null) {
-                name += " " + contact.getLastName();
+        if (viewHolder instanceof CirclesViewHolder) {
+            final CirclesViewHolder holder = (CirclesViewHolder) viewHolder;
+            User circle = circles.get(position);
+            String name = circle.getFirstName();
+            if (circle.getLastName() != null) {
+                name += " " + circle.getLastName();
             }
             holder.title.setText(name);
-            if (contact.getThumbnailPicture() != null) {
-                holder.profilePic.setImageBitmap(contact.getThumbnailPicture());
-            } else {
-                holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, name));
-            }
+            holder.profilePic.setImageDrawable(Utilities.getRoundedDrawable(context, name));
+            bitmapHolder.getBitmapThumbAsync(circle.getEmail(), new BitmapGetListener() {
+                @Override
+                public void onGet(Bitmap bitmap) {
+                    if (bitmap != null) {
+                        holder.profilePic.setImageBitmap(bitmap);
+                    }
+                }
+            });
         }
     }
 
@@ -72,7 +81,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if(circles.size() == 0){
+        if (circles.size() == 0) {
             return -1;
         }
         return super.getItemViewType(position);
@@ -82,7 +91,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.onItemClickListener = onItemClickListener;
     }
 
-    public List<User> getCircles(){
+    public List<User> getCircles() {
         return this.circles;
     }
 
@@ -128,7 +137,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public class EmptyViewHolder extends RecyclerView.ViewHolder{
+    public class EmptyViewHolder extends RecyclerView.ViewHolder {
 
         public EmptyViewHolder(View itemView) {
             super(itemView);

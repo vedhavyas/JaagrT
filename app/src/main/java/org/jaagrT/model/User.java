@@ -1,10 +1,6 @@
 package org.jaagrT.model;
 
 
-import android.graphics.Bitmap;
-
-import org.jaagrT.helpers.Utilities;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +20,6 @@ public class User {
     private String email;
     private long currentLat;
     private long currentLong;
-    private byte[] picture;
-    private byte[] thumbnailPicture;
     private String secondaryEmails;
     private String secondaryPhones;
 
@@ -105,38 +99,6 @@ public class User {
         this.email = email;
     }
 
-    public Bitmap getPicture() {
-        return Utilities.getBitmapFromBlob(picture);
-    }
-
-    public void setPicture(Bitmap pictureBitmap) {
-        this.picture = Utilities.getBlob(pictureBitmap);
-    }
-
-    public Bitmap getThumbnailPicture() {
-        return Utilities.getBitmapFromBlob(thumbnailPicture);
-    }
-
-    public void setThumbnailPicture(Bitmap thumbnailPictureBitmap) {
-        this.thumbnailPicture = Utilities.getBlob(thumbnailPictureBitmap);
-    }
-
-    public byte[] getPictureRaw() {
-        return picture;
-    }
-
-    public void  setPictureRaw(byte[] picture){
-        this.picture = picture;
-    }
-
-    public byte[] getThumbnailPictureRaw() {
-        return thumbnailPicture;
-    }
-
-    public void setThumbnailPictureRaw(byte[] thumbnailPicture){
-        this.thumbnailPicture = thumbnailPicture;
-    }
-
     public String getObjectID() {
         return objectID;
     }
@@ -145,12 +107,12 @@ public class User {
         this.objectID = objectID;
     }
 
-    public List<String> getSecondaryEmails(){
+    public List<String> getSecondaryEmails() {
         List<String> emails = new ArrayList<>();
-        if(secondaryEmails != null && !secondaryEmails.isEmpty()) {
+        if (secondaryEmails != null && !secondaryEmails.isEmpty()) {
             String[] dataSet = secondaryEmails.split(":");
-            for(String email : dataSet){
-                if(!emails.contains(email)){
+            for (String email : dataSet) {
+                if (!emails.contains(email)) {
                     emails.add(email);
                 }
             }
@@ -159,23 +121,23 @@ public class User {
         return emails;
     }
 
-    public void setSecondaryEmails(List<String> emails){
+    public void setSecondaryEmails(List<String> emails) {
         secondaryEmails = "";
-        for(String email : emails){
-            if(secondaryEmails.isEmpty()){
+        for (String email : emails) {
+            if (secondaryEmails.isEmpty()) {
                 secondaryEmails = email;
-            }else {
-                secondaryEmails = secondaryEmails+":"+email;
+            } else {
+                secondaryEmails = secondaryEmails + ":" + email;
             }
         }
     }
 
-    public List<String> getSecondaryPhones(){
+    public List<String> getSecondaryPhones() {
         List<String> phones = new ArrayList<>();
-        if(secondaryPhones != null && !secondaryPhones.isEmpty()){
-            String [] dataSet = secondaryPhones.split(":");
-            for (String phone : dataSet){
-                if(!phones.contains(phone)){
+        if (secondaryPhones != null && !secondaryPhones.isEmpty()) {
+            String[] dataSet = secondaryPhones.split(":");
+            for (String phone : dataSet) {
+                if (!phones.contains(phone)) {
                     phones.add(phone);
                 }
             }
@@ -184,30 +146,30 @@ public class User {
         return phones;
     }
 
-    public void setSecondaryPhones(List<String> phones){
+    public void setSecondaryPhones(List<String> phones) {
         secondaryPhones = "";
-        for (String phone : phones){
-            if(secondaryPhones.isEmpty()){
+        for (String phone : phones) {
+            if (secondaryPhones.isEmpty()) {
                 secondaryPhones = phone;
-            }else {
-                secondaryPhones = secondaryPhones+":"+phone;
+            } else {
+                secondaryPhones = secondaryPhones + ":" + phone;
             }
         }
     }
 
-    public String getSecondaryEmailsRaw(){
+    public String getSecondaryEmailsRaw() {
         return secondaryEmails;
     }
 
-    public void setSecondaryEmailsRaw(String emails){
+    public void setSecondaryEmailsRaw(String emails) {
         this.secondaryEmails = emails;
     }
 
-    public String getSecondaryPhonesRaw(){
+    public String getSecondaryPhonesRaw() {
         return secondaryPhones;
     }
 
-    public void setSecondaryPhonesRaw(String phones){
+    public void setSecondaryPhonesRaw(String phones) {
         this.secondaryPhones = phones;
     }
 }

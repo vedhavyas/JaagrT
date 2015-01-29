@@ -17,8 +17,8 @@ import java.io.IOException;
  * Authored by vedhavyas.singareddi on 28-01-2015.
  */
 public class BitmapHolder {
-    private static final String THUMB = "_thumbnail.jpg";
-    private static final String IMAGE = "_image.jpg";
+    public static final String THUMB = "_thumbnail.jpg";
+    public static final String IMAGE = "_image.jpg";
     private static BitmapHolder bitmapHolder;
     private Context context;
     private Handler handler;
@@ -36,12 +36,69 @@ public class BitmapHolder {
         return bitmapHolder;
     }
 
-    public void saveBitmapAsync(final String data, final Bitmap bitmap, final BitmapSaveListener listener) {
+    public static Bitmap getReSizedBitmap(Bitmap image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int maxSize = 100;
+        Bitmap reSizedBitmap = null;
+
+        float bitmapRatio = (float) width / (float) height;
+        try {
+            if (bitmapRatio > 1) {
+                width = maxSize;
+                height = (int) (width / bitmapRatio);
+            } else {
+                height = maxSize;
+                width = (int) (height * bitmapRatio);
+            }
+            reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
+        } catch (Exception e) {
+            ErrorHandler.handleError(null, e);
+        }
+        return reSizedBitmap;
+    }
+
+    public void saveBitmapThumbAsync(final String data, final Bitmap bitmap) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveBitmapThumb(data, bitmap);
+            }
+        }).start();
+    }
+
+    public void saveBitmapThumbAsync(final String data, final Bitmap bitmap, final BitmapSaveListener listener) {
         if (listener != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    final boolean result = saveBitmap(data, bitmap);
+                    final boolean result = saveBitmapThumb(data, bitmap);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onSave(result);
+                        }
+                    });
+                }
+            }).start();
+        }
+    }
+
+    public void saveBitmapImageAsync(final String data, final Bitmap bitmap) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveBitmapImage(data, bitmap);
+            }
+        }).start();
+    }
+
+    public void saveBitmapImageAsync(final String data, final Bitmap bitmap, final BitmapSaveListener listener) {
+        if (listener != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final boolean result = saveBitmapImage(data, bitmap);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -133,18 +190,13 @@ public class BitmapHolder {
         return bitmap;
     }
 
-
-    public boolean saveBitmap(String data, Bitmap bitmap) {
+    public boolean saveBitmapThumb(String data, Bitmap bitmap) {
         boolean result = false;
         if (data != null && !data.isEmpty() && bitmap != null) {
-            FileOutputStream fosImage = null;
             FileOutputStream fosThumb = null;
-            checkAndDeleteIfExists(data);
+            checkAndDeleteIfExists(data, THUMB);
 
             try {
-                fosImage = context.openFileOutput(data + IMAGE, Context.MODE_PRIVATE);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fosImage);
-
                 fosThumb = context.openFileOutput(data + THUMB, Context.MODE_PRIVATE);
                 getReSizedBitmap(bitmap).compress(Bitmap.CompressFormat.JPEG, 100, fosThumb);
 
@@ -153,10 +205,6 @@ public class BitmapHolder {
                 ErrorHandler.handleError(null, e);
             } finally {
                 try {
-                    if (fosImage != null) {
-                        fosImage.close();
-                    }
-
                     if (fosThumb != null) {
                         fosThumb.close();
                     }
@@ -169,12 +217,39 @@ public class BitmapHolder {
         return result;
     }
 
-    public boolean isBitmapExist(String data) {
+    public boolean saveBitmapImage(String data, Bitmap bitmap) {
+        boolean result = false;
+        if (data != null && !data.isEmpty() && bitmap != null) {
+            FileOutputStream fosImage = null;
+            checkAndDeleteIfExists(data, IMAGE);
+
+            try {
+                fosImage = context.openFileOutput(data + IMAGE, Context.MODE_PRIVATE);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fosImage);
+
+                result = true;
+            } catch (FileNotFoundException e) {
+                ErrorHandler.handleError(null, e);
+            } finally {
+                try {
+                    if (fosImage != null) {
+                        fosImage.close();
+                    }
+                } catch (IOException e) {
+                    ErrorHandler.handleError(null, e);
+                }
+
+            }
+        }
+        return result;
+    }
+
+    private boolean isBitmapExist(String data, String type) {
         boolean result = false;
         if (data != null && !data.isEmpty()) {
             FileInputStream fis = null;
             try {
-                fis = context.openFileInput(data + THUMB);
+                fis = context.openFileInput(data + type);
                 result = true;
             } catch (FileNotFoundException e) {
                 ErrorHandler.handleError(null, e);
@@ -192,43 +267,42 @@ public class BitmapHolder {
         return result;
     }
 
-    private boolean checkAndDeleteIfExists(String data) {
+    private boolean checkAndDeleteIfExists(String data, String type) {
         boolean result = true;
-        if (isBitmapExist(data)) {
-            result = context.deleteFile(data + IMAGE);
-            if (result) {
-                result = context.deleteFile(data + THUMB);
-            }
+        if (isBitmapExist(data, type)) {
+            result = context.deleteFile(data + type);
         }
         return result;
-    }
-
-    private Bitmap getReSizedBitmap(Bitmap image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int maxSize = 100;
-        Bitmap reSizedBitmap = null;
-
-        float bitmapRatio = (float) width / (float) height;
-        try {
-            if (bitmapRatio > 1) {
-                width = maxSize;
-                height = (int) (width / bitmapRatio);
-            } else {
-                height = maxSize;
-                width = (int) (height * bitmapRatio);
-            }
-            reSizedBitmap = Bitmap.createScaledBitmap(image, width, height, true);
-        } catch (Exception e) {
-            ErrorHandler.handleError(null, e);
-        }
-        return reSizedBitmap;
     }
 
     public void deleteAllImages() {
         String[] files = context.fileList();
         for (String file : files) {
-            checkAndDeleteIfExists(file);
+            if (file.contains("jpg")) {
+                context.deleteFile(file);
+            }
+        }
+    }
+
+    public void deleteImageAsync(final String data) {
+        if (data != null && !data.isEmpty()) {
+            if (isBitmapExist(data, THUMB)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        context.deleteFile(data + THUMB);
+                    }
+                }).start();
+            }
+
+            if (isBitmapExist(data, IMAGE)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        context.deleteFile(data + IMAGE);
+                    }
+                }).start();
+            }
         }
     }
 }
