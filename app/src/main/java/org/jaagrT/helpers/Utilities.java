@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
@@ -115,7 +120,7 @@ public class Utilities {
 
     public static Drawable getRoundedDrawable(Context context, String data) {
         ColorGenerator colorGenerator = ColorGenerator.create(context.getResources().getIntArray(R.array.colorsList));
-        int fontSize = 50;
+        int fontSize = 75;
 
         String finalData = "";
         String[] dataSet = data.split(" ");
@@ -133,6 +138,23 @@ public class Utilities {
                 .toUpperCase()
                 .endConfig()
                 .buildRound(finalData, colorGenerator.getColor(finalData));
+    }
+
+    public static Bitmap getRoundedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
     }
 
     public static boolean haveNetworkAccess() {

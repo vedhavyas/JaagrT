@@ -17,6 +17,7 @@ import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import it.neokree.materialnavigationdrawer.elements.MaterialAccount;
 import it.neokree.materialnavigationdrawer.elements.MaterialSection;
 import it.neokree.materialnavigationdrawer.elements.listeners.MaterialAccountListener;
+import it.neokree.materialnavigationdrawer.elements.listeners.MaterialSectionListener;
 
 
 public class Main extends MaterialNavigationDrawer<Fragment> {
@@ -27,7 +28,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
 
     private MaterialAccount account;
     private Activity activity;
-    private MaterialSection panicSection, circleSection;
+    private MaterialSection panicSection, circleSection, inviteSection;
     private BasicController basicController;
     private Handler handler;
     private BitmapHolder bitmapHolder;
@@ -59,6 +60,14 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
         circleSection = this.newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
+        inviteSection = this.newSection("Invite", getResources().getDrawable(R.drawable.ic_email), new MaterialSectionListener() {
+            @Override
+            public void onClick(MaterialSection materialSection) {
+                Intent intent = new Intent(activity, Invite.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+            }
+        });
 
         MaterialSection settingsSection = this.newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
@@ -66,17 +75,17 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
 
         this.addSection(panicSection);
         this.addSection(circleSection);
+        this.addSection(inviteSection);
         this.addBottomSection(settingsSection);
         allowArrowAnimation();
         addMultiPaneSupport();
     }
 
-
     private class GetUserAsync implements Runnable {
 
         @Override
         public void run() {
-            User localUser = basicController.getLocalUser();
+            User localUser = basicController.getUser();
             account.setTitle(localUser.getFirstName());
             account.setSubTitle(localUser.getEmail());
             Bitmap bitmap = bitmapHolder.getBitmapThumb(localUser.getEmail());

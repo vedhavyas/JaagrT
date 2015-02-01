@@ -30,8 +30,11 @@ public class Constants {
     public static final String USER_PRIMARY_PHONE = "primaryPhone";
     public static final String USER_SECONDARY_EMAILS = "secondaryEmails";
     public static final String USER_SECONDARY_PHONES = "secondaryPhones";
-
     public static final String USER_CIRCLE_RELATION = "myCircle";
+    public static final String INVITATION_CLASS = "Invitation";
+    public static final String EMAIL = "email";
+    public static final String INVITE_SENT_BY = "sentBy";
+    public static final String INVITE_STATUS = "status";
 
 
     public static final String USER_COMMUNICATION_PREFERENCE_CLASS = "UserCommunicationPreference";
@@ -58,10 +61,12 @@ public class Constants {
     public static final int PICK_PICTURE = 3;
     public static final int PICK_CONTACT = 4;
     public static final int ACTION_UPDATE_OBJECTS_CODE = 5;
+    public static final int SEND_INVITE = 6;
 
     //General Strings
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";
     public static final String CONTACT_ID = "contactID";
+    public static final String CIRCLE_ID = "circleID";
 
     //common Strings
     public static final String PLEASE_WAIT = "Please wait...";
@@ -69,6 +74,7 @@ public class Constants {
     public static final String CONNECTING_TO_FB = "Connecting to Facebook...";
     public static final String CONNECTION_ESTABLISHED = "Connection SuccessFul...";
     public static final String UPDATING = "Updating...";
+    public static final String EMAIL_BODY = "hi,\nI invite you to join this Close-nit community called \"JaagrT\". \n\n\nRegards";
 
     //Action strings
     public static final String ACTION_UPDATE_OBJECTS = "org.jaagrT.action.ACTION_UPDATE_OBJECTS";

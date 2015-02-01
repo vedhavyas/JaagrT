@@ -80,7 +80,8 @@ public class VerifyPhone extends Activity {
 
         verifyCodeBox.addValidator(new FormValidators.EmptyFieldValidator());
         phoneBox.addValidator(new FormValidators.EmptyFieldValidator());
-        phoneBox.addValidator(new FormValidators.NumberValidator());
+        phoneBox.addValidator(new FormValidators.NumberValidator())
+                .addValidator(new FormValidators.DigitValidator());
         phoneBox.setEnabled(false);
 
         final List<MaterialEditText> editTexts = new ArrayList<>();
@@ -173,7 +174,7 @@ public class VerifyPhone extends Activity {
                 .title("Success")
                 .titleColor(getResources().getColor(R.color.teal_400))
                 .content("SMS Sent!")
-                .contentColor(getResources().getColor(R.color.teal_400))
+                .contentColor(getResources().getColor(R.color.black))
                 .positiveText("Okay")
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .show();
@@ -184,7 +185,7 @@ public class VerifyPhone extends Activity {
                 .title("Warning")
                 .titleColor(getResources().getColor(R.color.teal_400))
                 .content("SMS will be sent to verify Phone Number. Standard SMS charges may apply.")
-                .contentColor(getResources().getColor(R.color.teal_400))
+                .contentColor(getResources().getColor(R.color.black))
                 .positiveText("Send anyway")
                 .positiveColor(getResources().getColor(R.color.teal_400))
                 .negativeText("Don't send")
@@ -229,7 +230,7 @@ public class VerifyPhone extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             basicController = BasicController.getInstance(activity);
-            localUser = basicController.getLocalUser();
+            localUser = basicController.getUser();
             userDetailsObject = ObjectService.getUserDetailsObject();
             return null;
         }

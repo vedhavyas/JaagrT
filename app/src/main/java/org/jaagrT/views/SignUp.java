@@ -20,7 +20,7 @@ import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.FormValidators;
 import org.jaagrT.helpers.Utilities;
-import org.jaagrT.listeners.BasicListener;
+import org.jaagrT.listeners.OnCompleteListener;
 import org.jaagrT.services.ObjectService;
 
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class SignUp extends Activity {
                     SweetAlertDialog pDialog = AlertDialogs.showSweetProgress(activity);
                     pDialog.setTitleText(SIGNING_UP);
                     pDialog.show();
-                    SignUpController signUpController = new SignUpController(activity, new BasicListener() {
+                    SignUpController signUpController = new SignUpController(activity, new OnCompleteListener() {
                         @Override
                         public void onComplete() {
                             startGetUserDetails();
@@ -111,7 +111,7 @@ public class SignUp extends Activity {
                                 AlertDialogs.showErrorDialog(activity, ErrorHandler.ERROR, ErrorHandler.CONNECTION_FAILED, ErrorHandler.OKAY);
                             } else if (parseUser.isNew()) {
                                 pDialog.setTitleText(Constants.CONNECTION_ESTABLISHED);
-                                SignUpController signUpController = new SignUpController(activity, new BasicListener() {
+                                SignUpController signUpController = new SignUpController(activity, new OnCompleteListener() {
 
                                     @Override
                                     public void onComplete() {
@@ -121,7 +121,7 @@ public class SignUp extends Activity {
                                 signUpController.facebookRegistration();
                             } else {
                                 pDialog.setTitleText(Constants.CONNECTION_ESTABLISHED);
-                                LoginController loginController = new LoginController(activity, new BasicListener() {
+                                LoginController loginController = new LoginController(activity, new OnCompleteListener() {
                                     @Override
                                     public void onComplete() {
                                         startMainActivity();

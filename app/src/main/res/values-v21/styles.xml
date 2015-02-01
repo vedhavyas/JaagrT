@@ -3,8 +3,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="colorAccent">@color/teal_400</item>
-        <item name="md_item_color">@color/teal_400</item>
+        <item name="colorAccent">@color/black</item>
         <item name="md_background_color">@color/light_gray</item>
     </style>
 </resources>

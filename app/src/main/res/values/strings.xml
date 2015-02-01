@@ -65,5 +65,9 @@
     <string name="secondary_phones">SECONDARY PHONES</string>
     <string name="add_sec_phone">add secondary phone</string>
     <string name="add_sec_emails">add Secondary emails</string>
+    <string name="title_activity_invite">Invite</string>
+    <string name="invite">Send Invite</string>
+    <string name="get_from_contacts">Add from Contacts</string>
+    <string name="add_email">ADD EMAIL</string>
 
 </resources>

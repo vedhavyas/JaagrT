@@ -82,7 +82,7 @@ public class ObjectService extends Service {
         if (parseUser != null) {
             try {
                 userDetailsObject = parseUser.getParseObject(Constants.USER_DETAILS_ROW).fetch();
-                User localUser = basicController.getLocalUser();
+                User localUser = basicController.getUser();
                 if (localUser.getFirstName() != null) {
                     userDetailsObject.put(Constants.USER_FIRST_NAME, localUser.getFirstName());
                 }
@@ -174,18 +174,10 @@ public class ObjectService extends Service {
                             circle.setMemberOfMasterCircle(parseObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                             circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
                             if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
-                                try {
-                                    bitmapHolder.saveBitmapThumbAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
-                                } catch (ParseException e) {
-                                    ErrorHandler.handleError(null, e);
-                                }
+                                bitmapHolder.saveBitmapThumbAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
                             }
                             if (parseObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
-                                try {
-                                    bitmapHolder.saveBitmapImageAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData()));
-                                } catch (ParseException e) {
-                                    ErrorHandler.handleError(null, e);
-                                }
+                                bitmapHolder.saveBitmapImageAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData()));
                             }
                             updatedCircles.add(circle);
                         } else {
@@ -238,7 +230,7 @@ public class ObjectService extends Service {
             public void run() {
                 if (userDetailsObject != null) {
                     byte[] picture = null, thumbnail = null;
-                    User user = basicController.getLocalUser();
+                    User user = basicController.getUser();
                     if (userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
                         try {
                             thumbnail = userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData();

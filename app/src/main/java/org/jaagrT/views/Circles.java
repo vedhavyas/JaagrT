@@ -98,8 +98,13 @@ public class Circles extends Fragment {
         adapter = new CirclesAdapter(activity, new ArrayList<User>());
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
-                //TODO show circle details
+            public void onItemClick(View v, int circleID) {
+                if (circleID > 0) {
+                    Intent intent = new Intent(activity, Profile.class);
+                    intent.putExtra(Constants.CIRCLE_ID, circleID);
+                    startActivity(intent);
+                    activity.overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
+                }
             }
         });
 
@@ -176,7 +181,12 @@ public class Circles extends Fragment {
                             userDetailsObject.saveInBackground();
                         }
                     } else {
-                        //TODO take user to invite page
+                        Intent intent = new Intent(activity, Invite.class);
+                        intent.putExtra(Constants.CONTACT_ID, contact.getID());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        activity.overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
                     }
                 } else {
                     ErrorHandler.handleError(activity, e);
@@ -199,9 +209,9 @@ public class Circles extends Fragment {
         }
     }
 
-    private void setCircleNumber(int number){
+    private void setCircleNumber(int number) {
 
-        ((MaterialNavigationDrawer)this.getActivity()).getCurrentSection().setNotifications(number);
+        ((MaterialNavigationDrawer) this.getActivity()).getCurrentSection().setNotifications(number);
     }
 
     private void deleteCircle(int[] reverseSortedPositions) {

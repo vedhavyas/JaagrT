@@ -140,7 +140,7 @@ public class PickPicture extends Activity {
         BasicController basicController = BasicController.getInstance(activity);
         userDetailsObject = ObjectService.getUserDetailsObject();
 
-        localUser = basicController.getLocalUser();
+        localUser = basicController.getUser();
         if (localUser != null) {
             Bitmap bitmap = bitmapHolder.getBitmapImage(localUser.getEmail());
             if (bitmap != null) {

@@ -31,7 +31,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:3.21.+'
     compile 'com.nispok:snackbar:2.7.4'
     compile 'com.edmodo:cropper:1.0.1'
-    compile 'com.afollestad:material-dialogs:0.+'
+    compile 'com.afollestad:material-dialogs:0.6.2.1'
     compile 'cn.pedant.sweetalert:library:1.+'
     compile 'it.neokree:MaterialNavigationDrawer:1.+'
     compile 'com.rengwuxian.materialedittext:library:1.8.2'

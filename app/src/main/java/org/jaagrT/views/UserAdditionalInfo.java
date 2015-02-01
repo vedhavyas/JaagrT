@@ -150,7 +150,7 @@ public class UserAdditionalInfo extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             basicController = BasicController.getInstance(activity);
-            localUser = basicController.getLocalUser();
+            localUser = basicController.getUser();
             userDetailsObject = ObjectService.getUserDetailsObject();
             return null;
         }

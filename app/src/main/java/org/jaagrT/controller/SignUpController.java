@@ -9,17 +9,19 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.parse.GetCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.listeners.BasicListener;
+import org.jaagrT.listeners.OnCompleteListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
 
@@ -33,16 +35,16 @@ public class SignUpController {
 
     private static final String SIGN_UP_SUCCESS = "Signup Successful!!";
     private static final String FINALIZING_SIGNUP = "Finalizing Signup...";
-    private static final String EMAIL = "email";
+    private static final String INVITE_ACCEPTED = "Invitation Accepted";
     private Activity activity;
     private SweetAlertDialog pDialog;
     private User localUser;
-    private BasicListener listener;
+    private OnCompleteListener listener;
     private ParseObject userDetailsObject, userPreferenceObject;
     private BasicController basicController;
 
 
-    public SignUpController(Activity activity, BasicListener listener, SweetAlertDialog pDialog) {
+    public SignUpController(Activity activity, OnCompleteListener listener, SweetAlertDialog pDialog) {
         this.activity = activity;
         this.listener = listener;
         this.pDialog = pDialog;
@@ -102,7 +104,7 @@ public class SignUpController {
             public void onCompleted(final GraphUser fbUser, Response response) {
                 if (response != null) {
                     try {
-                        final String email = (String) fbUser.getProperty(EMAIL);
+                        final String email = (String) fbUser.getProperty(Constants.EMAIL);
                         final ParseUser parseUser = ParseUser.getCurrentUser();
                         parseUser.setEmail(email);
                         parseUser.saveInBackground(new SaveCallback() {
@@ -238,9 +240,31 @@ public class SignUpController {
                 pDialog.cancel();
                 startObjectService();
                 listener.onComplete();
+                new Thread(new ChangeInviteStatus()).start();
             } else {
                 clearUser(null);
             }
+        }
+    }
+
+    private class ChangeInviteStatus implements Runnable {
+
+        @Override
+        public void run() {
+            User user = basicController.getUser();
+            ParseQuery<ParseObject> inviteSearchQuery = ParseQuery.getQuery(Constants.INVITATION_CLASS);
+            inviteSearchQuery.whereContains(Constants.EMAIL, user.getEmail());
+            inviteSearchQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        parseObject.put(Constants.INVITE_STATUS, INVITE_ACCEPTED);
+                        parseObject.saveEventually();
+                    } else {
+                        ErrorHandler.handleError(null, e);
+                    }
+                }
+            });
         }
     }
 }

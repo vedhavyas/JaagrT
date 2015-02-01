@@ -45,6 +45,29 @@ public class PickContact extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_contact);
+        setUpActivity();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            returnResult(Activity.RESULT_CANCELED, -1);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
+    }
+
+    @Override
+    public void onBackPressed() {
+        returnResult(Activity.RESULT_CANCELED, -1);
+    }
+
+    private void setUpActivity() {
         activity = this;
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(TITLE);
@@ -114,25 +137,6 @@ public class PickContact extends ActionBarActivity {
         });
 
         new GetContactsAndUpdateList().execute();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            returnResult(Activity.RESULT_CANCELED, -1);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.push_left_screen, R.anim.push_screen_right);
-    }
-
-    @Override
-    public void onBackPressed() {
-        returnResult(Activity.RESULT_CANCELED, -1);
     }
 
     private void returnResult(int result, int contactID) {

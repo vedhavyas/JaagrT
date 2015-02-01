@@ -47,7 +47,7 @@ public class BasicController {
         return basicController;
     }
 
-    public User getLocalUser() {
+    public User getUser() {
         return db.getUser(prefs.getInt(Constants.LOCAL_USER_ID, -1));
     }
 
@@ -165,5 +165,9 @@ public class BasicController {
         }
 
         ObjectService.removeCircles(objectIDs);
+    }
+
+    public User getCircle(int circleID) {
+        return db.getCircle(circleID);
     }
 }

@@ -14,7 +14,7 @@ import org.jaagrT.helpers.AlertDialogs;
 import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.listeners.BasicListener;
+import org.jaagrT.listeners.OnCompleteListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
 
@@ -29,14 +29,14 @@ public class LoginController {
     private static final String FETCHING_DATA = "Fetching data...";
     private static final String FETCHING_SETTINGS = "Fetching settings...";
     private Activity activity;
-    private BasicListener listener;
+    private OnCompleteListener listener;
     private User localUser;
     private SweetAlertDialog pDialog;
     private BasicController basicController;
     private ParseObject userDetailsObject, userPreferenceObject;
     private BitmapHolder bitmapHolder;
 
-    public LoginController(Activity activity, BasicListener listener) {
+    public LoginController(Activity activity, OnCompleteListener listener) {
         this.activity = activity;
         this.listener = listener;
         this.basicController = BasicController.getInstance(activity);

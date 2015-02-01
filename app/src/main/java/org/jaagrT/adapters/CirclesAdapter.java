@@ -67,7 +67,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onGet(Bitmap bitmap) {
                     if (bitmap != null) {
-                        holder.profilePic.setImageBitmap(bitmap);
+                        holder.profilePic.setImageBitmap(Utilities.getRoundedBitmap(bitmap));
                     }
                 }
             });
@@ -132,7 +132,7 @@ public class CirclesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Override
         public void onClick(View view) {
             if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(view, getPosition());
+                onItemClickListener.onItemClick(view, circles.get(getPosition()).getID());
             }
         }
     }
