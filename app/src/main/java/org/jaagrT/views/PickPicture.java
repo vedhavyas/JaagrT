@@ -104,7 +104,7 @@ public class PickPicture extends Activity {
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                croppedImage = Utilities.compressBitmap(cropImageView.getCroppedImage());
+                croppedImage = cropImageView.getCroppedImage();
                 if (croppedImage != null) {
                     new SavePicture().execute();
                 }

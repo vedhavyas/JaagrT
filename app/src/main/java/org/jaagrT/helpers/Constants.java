@@ -35,6 +35,7 @@ public class Constants {
     public static final String EMAIL = "email";
     public static final String INVITE_SENT_BY = "sentBy";
     public static final String INVITE_STATUS = "status";
+    public static final String EMAIL_VERIFIED = "emailVerified";
 
 
     public static final String USER_COMMUNICATION_PREFERENCE_CLASS = "UserCommunicationPreference";

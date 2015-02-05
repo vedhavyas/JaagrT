@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ObservableScrollView;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
@@ -48,11 +49,13 @@ public class Profile extends ActionBarActivity {
     private static final int PICK_PICTURE = 2;
     private static final int VERIFY_PHONE = 3;
     private static final String PHONE_NOT_VERIFIED = "Phone not verified";
+    private static final String EMAIL_NOT_VERIFIED = "Email not verified";
     private static final String UPDATING = "Updating...";
     private Activity activity;
     private LinearLayout secondaryEmailContainer, secondaryPhoneContainer;
     private List<MaterialEditText> primaryDetailBoxes = new ArrayList<>(), secondaryEmailBoxes = new ArrayList<>(), secondaryPhoneBoxes = new ArrayList<>();
     private User user;
+    private ParseUser parseUser;
     private Handler handler;
     private BasicController basicController;
     private BitmapHolder bitmapHolder;
@@ -111,6 +114,7 @@ public class Profile extends ActionBarActivity {
 
         if (profileMode) {
             user = basicController.getUser();
+            parseUser = ParseUser.getCurrentUser();
         } else {
             user = basicController.getCircle(circleID);
         }
@@ -248,6 +252,9 @@ public class Profile extends ActionBarActivity {
                     public void run() {
                         emailBox.setText(user.getEmail());
                         emailBox.setEnabled(false);
+                        if (profileMode && !parseUser.getBoolean(Constants.EMAIL_VERIFIED)) {
+                            emailBox.setError(EMAIL_NOT_VERIFIED);
+                        }
                         if (user.getFirstName() != null) {
                             firstNameBox.setText(user.getFirstName());
                         }
