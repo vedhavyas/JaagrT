@@ -123,6 +123,8 @@ public class ObjectService extends Service {
                 Utilities.writeToFile("Updated user details...");
             } catch (ParseException e) {
                 ErrorHandler.handleError(null, e);
+            } catch (Exception e) {
+                ErrorHandler.handleError(null, e);
             }
         }
     }
@@ -145,6 +147,8 @@ public class ObjectService extends Service {
                 userPreferenceObject.saveEventually();
                 Utilities.writeToFile("Updated preferences...");
             } catch (ParseException e) {
+                ErrorHandler.handleError(null, e);
+            } catch (Exception e) {
                 ErrorHandler.handleError(null, e);
             }
         }
@@ -195,6 +199,8 @@ public class ObjectService extends Service {
                 Utilities.writeToFile("Updated circles...");
 
             } catch (ParseException e) {
+                ErrorHandler.handleError(null, e);
+            } catch (Exception e) {
                 ErrorHandler.handleError(null, e);
             }
         }

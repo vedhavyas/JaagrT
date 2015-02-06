@@ -69,5 +69,8 @@
     <string name="invite">Send Invite</string>
     <string name="get_from_contacts">Add from Contacts</string>
     <string name="add_email">ADD EMAIL</string>
+    <string name="title_activity_forgot_password">ForgotPassword</string>
+    <string name="password_lost">Oops! Happens to the best of us.\n Type in your Email and we\'ll send password recovery link to that Email.</string>
+    <string name="reset_password">Reset password</string>
 
 </resources>

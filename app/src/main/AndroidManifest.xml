@@ -23,7 +23,8 @@
         <activity
             android:name=".views.Login"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="com.facebook.LoginActivity"
             android:label="@string/app_name"
@@ -36,7 +37,8 @@
         <activity
             android:name=".views.SignUp"
             android:label="@string/title_activity_register"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".views.PickPicture"
             android:label="@string/title_activity_pick_pic"
@@ -44,18 +46,20 @@
         <activity
             android:name=".views.UserAdditionalInfo"
             android:label="@string/title_activity_get_user_details"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".views.VerifyPhone"
             android:label="@string/title_activity_verify_phone"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <receiver
             android:name=".broadcast.receivers.SMSReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="2147483647">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
@@ -68,7 +72,7 @@
             android:name=".views.StartScreen"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
-            <intent-filter>
+        <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -88,7 +92,7 @@
         <receiver
             android:name=".broadcast.receivers.UpdateReceiver"
             android:exported="false">
-            <intent-filter>
+        <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="org.jaagrT.action.ACTION_UPDATE_OBJECTS" />
             </intent-filter>
@@ -96,7 +100,7 @@
         <receiver
             android:name=".broadcast.receivers.ConnectivityChangeReceiver"
             android:exported="false">
-            <intent-filter>
+        <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
@@ -106,13 +110,16 @@
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-
         <activity
             android:name=".views.Invite"
             android:label="@string/title_activity_invite"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-
+        <activity
+            android:name=".views.ForgotPassword"
+            android:label="@string/title_activity_forgot_password"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
     </application>
 
 </manifest>

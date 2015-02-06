@@ -148,7 +148,7 @@ public class Login extends Activity {
         forgotPassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO add forgot password logic
+                startForgotPasswordActivity();
             }
         });
     }
@@ -175,5 +175,11 @@ public class Login extends Activity {
     private void startAppService() {
         Intent serviceIntent = new Intent(this, ObjectService.class);
         startService(serviceIntent);
+    }
+
+    private void startForgotPasswordActivity() {
+        Intent intent = new Intent(this, ForgotPassword.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.push_right_screen, R.anim.push_screen_left);
     }
 }
