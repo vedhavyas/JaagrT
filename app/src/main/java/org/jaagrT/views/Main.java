@@ -25,6 +25,8 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
     private static final String PANIC = "Panic";
     private static final String CIRCLES = "My Circles";
     private static final String SETTINGS = "Settings";
+    private static final String ABOUT = "About";
+    private static final String INVITE = "Invite";
 
     private MaterialAccount account;
     private Activity activity;
@@ -60,7 +62,7 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
         circleSection = this.newSection(CIRCLES, this.getResources().getDrawable(R.drawable.ic_circles), new Circles())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
-        inviteSection = this.newSection("Invite", getResources().getDrawable(R.drawable.ic_email), new MaterialSectionListener() {
+        inviteSection = this.newSection(INVITE, getResources().getDrawable(R.drawable.ic_email), new MaterialSectionListener() {
             @Override
             public void onClick(MaterialSection materialSection) {
                 Intent intent = new Intent(activity, Invite.class);
@@ -72,10 +74,14 @@ public class Main extends MaterialNavigationDrawer<Fragment> {
         MaterialSection settingsSection = this.newSection(SETTINGS, this.getResources().getDrawable(R.drawable.ic_settings), new Settings())
                 .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
 
+        MaterialSection aboutSection = this.newSection(ABOUT, this.getResources().getDrawable(R.drawable.ic_about), new About())
+                .setSectionColor(this.getResources().getColor(R.color.teal_500), this.getResources().getColor(R.color.teal_700));
+
 
         this.addSection(panicSection);
         this.addSection(circleSection);
         this.addSection(inviteSection);
+        this.addBottomSection(aboutSection);
         this.addBottomSection(settingsSection);
         allowArrowAnimation();
         addMultiPaneSupport();

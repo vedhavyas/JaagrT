@@ -21,13 +21,17 @@ public class Database extends SQLiteOpenHelper {
     public static final String USER_TABLE = "user_details";
     public static final String CONTACTS_TABLE = "contacts_list";
     public static final String CIRCLES_TABLE = "user_circles_list";
-    private static final String[] TABLES = {USER_TABLE, CONTACTS_TABLE, CIRCLES_TABLE};
+    public static final String INVITATION_TABLE = "invitation_table";
+    private static final String[] TABLES = {USER_TABLE, CONTACTS_TABLE, CIRCLES_TABLE, INVITATION_TABLE};
     private static final String DB_NAME = "JaagrT.db";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_OBJECT_ID = "objectID";
     private static final String COLUMN_FIRST_NAME = "firstName";
     private static final String COLUMN_LAST_NAME = "lastName";
     private static final String COLUMN_EMAIL = "email";
+    private static final String SQL_INVITATION_TABLE_CREATE_QUERY = "CREATE TABLE " + INVITATION_TABLE
+            + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_EMAIL + " TEXT UNIQUE)";
     private static final String COLUMN_PHONE_NUMBER = "phoneNumber";
     private static final String COLUMN_MEMBER_OF_MASTER_CIRCLE = "memberOfMasterCircle";
     private static final String COLUMN_PHONE_VERIFIED = "phoneVerified";
@@ -86,6 +90,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(SQL_USER_TABLE_CREATE_QUERY);
         db.execSQL(SQL_CONTACT_TABLE_CREATE_QUERY);
         db.execSQL(SQL_CIRCLES_TABLE_CREATE_QUERY);
+        db.execSQL(SQL_INVITATION_TABLE_CREATE_QUERY);
     }
 
     @Override
@@ -109,6 +114,8 @@ public class Database extends SQLiteOpenHelper {
             db.execSQL(SQL_CONTACT_TABLE_CREATE_QUERY);
         } else if (tableName.equalsIgnoreCase(CIRCLES_TABLE)) {
             db.execSQL(SQL_CIRCLES_TABLE_CREATE_QUERY);
+        } else if (tableName.equalsIgnoreCase(INVITATION_TABLE)) {
+            db.execSQL(SQL_INVITATION_TABLE_CREATE_QUERY);
         }
     }
 
@@ -363,11 +370,9 @@ public class Database extends SQLiteOpenHelper {
                 circle.setSecondaryPhonesRaw(cursor.getString(cursor.getColumnIndex(COLUMN_SECONDARY_PHONES)));
                 circles.add(circle);
             } while (cursor.moveToNext());
-
-            return circles;
         }
 
-        return null;
+        return circles;
     }
 
     public List<String> getCircleObjectIDs() {
@@ -383,11 +388,9 @@ public class Database extends SQLiteOpenHelper {
             do {
                 objectIDs.add(cursor.getString(cursor.getColumnIndex(COLUMN_OBJECT_ID)));
             } while (cursor.moveToNext());
-
-            return objectIDs;
         }
 
-        return null;
+        return objectIDs;
     }
 
     public User getCircle(int circleID) {
@@ -447,5 +450,36 @@ public class Database extends SQLiteOpenHelper {
     public int deleteCircle(int circleID) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(CIRCLES_TABLE, COLUMN_ID + " = " + circleID, null);
+    }
+
+    public void saveInvitationList(String[] invitations) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues;
+        for (String invitation : invitations) {
+            contentValues = new ContentValues();
+            contentValues.put(COLUMN_EMAIL, invitation);
+            db.insert(INVITATION_TABLE, null, contentValues);
+        }
+    }
+
+    public String[] getInvitations() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<String> list = new ArrayList<>();
+        String selectQuery = "SELECT " + COLUMN_EMAIL
+                + " FROM "
+                + INVITATION_TABLE;
+        cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
+            } while (cursor.moveToNext());
+        }
+
+        String[] invitations = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            invitations[i] = list.get(i);
+        }
+
+        return invitations;
     }
 }

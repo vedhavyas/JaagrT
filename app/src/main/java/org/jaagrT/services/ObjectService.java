@@ -4,25 +4,19 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.IBinder;
 
-import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
-import com.parse.ParseUser;
 
 import org.jaagrT.broadcast.receivers.UpdateReceiver;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
-import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.ObjectFetcher;
 import org.jaagrT.helpers.Utilities;
-import org.jaagrT.model.User;
+import org.jaagrT.model.Database;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,7 +25,7 @@ public class ObjectService extends Service {
     private static ParseObject userDetailsObject, userPreferenceObject;
     private static List<ParseObject> userCircles;
     private static BasicController basicController;
-    private static boolean updatingObjects, updatingCircles;
+    private static boolean updatingObjects, updatingCircles, updatingInvitations, updatingUserImages, updatingCircleImages;
     private static BitmapHolder bitmapHolder;
     private AlarmManager objectAlarm;
     private PendingIntent objectPendingIntent;
@@ -47,8 +41,16 @@ public class ObjectService extends Service {
         ObjectService.userDetailsObject = userDetailsObject;
     }
 
+    public static BasicController getBasicController() {
+        return basicController;
+    }
+
     public static void setBasicController(BasicController basicController) {
         ObjectService.basicController = basicController;
+    }
+
+    public static BitmapHolder getBitmapHolder() {
+        return bitmapHolder;
     }
 
     public static void setBitmapHolder(BitmapHolder bitmapHolder) {
@@ -63,213 +65,116 @@ public class ObjectService extends Service {
         ObjectService.userPreferenceObject = userPreferenceObject;
     }
 
+    public static void setUserCircles(List<ParseObject> circles) {
+        ObjectService.userCircles = circles;
+    }
+
     public static void updateObjects() {
         if (!updatingObjects) {
             updatingObjects = true;
-            new Thread(new UpdateObjects()).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Utilities.writeToFile("Updating Objects...");
+                    ObjectFetcher.fetchAndUpdateUserDetailsObject();
+                    ObjectFetcher.fetchAndUpdateUserPreferenceObject();
+                    updatingObjects = false;
+                }
+            }).start();
         }
     }
 
     public static void updateCircles() {
         if (!updatingCircles) {
             updatingCircles = true;
-            new Thread(new UpdateCircles()).start();
-        }
-    }
-
-    private static void fetchAndUpdateUserDetailsObject() {
-        ParseUser parseUser = ParseUser.getCurrentUser();
-        if (parseUser != null) {
-            try {
-                userDetailsObject = parseUser.getParseObject(Constants.USER_DETAILS_ROW).fetch();
-                User localUser = basicController.getUser();
-                if (localUser.getFirstName() != null) {
-                    userDetailsObject.put(Constants.USER_FIRST_NAME, localUser.getFirstName());
-                }
-                if (localUser.getLastName() != null) {
-                    userDetailsObject.put(Constants.USER_LAST_NAME, localUser.getLastName());
-                }
-                if (localUser.getPhoneNumber() != null) {
-                    userDetailsObject.put(Constants.USER_PRIMARY_PHONE, localUser.getPhoneNumber());
-                }
-
-                Bitmap image = bitmapHolder.getBitmapImage(localUser.getEmail());
-                if (image != null) {
-                    ParseFile pictureFile = new ParseFile(Constants.USER_PICTURE_FILE_NAME, Utilities.getBlob(image));
-                    pictureFile.saveInBackground();
-                    userDetailsObject.put(Constants.USER_PROFILE_PICTURE, pictureFile);
-                }
-
-                image = bitmapHolder.getBitmapThumb(localUser.getEmail());
-                if (image != null) {
-                    ParseFile thumbFile = new ParseFile(Constants.USER_THUMBNAIL_PICTURE_FILE_NAME, Utilities.getBlob(image));
-                    thumbFile.save();
-                    userDetailsObject.put(Constants.USER_THUMBNAIL_PICTURE, thumbFile);
-                }
-
-                if (localUser.getSecondaryEmailsRaw() != null) {
-                    userDetailsObject.remove(Constants.USER_SECONDARY_EMAILS);
-                    userDetailsObject.addAll(Constants.USER_SECONDARY_EMAILS, localUser.getSecondaryEmails());
-                }
-
-                if (localUser.getSecondaryPhonesRaw() != null) {
-                    userDetailsObject.remove(Constants.USER_SECONDARY_PHONES);
-                    userDetailsObject.addAll(Constants.USER_SECONDARY_PHONES, localUser.getSecondaryPhones());
-                }
-                localUser.setMemberOfMasterCircle(userDetailsObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
-                userDetailsObject.put(Constants.USER_PRIMARY_PHONE_VERIFIED, localUser.isPhoneVerified());
-                userDetailsObject.saveEventually();
-                basicController.updateUser(localUser);
-                Utilities.writeToFile("Updated user details...");
-            } catch (ParseException e) {
-                ErrorHandler.handleError(null, e);
-            } catch (Exception e) {
-                ErrorHandler.handleError(null, e);
-            }
-        }
-    }
-
-    private static void fetchAndUpdateUserPreferenceObject() {
-        if (userDetailsObject != null) {
-            try {
-                userPreferenceObject = userDetailsObject.getParseObject(Constants.USER_COMMUNICATION_PREFERENCE_ROW).fetch();
-                SharedPreferences prefs = basicController.getPrefs();
-                userPreferenceObject.put(Constants.SEND_SMS, prefs.getBoolean(Constants.SEND_SMS, true));
-                userPreferenceObject.put(Constants.SEND_EMAIL, prefs.getBoolean(Constants.SEND_EMAIL, true));
-                userPreferenceObject.put(Constants.SEND_PUSH, prefs.getBoolean(Constants.SEND_PUSH, true));
-                userPreferenceObject.put(Constants.SHOW_POP_UPS, prefs.getBoolean(Constants.SHOW_POP_UPS, true));
-                userPreferenceObject.put(Constants.RECEIVE_SMS, prefs.getBoolean(Constants.RECEIVE_SMS, true));
-                userPreferenceObject.put(Constants.RECEIVE_PUSH, prefs.getBoolean(Constants.RECEIVE_PUSH, true));
-                userPreferenceObject.put(Constants.RECEIVE_EMAIL, prefs.getBoolean(Constants.RECEIVE_EMAIL, true));
-                userPreferenceObject.put(Constants.NOTIFY_WITH_IN, prefs.getInt(Constants.NOTIFY_WITH_IN, Constants.DEFAULT_DISTANCE));
-                userPreferenceObject.put(Constants.RESPOND_ALERT_WITH_IN, prefs.getInt(Constants.RESPOND_ALERT_WITH_IN, Constants.DEFAULT_DISTANCE));
-                userPreferenceObject.put(Constants.ALERT_MESSAGE, prefs.getString(Constants.ALERT_MESSAGE, Constants.DEFAULT_ALERT_MESSAGE));
-                userPreferenceObject.saveEventually();
-                Utilities.writeToFile("Updated preferences...");
-            } catch (ParseException e) {
-                ErrorHandler.handleError(null, e);
-            } catch (Exception e) {
-                ErrorHandler.handleError(null, e);
-            }
-        }
-    }
-
-    private static void fetchAndUpdateUserCircles() {
-        if (userDetailsObject != null) {
-            ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
-            try {
-                userCircles = circleRelation.getQuery().find();
-                List<String> objectIDs = basicController.getCircleObjectIDs();
-                List<User> updatedCircles = new ArrayList<>();
-                if (objectIDs != null) {
-                    for (ParseObject parseObject : userCircles) {
-                        if (objectIDs.contains(parseObject.getObjectId())) {
-                            User circle = new User();
-                            circle.setObjectID(parseObject.getObjectId());
-                            if (parseObject.getString(Constants.USER_FIRST_NAME) == null) {
-                                String[] emailSet = parseObject.getString(Constants.USER_PRIMARY_EMAIL).split("@");
-                                circle.setFirstName(emailSet[0]);
-                            } else {
-                                circle.setFirstName(parseObject.getString(Constants.USER_FIRST_NAME));
-                            }
-                            circle.setLastName(parseObject.getString(Constants.USER_LAST_NAME));
-                            circle.setPhoneNumber(parseObject.getString(Constants.USER_PRIMARY_PHONE));
-                            circle.setPhoneVerified(parseObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
-                            circle.setMemberOfMasterCircle(parseObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
-                            circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
-                            if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
-                                bitmapHolder.saveBitmapThumbAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData()));
-                            }
-                            if (parseObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
-                                bitmapHolder.saveBitmapImageAsync(circle.getEmail(), Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData()));
-                            }
-                            updatedCircles.add(circle);
-                        } else {
-                            circleRelation.remove(parseObject);
-                        }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Utilities.writeToFile("Updating circles...");
+                    if (userDetailsObject != null) {
+                        ObjectFetcher.fetchAndUpdateUserCircles();
+                    } else {
+                        ObjectFetcher.fetchAndUpdateUserDetailsObject();
+                        ObjectFetcher.fetchAndUpdateUserCircles();
                     }
 
-                    basicController.updateCircles(updatedCircles);
-                } else {
-                    for (ParseObject object : userCircles) {
-                        circleRelation.remove(object);
-                    }
+                    updatingCircles = false;
                 }
-                userDetailsObject.saveEventually();
-                Utilities.writeToFile("Updated circles...");
-
-            } catch (ParseException e) {
-                ErrorHandler.handleError(null, e);
-            } catch (Exception e) {
-                ErrorHandler.handleError(null, e);
-            }
+            }).start();
         }
     }
 
-    public static void removeCircles(List<String> objectIDs) {
-        new Thread(new RemoveUserCircles(objectIDs)).start();
+    public static void updateAllCirclesImages() {
+        if (!updatingCircleImages) {
+            updatingCircleImages = true;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ObjectFetcher.fetchAndUpdateAllCircleImages();
+                    updatingCircleImages = false;
+                }
+            }).start();
+        }
     }
 
-    public static void getCirclesFirstTime() {
-        Utilities.writeToFile("getting circles for the first time...");
+    public static void updateCircleImages(final List<String> objectIds) {
+        if (objectIds.size() > 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (String objectId : objectIds) {
+                        ObjectFetcher.fetchAndUpdateCircleImage(objectId);
+                    }
+                }
+            }).start();
+        }
+    }
+
+    public static void updateUserImages() {
+        if (!updatingUserImages) {
+            updatingUserImages = true;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ObjectFetcher.fetchAndUpdateUserImages();
+                    updatingUserImages = false;
+                }
+            }).start();
+        }
+    }
+
+    public static void removeCircles(final List<String> objectIDs) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (userDetailsObject != null) {
-                    ParseRelation<ParseObject> circleRelation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
-                    try {
-                        userCircles = circleRelation.getQuery().find();
-                        basicController.updateCirclesThroughObjects(userCircles);
-                    } catch (ParseException e) {
-                        ErrorHandler.handleError(null, e);
+                if (objectIDs.size() > 0 && userCircles != null && userDetailsObject != null) {
+                    ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
+                    for (ParseObject circle : userCircles) {
+                        if (objectIDs.contains(circle.getObjectId())) {
+                            relation.remove(circle);
+                        }
                     }
+                    userDetailsObject.saveEventually();
                 }
             }
         }).start();
-
     }
 
-    public static void getUserMiscDetails() {
-        Utilities.writeToFile("Fetching misc details...");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (userDetailsObject != null) {
-                    byte[] picture = null, thumbnail = null;
-                    User user = basicController.getUser();
-                    if (userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
-                        try {
-                            thumbnail = userDetailsObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData();
-                        } catch (ParseException e) {
-                            ErrorHandler.handleError(null, e);
-                        }
+    public static void updateInvitations() {
+        if (!updatingInvitations) {
+            updatingInvitations = true;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String[] invitations = basicController.getInvitations();
+                    if (invitations.length > 0) {
+                        ObjectFetcher.updateInvitations(invitations);
+                        basicController.dropTable(Database.INVITATION_TABLE);
                     }
-                    bitmapHolder.saveBitmapThumbAsync(user.getEmail(), Utilities.getBitmapFromBlob(thumbnail));
-                    List<String> secondaryEmails = userDetailsObject.getList(Constants.USER_SECONDARY_EMAILS);
-                    List<String> secondaryPhones = userDetailsObject.getList(Constants.USER_SECONDARY_PHONES);
-
-
-                    if (secondaryEmails != null) {
-                        user.setSecondaryEmails(secondaryEmails);
-                    }
-                    if (secondaryPhones != null) {
-                        user.setSecondaryPhones(secondaryPhones);
-                    }
-                    basicController.updateUser(user);
-
-                    if (userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
-                        try {
-                            picture = userDetailsObject.getParseFile(Constants.USER_PROFILE_PICTURE).getData();
-                        } catch (ParseException e) {
-                            ErrorHandler.handleError(null, e);
-                        }
-                    }
-
-                    bitmapHolder.saveBitmapImageAsync(user.getEmail(), Utilities.getBitmapFromBlob(picture));
-                    Utilities.writeToFile("Updated misc details ...");
+                    updatingInvitations = false;
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
     private void cleanUp() {
@@ -332,52 +237,4 @@ public class ObjectService extends Service {
         return START_STICKY;
     }
 
-    private static class UpdateObjects implements Runnable {
-
-        @Override
-        public void run() {
-            Utilities.writeToFile("Updating Objects...");
-            fetchAndUpdateUserDetailsObject();
-            fetchAndUpdateUserPreferenceObject();
-            updatingObjects = false;
-        }
-    }
-
-    private static class UpdateCircles implements Runnable {
-
-        @Override
-        public void run() {
-            Utilities.writeToFile("Updating circles...");
-            if (userDetailsObject != null) {
-                fetchAndUpdateUserCircles();
-            } else {
-                fetchAndUpdateUserDetailsObject();
-                fetchAndUpdateUserCircles();
-            }
-
-            updatingCircles = false;
-        }
-    }
-
-    private static class RemoveUserCircles implements Runnable {
-
-        List<String> objectsIDs;
-
-        private RemoveUserCircles(List<String> objectsIDs) {
-            this.objectsIDs = objectsIDs;
-        }
-
-        @Override
-        public void run() {
-            if (objectsIDs.size() > 0 && userCircles != null && userDetailsObject != null) {
-                ParseRelation<ParseObject> relation = userDetailsObject.getRelation(Constants.USER_CIRCLE_RELATION);
-                for (ParseObject circle : userCircles) {
-                    if (objectsIDs.contains(circle.getObjectId())) {
-                        relation.remove(circle);
-                    }
-                }
-                userDetailsObject.saveEventually();
-            }
-        }
-    }
 }

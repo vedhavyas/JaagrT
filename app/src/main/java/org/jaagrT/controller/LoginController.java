@@ -14,6 +14,7 @@ import org.jaagrT.helpers.AlertDialogs;
 import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.ErrorHandler;
+import org.jaagrT.helpers.ObjectFetcher;
 import org.jaagrT.listeners.OnCompleteListener;
 import org.jaagrT.model.User;
 import org.jaagrT.services.ObjectService;
@@ -117,8 +118,8 @@ public class LoginController {
         ObjectService.setUserPreferenceObject(userPreferenceObject);
         ObjectService.setBasicController(basicController);
         ObjectService.setBitmapHolder(bitmapHolder);
-        ObjectService.getCirclesFirstTime();
-        ObjectService.getUserMiscDetails();
+        ObjectFetcher.getCirclesFirstTime();
+        ObjectFetcher.getUserMiscDetails();
     }
 
     private class SaveLocalUser extends AsyncTask<Void, Void, Integer> {

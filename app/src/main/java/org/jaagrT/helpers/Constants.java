@@ -54,7 +54,8 @@ public class Constants {
     //Preferences
     public static final String PREFERENCES_NAME = "JaagrTPreferences";
     public static final String LOCAL_USER_ID = "localUserID";
-    public static final String LAST_UPDATE = "Last updated";
+    public static final String LAST_DATA_UPDATED = "last data updated";
+    public static final String LAST_IMAGE_UPDATED = "last image updated";
 
     //Activity Request codes
     public static final int GET_IMAGE = 1;

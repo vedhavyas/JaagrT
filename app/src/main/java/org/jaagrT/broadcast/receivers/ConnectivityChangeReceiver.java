@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.parse.ParseUser;
+
 import org.jaagrT.helpers.Constants;
 import org.jaagrT.helpers.Utilities;
 
@@ -21,7 +23,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null) {
             networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo.isConnected() && Utilities.haveNetworkAccess()) {
+            if (networkInfo.isConnected() && Utilities.haveNetworkAccess() && ParseUser.getCurrentUser() != null) {
                 Intent updateIntent = new Intent(context, UpdateReceiver.class);
                 updateIntent.setAction(Constants.ACTION_UPDATE_OBJECTS);
                 context.sendBroadcast(updateIntent);

@@ -12,21 +12,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.parse.GetCallback;
-import com.parse.ParseACL;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.jaagrT.R;
 import org.jaagrT.controller.BasicController;
 import org.jaagrT.helpers.Constants;
-import org.jaagrT.helpers.ErrorHandler;
 import org.jaagrT.helpers.FormValidators;
+import org.jaagrT.helpers.ObjectFetcher;
 import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.Contact;
-import org.jaagrT.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +28,9 @@ import java.util.List;
 public class Invite extends ActionBarActivity {
 
     private static final String TITLE = "Invite";
-    private static final String INVITE_SENT = "Invitation Sent";
+    private static final String SELECT_EMAIL_PROVIDER = "Select an Email provider";
+    private static final String OKAY = "Okay";
+    private static final String ATLEAST_ONE = "Add atleast One Email";
     private Activity activity;
     private List<MaterialEditText> emailBoxes = new ArrayList<>();
     private BasicController basicController;
@@ -69,7 +65,7 @@ public class Invite extends ActionBarActivity {
             addContact(contactID);
         } else if (requestCode == Constants.SEND_INVITE) {
             if (sentInvite) {
-                new Thread(new SaveOnCloud()).start();
+                updateOnCloudIfPossible();
             }
             startMainActivity();
         }
@@ -178,47 +174,24 @@ public class Invite extends ActionBarActivity {
                 emailActivity.putExtra(Intent.EXTRA_SUBJECT, Constants.JAAGRT);
                 emailActivity.putExtra(Intent.EXTRA_TEXT, Constants.EMAIL_BODY);
                 emailActivity.setType("message/rfc822");
-                startActivityForResult(Intent.createChooser(emailActivity, "Select an Email provider"), Constants.SEND_INVITE);
+                startActivityForResult(Intent.createChooser(emailActivity, SELECT_EMAIL_PROVIDER), Constants.SEND_INVITE);
                 sentInvite = true;
             }
         } else {
-            Utilities.snackIt(activity, "Add atleast One Email", "Okay");
+            Utilities.snackIt(activity, ATLEAST_ONE, OKAY);
         }
     }
 
-
-    private class SaveOnCloud implements Runnable {
-
-        @Override
-        public void run() {
-            //TODO do an offline save while segmenting the user images in service
-            String[] emails = getEmailsFromBoxes();
-            final User user = basicController.getUser();
-            for (final String email : emails) {
-                ParseQuery<ParseObject> emailSearchQuery = ParseQuery.getQuery(Constants.INVITATION_CLASS);
-                emailSearchQuery.whereEqualTo(Constants.EMAIL, email);
-                emailSearchQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject parseObject, ParseException e) {
-                        if (e == null) {
-                            parseObject.addUnique(Constants.INVITE_SENT_BY, user.getEmail());
-                            parseObject.saveEventually();
-                        } else {
-                            ErrorHandler.handleError(null, e);
-                            ParseObject newInviteObject = new ParseObject(Constants.INVITATION_CLASS);
-                            ParseACL inviteAcl = new ParseACL();
-                            inviteAcl.setPublicReadAccess(true);
-                            inviteAcl.setPublicWriteAccess(true);
-                            newInviteObject.setACL(inviteAcl);
-                            newInviteObject.put(Constants.EMAIL, email);
-                            newInviteObject.addUnique(Constants.INVITE_SENT_BY, user.getEmail());
-                            newInviteObject.put(Constants.INVITE_STATUS, INVITE_SENT);
-                            newInviteObject.saveEventually();
-                        }
-                    }
-                });
-            }
+    private void updateOnCloudIfPossible() {
+        if (Utilities.haveNetworkAccess()) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ObjectFetcher.updateInvitations(getEmailsFromBoxes());
+                }
+            }).start();
+        } else {
+            basicController.saveInvitations(getEmailsFromBoxes());
         }
     }
-
 }

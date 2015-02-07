@@ -3,16 +3,11 @@ package org.jaagrT.controller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 
 import org.jaagrT.helpers.BitmapHolder;
 import org.jaagrT.helpers.Constants;
-import org.jaagrT.helpers.ErrorHandler;
-import org.jaagrT.helpers.Utilities;
 import org.jaagrT.model.Contact;
 import org.jaagrT.model.Database;
 import org.jaagrT.model.User;
@@ -100,31 +95,12 @@ public class BasicController {
                 circle.setPhoneVerified(parseObject.getBoolean(Constants.USER_PRIMARY_PHONE_VERIFIED));
                 circle.setMemberOfMasterCircle(parseObject.getBoolean(Constants.USER_MEMBER_OF_MASTER_CIRCLE));
                 circle.setEmail(parseObject.getString(Constants.USER_PRIMARY_EMAIL));
-                if (parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE) != null) {
-                    try {
-                        Bitmap bitmap = Utilities.getBitmapFromBlob(parseObject.getParseFile(Constants.USER_THUMBNAIL_PICTURE).getData());
-                        bitmapHolder.saveBitmapThumb(parseObject.getString(Constants.USER_PRIMARY_EMAIL), bitmap);
-                    } catch (ParseException e) {
-                        ErrorHandler.handleError(null, e);
-                    }
-                }
-                if (parseObject.getParseFile(Constants.USER_PROFILE_PICTURE) != null) {
-                    parseObject.getParseFile(Constants.USER_PROFILE_PICTURE).getDataInBackground(new GetDataCallback() {
-                        @Override
-                        public void done(byte[] bytes, ParseException e) {
-                            if (e == null) {
-                                Bitmap bitmap = Utilities.getBitmapFromBlob(bytes);
-                                bitmapHolder.saveBitmapImageAsync(parseObject.getString(Constants.USER_PRIMARY_EMAIL), bitmap);
-                            } else {
-                                ErrorHandler.handleError(null, e);
-                            }
-                        }
-                    });
-                }
                 circles.add(circle);
             }
 
             db.saveCircles(circles);
+            List<String> objectIds = getCircleObjectIDs();
+            ObjectService.updateCircleImages(objectIds);
         }
     }
 
@@ -169,5 +145,15 @@ public class BasicController {
 
     public User getCircle(int circleID) {
         return db.getCircle(circleID);
+    }
+
+    public void saveInvitations(String[] invitations) {
+        if (invitations.length > 0) {
+            db.saveInvitationList(invitations);
+        }
+    }
+
+    public String[] getInvitations() {
+        return db.getInvitations();
     }
 }
