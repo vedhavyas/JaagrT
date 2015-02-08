@@ -59,11 +59,12 @@ public class Constants {
 
     //Activity Request codes
     public static final int GET_IMAGE = 1;
-    public static final int VERIFY_PHONE = 2;
-    public static final int PICK_PICTURE = 3;
-    public static final int PICK_CONTACT = 4;
-    public static final int ACTION_UPDATE_OBJECTS_CODE = 5;
-    public static final int SEND_INVITE = 6;
+    public static final int CAPTURE_IMAGE = 2;
+    public static final int VERIFY_PHONE = 3;
+    public static final int PICK_PICTURE = 4;
+    public static final int PICK_CONTACT = 5;
+    public static final int ACTION_UPDATE_OBJECTS_CODE = 6;
+    public static final int SEND_INVITE = 7;
 
     //General Strings
     public static final String DEFAULT_ALERT_MESSAGE = "I'm in Emergency. This is my Location : ";

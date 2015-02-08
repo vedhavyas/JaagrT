@@ -7,8 +7,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -34,6 +36,7 @@ import org.jaagrT.services.ObjectService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -55,6 +58,7 @@ public class PickPicture extends Activity {
     private ParseObject userDetailsObject;
     private Button acceptBtn;
     private BitmapHolder bitmapHolder;
+    private File tempFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,15 @@ public class PickPicture extends Activity {
             } catch (IOException e) {
                 ErrorHandler.handleError(activity, e);
             }
+        } else if (requestCode == Constants.CAPTURE_IMAGE && resultCode == RESULT_OK) {
+            try {
+                originalImage = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
+                cropImageView.setImageBitmap(originalImage);
+                acceptBtn.setEnabled(true);
+            } catch (Exception e) {
+                ErrorHandler.handleError(activity, e);
+            }
+
         }
     }
 
@@ -205,7 +218,17 @@ public class PickPicture extends Activity {
 
     private void getImageFromCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, Constants.GET_IMAGE);
+        String exStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equalsIgnoreCase(exStorageState)) {
+            tempFile = new File(Environment.getExternalStorageDirectory(), "tempImageFromCam.jpg");
+            Uri imageUri = Uri.fromFile(tempFile);
+            Utilities.logData(imageUri.toString(), Log.DEBUG);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(intent, Constants.CAPTURE_IMAGE);
+        } else {
+            getImageFromGallery();
+        }
+
     }
 
 
@@ -217,9 +240,14 @@ public class PickPicture extends Activity {
     }
 
     private void returnResult(int result) {
+        checkAndDeleteTempFile();
         Intent intent = new Intent();
         setResult(result, intent);
         finish();
+    }
+
+    private boolean checkAndDeleteTempFile() {
+        return tempFile != null && tempFile.exists() && tempFile.delete();
     }
 
 
