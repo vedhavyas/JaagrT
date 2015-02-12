@@ -385,7 +385,7 @@ public class Profile extends ActionBarActivity {
             user = basicController.getUser();
             user.setFirstName(firstNameBox.getText().toString());
             user.setLastName(lastNameBox.getText().toString());
-            if (!user.getPhoneNumber().contains(phoneBox.getText().toString())) {
+            if (user.getPhoneNumber() != null && !user.getPhoneNumber().contains(phoneBox.getText().toString())) {
                 user.setPhoneVerified(false);
             }
             user.setPhoneNumber(phoneBox.getText().toString());

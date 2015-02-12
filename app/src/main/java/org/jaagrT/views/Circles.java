@@ -246,17 +246,28 @@ public class Circles extends Fragment {
                         .eventListener(new EventListener() {
                             @Override
                             public void onShow(Snackbar snackbar) {
-
                                 ViewPropertyAnimator.animate(addBtn).cancel();
                                 ViewPropertyAnimator.animate(addBtn).scaleX(0).scaleY(0).setDuration(200).start();
                             }
 
                             @Override
+                            public void onShowByReplace(Snackbar snackbar) {
+
+                            }
+
+                            @Override
                             public void onShown(Snackbar snackbar) {
+
                             }
 
                             @Override
                             public void onDismiss(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onDismissByReplace(Snackbar snackbar) {
+
                             }
 
                             @Override
@@ -306,12 +317,22 @@ public class Circles extends Fragment {
                             }
 
                             @Override
+                            public void onShowByReplace(Snackbar snackbar) {
+
+                            }
+
+                            @Override
                             public void onShown(Snackbar snackbar) {
 
                             }
 
                             @Override
                             public void onDismiss(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onDismissByReplace(Snackbar snackbar) {
 
                             }
 
