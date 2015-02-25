@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/mapLayout"
+    android:layout_height="match_parent"
+    android:background="@color/background_material_light">
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        tools:context="org.jaagrT.views.Maps"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="@string/back"
+        android:id="@+id/backMap"/>
+   </RelativeLayout>
